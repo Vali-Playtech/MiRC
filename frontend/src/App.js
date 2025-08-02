@@ -634,42 +634,62 @@ const RoomList = ({ onRoomSelect }) => {
 
       {/* Create Room Modal */}
       {showCreateRoom && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-2xl p-6 w-full max-w-md">
-            <h2 className="text-white text-xl font-bold mb-4">Create New Room</h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <h2 className="text-white text-2xl font-bold mb-2">Creează o Cameră Nouă</h2>
+              <p className="text-gray-300 text-sm">Începe o conversație pe un subiect care te pasionează</p>
+            </div>
             
-            <form onSubmit={createRoom} className="space-y-4">
-              <div>
+            <form onSubmit={createRoom} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-gray-300 text-sm font-medium">Numele camerei</label>
                 <input
                   type="text"
-                  placeholder="Room Name"
+                  placeholder="ex. General Discussion, Gaming, Music..."
                   value={newRoomName}
                   onChange={(e) => setNewRoomName(e.target.value)}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
+                  className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20 transition-all duration-200"
                   required
                 />
               </div>
               
-              <div>
+              <div className="space-y-2">
+                <label className="text-gray-300 text-sm font-medium">Descrierea camerei</label>
                 <textarea
-                  placeholder="Room Description (optional)"
+                  placeholder="Descrie despre ce este această cameră..."
                   value={newRoomDescription}
                   onChange={(e) => setNewRoomDescription(e.target.value)}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 resize-none"
+                  className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20 resize-none transition-all duration-200"
                   rows="3"
                 />
               </div>
               
-              <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  id="isPrivate"
-                  checked={isPrivate}
-                  onChange={(e) => setIsPrivate(e.target.checked)}
-                  className="w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500 rounded"
-                />
-                <label htmlFor="isPrivate" className="text-gray-300 text-sm">
-                  Make this room private
+              <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-white font-medium">Cameră Privată</div>
+                    <div className="text-gray-400 text-xs">Doar persoanele invitate pot intra</div>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                 </label>
               </div>
               
@@ -677,15 +697,18 @@ const RoomList = ({ onRoomSelect }) => {
                 <button
                   type="button"
                   onClick={() => setShowCreateRoom(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg transition-colors"
+                  className="flex-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white py-3 rounded-xl transition-all duration-200 font-medium border border-white/20 hover:border-white/30"
                 >
-                  Cancel
+                  Anulează
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg transition-colors"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
-                  Create Room
+                  <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Creează Camera
                 </button>
               </div>
             </form>
