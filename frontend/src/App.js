@@ -273,79 +273,130 @@ const ChatRoom = ({ room, onBack }) => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-900">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
-      <div className="bg-gray-800 px-4 py-3 flex items-center justify-between border-b border-gray-700">
-        <div className="flex items-center space-x-3">
+      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-4 flex items-center justify-between border-b border-white/10 shadow-lg">
+        <div className="flex items-center space-x-4">
           <button
             onClick={onBack}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-white transition-all duration-200 p-2 rounded-lg hover:bg-white/10"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div>
-            <h2 className="text-white font-semibold text-lg"># {room.name}</h2>
-            {room.description && (
-              <p className="text-gray-400 text-sm">{room.description}</p>
-            )}
+          
+          <div className="flex items-center space-x-3">
+            {getRoomIcon(room.name, room.is_private)}
+            <div>
+              <h2 className="text-white font-bold text-xl">{room.name}</h2>
+              {room.description && (
+                <p className="text-gray-400 text-sm">{room.description}</p>
+              )}
+            </div>
           </div>
         </div>
-        <div className="text-gray-400 text-sm">
-          {room.member_count} members
+        
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center text-green-400">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
+            <span className="text-sm font-medium">Online</span>
+          </div>
+          <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20">
+            <span className="text-white text-sm font-medium">{room.member_count} membri</span>
+          </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'} w-full`}
           >
-            <div
-              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                message.user_id === user?.id
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-700 text-gray-100'
-              }`}
-            >
+            <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
               {message.user_id !== user?.id && (
-                <div className="text-xs text-gray-300 mb-1 font-medium">
-                  {message.user_name}
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 mb-1">
+                  <span className="text-white text-xs font-semibold">
+                    {message.user_name?.charAt(0)?.toUpperCase()}
+                  </span>
                 </div>
               )}
-              <div className="break-words">{message.content}</div>
-              <div className={`text-xs mt-1 ${
-                message.user_id === user?.id ? 'text-purple-200' : 'text-gray-400'
-              }`}>
-                {formatTime(message.created_at)}
+              
+              <div
+                className={`px-4 py-3 rounded-2xl shadow-lg backdrop-blur-sm border ${
+                  message.user_id === user?.id
+                    ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white border-purple-500/30'
+                    : 'bg-white/10 text-gray-100 border-white/20'
+                } ${message.user_id === user?.id ? 'rounded-br-md' : 'rounded-bl-md'}`}
+              >
+                {message.user_id !== user?.id && (
+                  <div className="text-xs font-semibold mb-1 opacity-75">
+                    {message.user_name}
+                  </div>
+                )}
+                <div className="break-words leading-relaxed">{message.content}</div>
+                <div className={`text-xs mt-2 opacity-70 ${
+                  message.user_id === user?.id ? 'text-purple-100' : 'text-gray-400'
+                }`}>
+                  {formatTime(message.created_at)}
+                </div>
               </div>
+              
+              {message.user_id === user?.id && (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 mb-1">
+                  <span className="text-white text-xs font-semibold">
+                    {user?.name?.charAt(0)?.toUpperCase()}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
+        
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center mb-4">
+              <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Începe conversația</h3>
+            <p className="text-gray-400 max-w-sm">
+              Fii primul care trimite un mesaj în această cameră. Începe o conversație interesantă!
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Message Input */}
-      <form onSubmit={sendMessage} className="p-4 bg-gray-800 border-t border-gray-700">
+      <form onSubmit={sendMessage} className="p-6 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-xl border-t border-white/10">
         <div className="flex space-x-4">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder={`Message # ${room.name}`}
-            className="flex-1 bg-gray-700 text-white px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400"
-          />
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder={`Trimite un mesaj în ${room.name}...`}
+              className="w-full bg-white/10 backdrop-blur-sm text-white px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20 transition-all duration-200"
+            />
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v1a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z" />
+              </svg>
+            </div>
+          </div>
           <button
             type="submit"
             disabled={!newMessage.trim() || !ws}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-6 py-3 rounded-full transition-colors disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-4 rounded-2xl transition-all duration-200 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none flex items-center space-x-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
+            <span className="font-medium">Trimite</span>
           </button>
         </div>
       </form>
