@@ -156,12 +156,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 # Authentication routes
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
-    # Validate email
-    try:
-        valid = validate_email(user_data.email)
-        email = valid.email
-    except EmailNotValidError:
-        raise HTTPException(status_code=400, detail="Invalid email address")
+    # Validate email - let Pydantic handle basic validation, we just check existence
+    email = user_data.email
     
     # Check if user exists
     existing_user = await db.users.find_one({"email": email})
