@@ -67,25 +67,25 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(`${API}/auth/login`, { email, password });
+      const response = await api.post(`${API}/auth/login`, { email, password });
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       setToken(access_token);
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.response?.data?.detail || 'Login failed' };
+      return { success: false, error: error.message || 'Login failed' };
     }
   };
 
   const register = async (email, password, name) => {
     try {
-      const response = await axios.post(`${API}/auth/register`, { email, password, name });
+      const response = await api.post(`${API}/auth/register`, { email, password, name });
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       setToken(access_token);
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.response?.data?.detail || 'Registration failed' };
+      return { success: false, error: error.message || 'Registration failed' };
     }
   };
 
