@@ -384,7 +384,7 @@ const ChatRoom = ({ room, onBack }) => {
         }));
       } else {
         // Send via HTTP API (fallback)
-        const response = await axios.post(`${API}/rooms/${room.id}/messages`, {
+        const response = await api.post(`${API}/rooms/${room.id}/messages`, {
           content: newMessage.trim()
         }, {
           headers: { Authorization: `Bearer ${token}` }
