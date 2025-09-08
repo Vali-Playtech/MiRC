@@ -407,9 +407,11 @@ const ChatRoom = ({ room, onBack }) => {
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="flex items-center text-green-400">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
-            <span className="text-sm font-medium">Online</span>
+          <div className={`flex items-center ${isPolling ? 'text-yellow-400' : 'text-green-400'}`}>
+            <div className={`w-2 h-2 ${isPolling ? 'bg-yellow-400' : 'bg-green-400'} rounded-full animate-pulse mr-2`}></div>
+            <span className="text-sm font-medium">
+              {isPolling ? 'Sincronizare...' : 'Online'}
+            </span>
           </div>
           <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20">
             <span className="text-white text-sm font-medium">{room.member_count} membri</span>
