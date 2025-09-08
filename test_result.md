@@ -269,9 +269,12 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Real-time Chat Interface"
+    - "Real-time WebSocket Chat"
   stuck_tasks:
     - "Real-time WebSocket Chat"
+    - "Real-time Chat Interface"
   test_all: false
   test_priority: "high_first"
 
