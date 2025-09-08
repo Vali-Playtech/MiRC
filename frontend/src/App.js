@@ -229,7 +229,9 @@ const ChatRoom = ({ room, onBack }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [ws, setWs] = useState(null);
+  const [isPolling, setIsPolling] = useState(true);
   const messagesEndRef = useRef(null);
+  const pollingInterval = useRef(null);
   const { token, user } = useAuth();
 
   const scrollToBottom = () => {
@@ -240,28 +242,43 @@ const ChatRoom = ({ room, onBack }) => {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    // Fetch existing messages
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get(`${API}/rooms/${room.id}/messages`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setMessages(response.data);
-      } catch (error) {
-        console.error('Failed to fetch messages:', error);
-      }
-    };
+  // Fetch messages function
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get(`${API}/rooms/${room.id}/messages`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+    }
+  };
 
+  useEffect(() => {
+    // Initial fetch
     fetchMessages();
 
-    // Setup WebSocket connection
+    // Try WebSocket connection first
     const wsUrl = `${BACKEND_URL.replace('https:', 'wss:').replace('http:', 'ws:')}/ws/${room.id}`;
     const websocket = new WebSocket(wsUrl);
+    let wsConnected = false;
+
+    const wsTimeout = setTimeout(() => {
+      if (!wsConnected) {
+        console.log('WebSocket connection failed, switching to polling...');
+        websocket.close();
+        setWs(null);
+        startPolling();
+      }
+    }, 5000); // 5 second timeout
 
     websocket.onopen = () => {
-      console.log('WebSocket connected');
+      console.log('WebSocket connected successfully');
+      wsConnected = true;
+      clearTimeout(wsTimeout);
       setWs(websocket);
+      setIsPolling(false);
+      stopPolling();
     };
 
     websocket.onmessage = (event) => {
@@ -284,25 +301,75 @@ const ChatRoom = ({ room, onBack }) => {
     };
 
     websocket.onclose = () => {
-      console.log('WebSocket disconnected');
+      console.log('WebSocket disconnected, switching to polling...');
       setWs(null);
+      if (!wsConnected) {
+        clearTimeout(wsTimeout);
+        startPolling();
+      }
     };
 
-    return () => {
+    websocket.onerror = () => {
+      console.error('WebSocket error, switching to polling...');
+      clearTimeout(wsTimeout);
       websocket.close();
+      startPolling();
+    };
+
+    // Cleanup function
+    return () => {
+      clearTimeout(wsTimeout);
+      websocket.close();
+      stopPolling();
     };
   }, [room.id, token]);
 
-  const sendMessage = (e) => {
+  const startPolling = () => {
+    if (pollingInterval.current) return; // Already polling
+    
+    setIsPolling(true);
+    pollingInterval.current = setInterval(fetchMessages, 3000); // Poll every 3 seconds
+    console.log('Started message polling (3 second interval)');
+  };
+
+  const stopPolling = () => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+      pollingInterval.current = null;
+      setIsPolling(false);
+      console.log('Stopped message polling');
+    }
+  };
+
+  const sendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !ws) return;
+    if (!newMessage.trim()) return;
 
-    ws.send(JSON.stringify({
-      content: newMessage.trim(),
-      token: token
-    }));
-
-    setNewMessage('');
+    try {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        // Send via WebSocket
+        ws.send(JSON.stringify({
+          content: newMessage.trim(),
+          token: token
+        }));
+      } else {
+        // Send via HTTP API (fallback)
+        const response = await axios.post(`${API}/rooms/${room.id}/messages`, {
+          content: newMessage.trim()
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // Immediately fetch messages to show the new message
+        setTimeout(fetchMessages, 500);
+      }
+      
+      setNewMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      // Show error to user
+      alert('Nu s-a putut trimite mesajul. Încearcă din nou.');
+    }
   };
 
   const formatTime = (timestamp) => {
