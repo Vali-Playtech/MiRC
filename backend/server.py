@@ -305,6 +305,42 @@ async def get_room_messages(room_id: str, current_user: User = Depends(get_curre
     
     return message_list
 
+@api_router.post("/rooms/{room_id}/messages", response_model=Message)
+async def send_message_http(room_id: str, message_data: MessageCreate, current_user: User = Depends(get_current_user)):
+    # Check if user has access to room
+    room = await db.rooms.find_one({"id": room_id})
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    
+    if room["is_private"] and current_user.id not in room.get("members", []):
+        raise HTTPException(status_code=403, detail="Access denied to private room")
+    
+    # Create message
+    message_id = str(uuid.uuid4())
+    message_doc = {
+        "id": message_id,
+        "content": message_data.content,
+        "room_id": room_id,
+        "user_id": current_user.id,
+        "user_name": current_user.name,
+        "user_avatar": current_user.avatar_url,
+        "created_at": datetime.utcnow()
+    }
+    
+    # Save to database
+    await db.messages.insert_one(message_doc)
+    
+    # Return the message
+    return Message(
+        id=message_id,
+        content=message_data.content,
+        room_id=room_id,
+        user_id=current_user.id,
+        user_name=current_user.name,
+        user_avatar=current_user.avatar_url,
+        created_at=message_doc["created_at"]
+    )
+
 # WebSocket for real-time chat
 @app.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str):
