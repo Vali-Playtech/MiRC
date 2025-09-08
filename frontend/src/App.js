@@ -275,7 +275,7 @@ const ChatRoom = ({ room, onBack }) => {
   // Fetch messages function
   const fetchMessages = async () => {
     try {
-      const response = await axios.get(`${API}/rooms/${room.id}/messages`, {
+      const response = await api.get(`${API}/rooms/${room.id}/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(response.data);
