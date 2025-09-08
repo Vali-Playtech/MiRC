@@ -1,9 +1,39 @@
 import React, { useState, useEffect, useContext, createContext, useRef } from 'react';
-import axios from 'axios';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Replace axios with fetch
+const api = {
+  get: async (url, options = {}) => {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return { data: await response.json() };
+  },
+  post: async (url, data, options = {}) => {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return { data: await response.json() };
+  }
+};
 
 // Auth Context
 const AuthContext = createContext();
