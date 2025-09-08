@@ -697,7 +697,7 @@ const RoomList = ({ onRoomSelect }) => {
 
   const joinRoom = async (roomId) => {
     try {
-      await axios.post(`${API}/rooms/${roomId}/join`, {}, {
+      await api.post(`${API}/rooms/${roomId}/join`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchRooms();
