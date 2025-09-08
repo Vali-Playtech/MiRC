@@ -105,6 +105,9 @@ class Room(BaseModel):
 
 class MessageCreate(BaseModel):
     content: str
+
+class MessageCreateForRoom(BaseModel):
+    content: str
     room_id: str
 
 class Message(BaseModel):
