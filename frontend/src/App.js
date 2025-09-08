@@ -663,7 +663,7 @@ const RoomList = ({ onRoomSelect }) => {
 
   const fetchRooms = async () => {
     try {
-      const response = await axios.get(`${API}/rooms`, {
+      const response = await api.get(`${API}/rooms`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setRooms(response.data);
