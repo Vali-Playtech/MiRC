@@ -154,7 +154,7 @@ backend:
     implemented: true
     working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -164,6 +164,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "WebSocket functionality not working due to routing issues in the deployment environment. Messages can be typed and sent through the UI but don't appear in the chat. This is likely due to WebSocket URL routing configuration in the Kubernetes environment, not a code issue."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL ISSUE IDENTIFIED: 1) WebSocket fails as expected (deployment routing). 2) AXIOS library not available in browser - send button doesn't work. 3) Form submission (Enter key) works and sends messages successfully. 4) Messages display correctly but don't persist after page reload. 5) HTTP fallback API is working correctly. ROOT CAUSE: Missing axios dependency in frontend bundle."
 
   - task: "Message Persistence"
     implemented: true
