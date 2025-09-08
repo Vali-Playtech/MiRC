@@ -677,7 +677,7 @@ const RoomList = ({ onRoomSelect }) => {
     if (!newRoomName.trim()) return;
 
     try {
-      await axios.post(`${API}/rooms`, {
+      await api.post(`${API}/rooms`, {
         name: newRoomName.trim(),
         description: newRoomDescription.trim() || null,
         is_private: isPrivate
