@@ -1556,7 +1556,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center group-hover:from-gray-500 group-hover:to-gray-600 transition-all duration-200">
                   <span className="text-white text-sm font-semibold">
-                    {user?.name?.charAt(0)?.toUpperCase()}
+                    {user?.nickname?.charAt(0)?.toUpperCase()}
                   </span>
                 </div>
               )}
