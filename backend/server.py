@@ -712,7 +712,7 @@ async def send_message_http(room_id: str, message_data: MessageCreate, current_u
         "content": message_data.content,
         "room_id": room_id,
         "user_id": current_user.id,
-        "user_name": current_user.name,
+        "user_name": current_user.nickname,
         "user_avatar": current_user.avatar_url,
         "created_at": datetime.utcnow()
     }
