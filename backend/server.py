@@ -393,30 +393,188 @@ async def approve_nickname_request(request_id: str, admin_comment: str = "", cur
     
     return {"message": "Nickname change request approved"}
 
-@api_router.post("/admin/nickname-requests/{request_id}/reject")
-async def reject_nickname_request(request_id: str, admin_comment: str = "", current_user: User = Depends(get_current_user)):
-    # In production, add proper admin role check here
+# Friends endpoints
+@api_router.post("/friends/request")
+async def send_friend_request(request_data: FriendRequest, current_user: User = Depends(get_current_user)):
+    # Check if friend exists
+    friend_user = await db.users.find_one({"id": request_data.friend_user_id})
+    if not friend_user:
+        raise HTTPException(status_code=404, detail="User not found")
     
-    # Get the request
-    request_doc = await db.nickname_requests.find_one({"id": request_id})
-    if not request_doc:
-        raise HTTPException(status_code=404, detail="Request not found")
+    # Check if already friends
+    existing_friendship = await db.friends.find_one({
+        "$or": [
+            {"user_id": current_user.id, "friend_user_id": request_data.friend_user_id},
+            {"user_id": request_data.friend_user_id, "friend_user_id": current_user.id}
+        ]
+    })
+    if existing_friendship:
+        raise HTTPException(status_code=400, detail="Already friends")
     
-    if request_doc["status"] != "pending":
-        raise HTTPException(status_code=400, detail="Request already processed")
+    # Create friendship (auto-accept for now, can add approval later)
+    friendship_id = str(uuid.uuid4())
+    friendship_doc = {
+        "id": friendship_id,
+        "user_id": current_user.id,
+        "friend_user_id": request_data.friend_user_id,
+        "friend_nickname": friend_user.get("nickname", "Unknown"),
+        "friend_first_name": friend_user.get("first_name", ""),
+        "friend_last_name": friend_user.get("last_name", ""),
+        "friend_avatar_url": friend_user.get("avatar_url"),
+        "created_at": datetime.utcnow(),
+        "last_message": None,
+        "last_message_time": None,
+        "unread_count": 0
+    }
+    await db.friends.insert_one(friendship_doc)
     
-    # Update request status
-    await db.nickname_requests.update_one(
-        {"id": request_id},
+    # Create reverse friendship
+    reverse_friendship_id = str(uuid.uuid4())
+    reverse_friendship_doc = {
+        "id": reverse_friendship_id,
+        "user_id": request_data.friend_user_id,
+        "friend_user_id": current_user.id,
+        "friend_nickname": current_user.nickname or "Unknown",
+        "friend_first_name": current_user.first_name or "",
+        "friend_last_name": current_user.last_name or "",
+        "friend_avatar_url": current_user.avatar_url,
+        "created_at": datetime.utcnow(),
+        "last_message": None,
+        "last_message_time": None,
+        "unread_count": 0
+    }
+    await db.friends.insert_one(reverse_friendship_doc)
+    
+    return {"message": "Friend added successfully"}
+
+@api_router.get("/friends", response_model=List[Friend])
+async def get_friends(current_user: User = Depends(get_current_user)):
+    friends = await db.friends.find({"user_id": current_user.id}).sort("last_message_time", -1).to_list(50)
+    
+    friend_list = []
+    for friend in friends:
+        friend_list.append(Friend(**friend))
+    
+    return friend_list
+
+@api_router.post("/friends/message", response_model=PrivateMessage)
+async def send_private_message(message_data: PrivateMessageCreate, current_user: User = Depends(get_current_user)):
+    # Verify friendship exists
+    friendship = await db.friends.find_one({
+        "user_id": current_user.id,
+        "friend_user_id": message_data.recipient_id
+    })
+    if not friendship:
+        raise HTTPException(status_code=403, detail="Not friends with this user")
+    
+    # Create message
+    message_id = str(uuid.uuid4())
+    message_doc = {
+        "id": message_id,
+        "sender_id": current_user.id,
+        "recipient_id": message_data.recipient_id,
+        "content": message_data.content,
+        "sender_nickname": current_user.nickname or "Unknown",
+        "sender_avatar_url": current_user.avatar_url,
+        "created_at": datetime.utcnow(),
+        "is_read": False
+    }
+    
+    await db.private_messages.insert_one(message_doc)
+    
+    # Update friendship last message
+    await db.friends.update_one(
+        {"user_id": current_user.id, "friend_user_id": message_data.recipient_id},
         {"$set": {
-            "status": "rejected",
-            "reviewed_at": datetime.utcnow(),
-            "reviewed_by": current_user.id,
-            "admin_comment": admin_comment
+            "last_message": message_data.content,
+            "last_message_time": datetime.utcnow()
         }}
     )
     
-    return {"message": "Nickname change request rejected"}
+    # Update recipient's friendship unread count and last message
+    await db.friends.update_one(
+        {"user_id": message_data.recipient_id, "friend_user_id": current_user.id},
+        {"$set": {
+            "last_message": message_data.content,
+            "last_message_time": datetime.utcnow()
+        }, "$inc": {"unread_count": 1}}
+    )
+    
+    return PrivateMessage(**message_doc)
+
+@api_router.get("/friends/{friend_id}/messages", response_model=List[PrivateMessage])
+async def get_private_messages(friend_id: str, current_user: User = Depends(get_current_user)):
+    # Verify friendship
+    friendship = await db.friends.find_one({
+        "user_id": current_user.id,
+        "friend_user_id": friend_id
+    })
+    if not friendship:
+        raise HTTPException(status_code=403, detail="Not friends with this user")
+    
+    # Get messages
+    messages = await db.private_messages.find({
+        "$or": [
+            {"sender_id": current_user.id, "recipient_id": friend_id},
+            {"sender_id": friend_id, "recipient_id": current_user.id}
+        ]
+    }).sort("created_at", -1).limit(50).to_list(50)
+    
+    messages.reverse()  # Show oldest first
+    
+    # Mark messages as read
+    await db.private_messages.update_many(
+        {"sender_id": friend_id, "recipient_id": current_user.id, "is_read": False},
+        {"$set": {"is_read": True}}
+    )
+    
+    # Reset unread count
+    await db.friends.update_one(
+        {"user_id": current_user.id, "friend_user_id": friend_id},
+        {"$set": {"unread_count": 0}}
+    )
+    
+    message_list = []
+    for msg in messages:
+        message_list.append(PrivateMessage(**msg))
+    
+    return message_list
+
+# Get users in same room for friend suggestions
+@api_router.get("/rooms/{room_id}/users")
+async def get_room_users(room_id: str, current_user: User = Depends(get_current_user)):
+    # Check if user has access to room
+    room = await db.rooms.find_one({"id": room_id})
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    
+    if room["is_private"] and current_user.id not in room.get("members", []):
+        raise HTTPException(status_code=403, detail="Access denied to private room")
+    
+    # Get recent messages to find active users
+    recent_messages = await db.messages.find({"room_id": room_id}).sort("created_at", -1).limit(20).to_list(20)
+    
+    user_ids = set()
+    users_info = []
+    
+    for msg in recent_messages:
+        if msg["user_id"] != current_user.id and msg["user_id"] not in user_ids:
+            user_ids.add(msg["user_id"])
+            
+            # Check if already friends
+            existing_friendship = await db.friends.find_one({
+                "user_id": current_user.id,
+                "friend_user_id": msg["user_id"]
+            })
+            
+            users_info.append({
+                "id": msg["user_id"],
+                "nickname": msg["user_name"],
+                "avatar_url": msg.get("user_avatar"),
+                "is_friend": existing_friendship is not None
+            })
+    
+    return users_info
 
 @api_router.post("/auth/change-password")
 async def change_password(password_data: PasswordChange, current_user: User = Depends(get_current_user)):
