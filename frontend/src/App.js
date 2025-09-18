@@ -2280,6 +2280,7 @@ const AppContent = () => {
   const [privateChatUser, setPrivateChatUser] = useState(null);
   const [privateMessages, setPrivateMessages] = useState([]);
   const [newPrivateMessage, setNewPrivateMessage] = useState('');
+  const [isPrivateChatUserFriend, setIsPrivateChatUserFriend] = useState(false);
   const { user, loading, token } = useAuth();
 
   // Functions for private chat
