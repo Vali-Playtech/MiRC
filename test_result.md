@@ -375,8 +375,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Private Chat System Integration"
-    - "Private Conversations Management"
+    - "Avatar Interaction System"
+    - "Real-time Chat Interface"
   stuck_tasks:
     - "Real-time WebSocket Chat"
   test_all: false
