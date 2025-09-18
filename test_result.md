@@ -277,12 +277,10 @@ metadata:
 test_plan:
   current_focus:
     - "Email Authentication System"
-    - "Authentication UI"
-  stuck_tasks:
-    - "Email Authentication System"
-    - "Authentication UI"
-    - "Real-time WebSocket Chat"
     - "Real-time Chat Interface"
+    - "Real-time WebSocket Chat"
+  stuck_tasks:
+    - "Real-time WebSocket Chat"
   test_all: false
   test_priority: "high_first"
 
