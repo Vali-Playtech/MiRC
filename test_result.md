@@ -177,6 +177,24 @@ backend:
         agent: "testing"
         comment: "WebSocket testing confirmed non-functional due to deployment environment limitations (Kubernetes ingress routing). This is an infrastructure issue, not a code bug. The WebSocket code implementation is correct with proper JWT authentication, room-based broadcasting, and message persistence. HTTP fallback messaging API is working perfectly as verified in comprehensive testing."
 
+  - task: "HTTP Message Sending API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "CRITICAL BUG IDENTIFIED: AttributeError in server.py line 715 where 'current_user.name' was referenced but User model only has 'nickname' field. This caused HTTP 500 errors when sending messages via POST /api/rooms/{room_id}/messages endpoint."
+      - working: true
+        agent: "main"
+        comment: "CRITICAL BUG FIXED: Changed server.py line 715 from 'current_user.name' to 'current_user.nickname' to match the User model structure. Backend restarted automatically."
+      - working: true
+        agent: "testing"
+        comment: "CRITICAL BUG FIX VERIFIED: HTTP message sending API is now working perfectly! Comprehensive testing confirms: 1) POST /api/rooms/{room_id}/messages endpoint returns HTTP 200 with proper message structure. 2) user_name field is correctly populated with user's nickname (was the critical bug). 3) Messages are properly stored in MongoDB with all required fields. 4) Message retrieval shows sent messages with correct user information. 5) Multiple users can send messages successfully. 6) Fixed legacy message compatibility where old messages with null user_name display as 'Unknown User'. The AttributeError bug has been completely resolved and messaging functionality is fully operational."
+
   - task: "Message Persistence"
     implemented: true
     working: true
