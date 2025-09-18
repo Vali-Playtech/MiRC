@@ -708,17 +708,44 @@ const LoginForm = ({ isLogin, onToggle }) => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
-            <div className="space-y-2">
-              <label className="text-gray-300 text-sm font-medium">{t('fullName')}</label>
-              <input
-                type="text"
-                placeholder={t('fullNamePlaceholder')}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
-                required
-              />
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-gray-300 text-sm font-medium">{t('firstName')}</label>
+                  <input
+                    type="text"
+                    placeholder={t('firstNamePlaceholder')}
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-gray-300 text-sm font-medium">{t('lastName')}</label>
+                  <input
+                    type="text"
+                    placeholder={t('lastNamePlaceholder')}
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-gray-300 text-sm font-medium">{t('nickname')}</label>
+                <input
+                  type="text"
+                  placeholder={t('nicknamePlaceholder')}
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
+                  required
+                />
+                <p className="text-gray-400 text-xs">{t('nicknameWillAppearInChat', 'This nickname will appear in chat messages')}</p>
+              </div>
+            </>
           )}
           
           <div className="space-y-2">
