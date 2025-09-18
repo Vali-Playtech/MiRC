@@ -1209,6 +1209,7 @@ const ChatRoom = ({ room, onBack }) => {
     setShowPrivateChat(true);
     setShowAvatarBubble(null);
     fetchPrivateMessages(chatUser.id);
+    checkFriendStatus(chatUser.id);
   };
 
   useEffect(() => {
