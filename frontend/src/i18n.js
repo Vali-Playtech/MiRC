@@ -82,6 +82,7 @@ export const translations = {
     security: 'Security',
     about: 'About',
     editProfile: 'Edit Profile',
+    updateProfileInfo: 'Update your profile information',
     changePassword: 'Change Password',
     language: 'Language',
     selectLanguage: 'Select Language',
@@ -97,6 +98,11 @@ export const translations = {
     currentPassword: 'Current Password',
     newPassword: 'New Password',
     confirmPassword: 'Confirm New Password',
+    emailCannotBeChanged: 'Email address cannot be changed',
+    customizeExperience: 'Customize your VONEX experience',
+    manageAccountSecurity: 'Manage your account security settings',
+    aboutVonex: 'About VONEX and your account',
+    version: 'Version',
     
     // Avatar Settings
     avatar: 'Avatar',
@@ -108,8 +114,11 @@ export const translations = {
     removeAvatar: 'Remove Avatar',
     avatarUpdated: 'Avatar updated successfully',
     selectDefaultAvatar: 'Select a default avatar',
-    orUploadCustom: 'or upload your own image',
+    orUploadCustom: 'Or upload your own image',
     supportedFormats: 'Supported formats: JPG, PNG, GIF (max 2MB)',
+    invalidFileType: 'Please select a valid image file',
+    fileTooLarge: 'File size must be less than 2MB',
+    
     // Nickname Management
     changeNickname: 'Change Nickname',
     currentNickname: 'Current Nickname',
@@ -130,6 +139,12 @@ export const translations = {
     adminComment: 'Admin Comment',
     requestDate: 'Request Date',
     reviewDate: 'Review Date',
+    nicknameVisibleInChat: 'This nickname is visible in chat messages',
+    nicknameWillAppearInChat: 'This nickname will appear in chat messages',
+    nicknameChangeExplanation: 'Nickname changes require admin approval',
+    profileUpdated: 'Profile updated successfully',
+    passwordChanged: 'Password changed successfully',
+    passwordMismatch: 'Passwords do not match',
     
     // Common
     close: 'Close',
