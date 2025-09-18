@@ -308,8 +308,113 @@ class BackendTester:
         except Exception as e:
             return self.log_test("Real-time WebSocket Chat", False, f"Exception: {str(e)}")
     
+    def test_http_message_sending(self):
+        """Test 5: HTTP Message Sending API (Critical Bug Fix Verification)"""
+        print("\n=== Testing HTTP Message Sending API ===")
+        
+        try:
+            if not self.test_rooms:
+                self.log_test("HTTP Message Sending", False, "No test rooms available")
+                return False
+            
+            room_id = self.test_rooms[0]['id']  # Use first public room
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Get initial message count
+            response = self.session.get(f"{API_BASE}/rooms/{room_id}/messages", headers=headers_alice)
+            if not self.log_test("Initial Message Retrieval", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            initial_messages = response.json()
+            initial_count = len(initial_messages)
+            
+            # Test HTTP message sending (this is the critical bug fix test)
+            test_message = {
+                "content": "This is a test message sent via HTTP API to verify the nickname bug fix!"
+            }
+            
+            response = self.session.post(f"{API_BASE}/rooms/{room_id}/messages", 
+                                       json=test_message, headers=headers_alice)
+            if not self.log_test("HTTP Message Send", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            sent_message = response.json()
+            
+            # Validate the returned message structure
+            required_fields = ['id', 'content', 'room_id', 'user_id', 'user_name', 'created_at']
+            for field in required_fields:
+                if field not in sent_message:
+                    return self.log_test("Message Response Structure", False,
+                                       f"Missing field: {field}")
+            
+            # Critical: Verify user_name is populated (this was the bug)
+            if not sent_message.get('user_name'):
+                return self.log_test("User Name Bug Fix", False,
+                                   "user_name is null or empty - bug not fixed!")
+            
+            # Verify user_name matches the user's nickname
+            if sent_message.get('user_name') != 'alice_j':
+                return self.log_test("User Name Accuracy", False,
+                                   f"Expected 'alice_j', got '{sent_message.get('user_name')}'")
+            
+            # Send another message from Bob to test different user
+            test_message_bob = {
+                "content": "Bob's test message via HTTP API"
+            }
+            
+            response = self.session.post(f"{API_BASE}/rooms/{room_id}/messages", 
+                                       json=test_message_bob, headers=headers_bob)
+            if not self.log_test("HTTP Message Send (Bob)", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_message = response.json()
+            if bob_message.get('user_name') != 'bob_s':
+                return self.log_test("Bob User Name Accuracy", False,
+                                   f"Expected 'bob_s', got '{bob_message.get('user_name')}'")
+            
+            # Verify messages are persisted
+            response = self.session.get(f"{API_BASE}/rooms/{room_id}/messages", headers=headers_alice)
+            if not self.log_test("Message Persistence Check", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            current_messages = response.json()
+            current_count = len(current_messages)
+            
+            if current_count != initial_count + 2:
+                return self.log_test("Message Count Validation", False,
+                                   f"Expected {initial_count + 2} messages, got {current_count}")
+            
+            # Verify the messages are in the list with correct user names
+            alice_found = False
+            bob_found = False
+            
+            for msg in current_messages[-2:]:  # Check last 2 messages
+                if msg.get('content') == test_message['content'] and msg.get('user_name') == 'alice_j':
+                    alice_found = True
+                elif msg.get('content') == test_message_bob['content'] and msg.get('user_name') == 'bob_s':
+                    bob_found = True
+            
+            if not alice_found:
+                return self.log_test("Alice Message Persistence", False,
+                                   "Alice's message not found in message list")
+            
+            if not bob_found:
+                return self.log_test("Bob Message Persistence", False,
+                                   "Bob's message not found in message list")
+            
+            self.log_test("HTTP Message Sending API", True, "All HTTP message sending tests passed - Bug fix verified!")
+            return True
+            
+        except Exception as e:
+            return self.log_test("HTTP Message Sending API", False, f"Exception: {str(e)}")
+    
     def test_message_persistence(self):
-        """Test 5: Message Persistence"""
+        """Test 6: Message Persistence"""
         print("\n=== Testing Message Persistence ===")
         
         try:
@@ -319,35 +424,31 @@ class BackendTester:
             
             room_id = self.test_rooms[0]['id']  # Use first public room
             headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
             
-            # Get initial message count
-            response = self.session.get(f"{API_BASE}/rooms/{room_id}/messages", headers=headers_alice)
-            if not self.log_test("Message Retrieval", response.status_code == 200,
+            # Test message retrieval with different user (Bob)
+            response = self.session.get(f"{API_BASE}/rooms/{room_id}/messages", headers=headers_bob)
+            if not self.log_test("Cross-User Message Access", response.status_code == 200,
                                f"Status: {response.status_code}"):
                 return False
             
-            initial_messages = response.json()
-            initial_count = len(initial_messages)
+            bob_messages = response.json()
             
-            # Send a message via WebSocket (this should persist)
-            # Note: We already sent a message in the WebSocket test, so check if it's persisted
-            
-            # Get messages again to verify persistence
+            # Test message retrieval with Alice
             response = self.session.get(f"{API_BASE}/rooms/{room_id}/messages", headers=headers_alice)
-            if not self.log_test("Message Persistence Check", response.status_code == 200,
+            if not self.log_test("Alice Message Access", response.status_code == 200,
                                f"Status: {response.status_code}"):
                 return False
             
-            current_messages = response.json()
-            current_count = len(current_messages)
+            alice_messages = response.json()
             
-            if current_count <= initial_count:
-                return self.log_test("Message Persistence Validation", False,
-                                   f"Message count did not increase: {initial_count} -> {current_count}")
+            if len(bob_messages) != len(alice_messages):
+                return self.log_test("Message Consistency", False,
+                                   "Different users see different message counts")
             
             # Validate message structure
-            if current_messages:
-                latest_message = current_messages[-1]
+            if alice_messages:
+                latest_message = alice_messages[-1]
                 required_fields = ['id', 'content', 'room_id', 'user_id', 'user_name', 'created_at']
                 for field in required_fields:
                     if field not in latest_message:
@@ -362,18 +463,6 @@ class BackendTester:
                 if latest_message.get('room_id') != room_id:
                     return self.log_test("Room Association", False,
                                        "Incorrect room ID in message")
-            
-            # Test message retrieval with different user (Bob)
-            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
-            response = self.session.get(f"{API_BASE}/rooms/{room_id}/messages", headers=headers_bob)
-            if not self.log_test("Cross-User Message Access", response.status_code == 200,
-                               f"Status: {response.status_code}"):
-                return False
-            
-            bob_messages = response.json()
-            if len(bob_messages) != current_count:
-                return self.log_test("Message Consistency", False,
-                                   "Different users see different message counts")
             
             self.log_test("Message Persistence", True, "All message persistence tests passed")
             return True
