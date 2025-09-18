@@ -1353,29 +1353,41 @@ const ChatRoom = ({ room, onBack }) => {
           >
             <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
               {message.user_id !== user?.id && (
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-purple-500/30 flex-shrink-0 mb-1">
-                  {message.user_avatar ? (
-                    message.user_avatar.startsWith('data:') ? (
-                      <img 
-                        src={message.user_avatar} 
-                        alt="Avatar" 
-                        className="w-full h-full object-cover" 
-                      />
+                <div className="relative group">
+                  <button
+                    onClick={(e) => handleAvatarClick(e, message)}
+                    className="w-8 h-8 rounded-full overflow-hidden border border-purple-500/30 flex-shrink-0 mb-1 relative hover:border-purple-400 transition-all duration-200 cursor-pointer hover:scale-110"
+                  >
+                    {message.user_avatar ? (
+                      message.user_avatar.startsWith('data:') ? (
+                        <img 
+                          src={message.user_avatar} 
+                          alt="Avatar" 
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <div 
+                          className="w-full h-full"
+                          dangerouslySetInnerHTML={{ 
+                            __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
+                          }}
+                        />
+                      )
                     ) : (
-                      <div 
-                        className="w-full h-full"
-                        dangerouslySetInnerHTML={{ 
-                          __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
-                        }}
-                      />
-                    )
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold">
-                        {message.user_name?.charAt(0)?.toUpperCase()}
-                      </span>
+                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">
+                          {message.user_name?.charAt(0)?.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Plus indicator */}
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border-2 border-gray-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                      </svg>
                     </div>
-                  )}
+                  </button>
                 </div>
               )}
               
