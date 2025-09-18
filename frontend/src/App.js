@@ -1475,6 +1475,7 @@ const ChatRoom = ({ room, onBack }) => {
         {messages.map((message) => (
           <div
             key={message.id}
+            id={`message-${message.id}`}
             className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'} w-full`}
           >
             <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
