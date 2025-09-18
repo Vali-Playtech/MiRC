@@ -378,7 +378,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Avatar Interaction System"
     - "Real-time Chat Interface"
   stuck_tasks:
     - "Real-time WebSocket Chat"
