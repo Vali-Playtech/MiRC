@@ -204,7 +204,9 @@ const useAuth = () => {
 const AccountSettings = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState('profile');
   const [profileData, setProfileData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
+    nickname: '',
     email: '',
     avatar_url: null
   });
@@ -213,6 +215,12 @@ const AccountSettings = ({ onBack }) => {
     newPassword: '',
     confirmPassword: ''
   });
+  const [nicknameRequestData, setNicknameRequestData] = useState({
+    newNickname: '',
+    reason: ''
+  });
+  const [nicknameRequests, setNicknameRequests] = useState([]);
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(null);
@@ -224,13 +232,27 @@ const AccountSettings = ({ onBack }) => {
   useEffect(() => {
     if (user) {
       setProfileData({
-        name: user.name || '',
+        firstName: user.first_name || '',
+        lastName: user.last_name || '',
+        nickname: user.nickname || '',
         email: user.email || '',
         avatar_url: user.avatar_url || null
       });
       setSelectedAvatar(user.avatar_url || null);
     }
+    fetchNicknameRequests();
   }, [user]);
+
+  const fetchNicknameRequests = async () => {
+    try {
+      const response = await api.get(`${API}/auth/nickname-requests`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNicknameRequests(response.data);
+    } catch (error) {
+      console.error('Failed to fetch nickname requests:', error);
+    }
+  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
