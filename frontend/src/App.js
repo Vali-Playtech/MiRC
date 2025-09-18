@@ -1259,7 +1259,7 @@ const ChatRoom = ({ room, onBack }) => {
   useEffect(() => {
     // Initial fetch
     fetchMessages();
-    fetchRoomUsers();
+    fetchRoomFriends();
 
     // Try WebSocket connection first
     const wsUrl = `${BACKEND_URL.replace('https:', 'wss:').replace('http:', 'ws:')}/ws/${room.id}`;
