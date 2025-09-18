@@ -94,6 +94,22 @@ export const translations = {
     newPassword: 'New Password',
     confirmPassword: 'Confirm New Password',
     
+    // Avatar Settings
+    avatar: 'Avatar',
+    changeAvatar: 'Change Avatar',
+    chooseAvatar: 'Choose Avatar',
+    defaultAvatars: 'Default Avatars',
+    uploadCustomAvatar: 'Upload Custom Avatar',
+    uploadImage: 'Upload Image',
+    removeAvatar: 'Remove Avatar',
+    avatarUpdated: 'Avatar updated successfully',
+    selectDefaultAvatar: 'Select a default avatar',
+    orUploadCustom: 'or upload your own image',
+    supportedFormats: 'Supported formats: JPG, PNG, GIF (max 2MB)',
+    profileUpdated: 'Profile updated successfully',
+    passwordChanged: 'Password changed successfully',
+    passwordMismatch: 'Passwords do not match',
+    
     // Common
     close: 'Close',
     back: 'Back',
