@@ -2288,6 +2288,45 @@ const AppContent = () => {
     setPrivateChatUser(chatUser);
     setShowPrivateChat(true);
     fetchPrivateMessages(chatUser.id);
+    checkIfUserIsFriend(chatUser.id);
+  };
+
+  // Check if user is friend
+  const checkIfUserIsFriend = async (userId) => {
+    try {
+      const response = await api.get(`${API}/friends`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const isFriend = response.data.some(friend => friend.friend_user_id === userId);
+      setIsPrivateChatUserFriend(isFriend);
+    } catch (error) {
+      console.error('Failed to check friend status:', error);
+      setIsPrivateChatUserFriend(false);
+    }
+  };
+
+  // Toggle friend status
+  const toggleFriendStatus = async () => {
+    if (!privateChatUser) return;
+
+    try {
+      if (isPrivateChatUserFriend) {
+        // Remove from friends - need to implement unfriend endpoint
+        alert('Funcționalitatea de eliminare din favorite va fi implementată în curând.');
+      } else {
+        // Add to friends
+        await api.post(`${API}/friends/request`, {
+          friend_user_id: privateChatUser.id
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIsPrivateChatUserFriend(true);
+        alert('Utilizator adăugat la favorite!');
+      }
+    } catch (error) {
+      console.error('Failed to toggle friend status:', error);
+      alert('Nu s-a putut modifica statusul de favorit.');
+    }
   };
 
   const fetchPrivateMessages = async (userId) => {
