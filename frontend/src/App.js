@@ -1368,7 +1368,10 @@ const ChatRoom = ({ room, onBack }) => {
     if (pollingInterval.current) return; // Already polling
     
     setIsPolling(true);
-    pollingInterval.current = setInterval(fetchMessages, 3000); // Poll every 3 seconds
+    pollingInterval.current = setInterval(() => {
+      fetchMessages();
+      fetchRoomFriends(); // Also update friends list to refresh unread counts
+    }, 3000); // Poll every 3 seconds
     console.log('Started message polling (3 second interval)');
   };
 
