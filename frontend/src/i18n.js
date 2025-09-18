@@ -110,16 +110,17 @@ export const translations = {
     passwordChanged: 'Password changed successfully',
     passwordMismatch: 'Passwords do not match',
     
-    // Common
-    close: 'Close',
-    back: 'Back',
-    next: 'Next',
-    confirm: 'Confirm',
-    yes: 'Yes',
-    no: 'No',
-    or: 'or',
-    and: 'and'
-  },
+// Helper function to get translation with fallback
+export const getTranslation = (key, lang = 'en', variables = {}) => {
+  let translation = translations[lang]?.[key] || translations['en'][key] || key;
+  
+  // Replace variables in translation
+  Object.keys(variables).forEach(variable => {
+    translation = translation.replace(`{${variable}}`, variables[variable]);
+  });
+  
+  return translation;
+};
   
   ro: {
     // App Name
