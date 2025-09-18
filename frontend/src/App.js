@@ -1243,16 +1243,16 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
               </div>
-              <h2 className="text-white text-2xl font-bold mb-2">Creează o Cameră Nouă</h2>
-              <p className="text-gray-300 text-sm">Începe o conversație pe un subiect care te pasionează</p>
+              <h2 className="text-white text-2xl font-bold mb-2">{t('createNewRoom')}</h2>
+              <p className="text-gray-300 text-sm">{t('startConversation')}</p>
             </div>
             
             <form onSubmit={createRoom} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-gray-300 text-sm font-medium">Numele camerei</label>
+                <label className="text-gray-300 text-sm font-medium">{t('roomName')}</label>
                 <input
                   type="text"
-                  placeholder="ex. General Discussion, Gaming, Music..."
+                  placeholder={t('roomNamePlaceholder')}
                   value={newRoomName}
                   onChange={(e) => setNewRoomName(e.target.value)}
                   className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20 transition-all duration-200"
@@ -1261,9 +1261,9 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               </div>
               
               <div className="space-y-2">
-                <label className="text-gray-300 text-sm font-medium">Descrierea camerei</label>
+                <label className="text-gray-300 text-sm font-medium">{t('roomDescription')}</label>
                 <textarea
-                  placeholder="Descrie despre ce este această cameră..."
+                  placeholder={t('roomDescriptionPlaceholder')}
                   value={newRoomDescription}
                   onChange={(e) => setNewRoomDescription(e.target.value)}
                   className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20 resize-none transition-all duration-200"
@@ -1279,8 +1279,8 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-white font-medium">Cameră Privată</div>
-                    <div className="text-gray-400 text-xs">Doar persoanele invitate pot intra</div>
+                    <div className="text-white font-medium">{t('privateRoom')}</div>
+                    <div className="text-gray-400 text-xs">{t('privateRoomDesc')}</div>
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -1300,7 +1300,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   onClick={() => setShowCreateRoom(false)}
                   className="flex-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white py-3 rounded-xl transition-all duration-200 font-medium border border-white/20 hover:border-white/30"
                 >
-                  Anulează
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
@@ -1309,7 +1309,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Creează Camera
+                  {t('createRoom')}
                 </button>
               </div>
             </form>
