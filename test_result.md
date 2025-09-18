@@ -381,7 +381,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Real-time Chat Interface"
+    - "Real-time WebSocket Chat"
   stuck_tasks:
     - "Real-time WebSocket Chat"
   test_all: false
