@@ -1264,30 +1264,37 @@ const ChatRoom = ({ room, onBack }) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
+    const messageContent = newMessage.trim();
+    
     try {
       if (ws && ws.readyState === WebSocket.OPEN) {
         // Send via WebSocket
         ws.send(JSON.stringify({
-          content: newMessage.trim(),
+          content: messageContent,
           token: token
         }));
+        // Clear input immediately for WebSocket (real-time)
+        setNewMessage('');
       } else {
         // Send via HTTP API (fallback)
         const response = await api.post(`${API}/rooms/${room.id}/messages`, {
-          content: newMessage.trim()
+          content: messageContent
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        // Immediately fetch messages to show the new message
-        setTimeout(fetchMessages, 500);
+        // Only clear input after successful HTTP send
+        if (response && response.data) {
+          setNewMessage('');
+          // Immediately fetch messages to show the new message
+          setTimeout(fetchMessages, 500);
+        }
       }
-      
-      setNewMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
       // Show error to user
       alert('Nu s-a putut trimite mesajul. Încearcă din nou.');
+      // Don't clear the input on error so user can retry
     }
   };
 
