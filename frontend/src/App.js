@@ -1283,12 +1283,10 @@ const ChatRoom = ({ room, onBack }) => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        // Only clear input after successful HTTP send
-        if (response && response.data) {
-          setNewMessage('');
-          // Immediately fetch messages to show the new message
-          setTimeout(fetchMessages, 500);
-        }
+        // Clear input after successful HTTP send (response means success)
+        setNewMessage('');
+        // Immediately fetch messages to show the new message
+        setTimeout(fetchMessages, 500);
       }
     } catch (error) {
       console.error('Failed to send message:', error);
