@@ -1048,6 +1048,80 @@ const ChatRoom = ({ room, onBack }) => {
     }
   };
 
+  // Fetch room users function
+  const fetchRoomUsers = async () => {
+    try {
+      const response = await api.get(`${API}/rooms/${room.id}/users`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setRoomUsers(response.data);
+    } catch (error) {
+      console.error('Failed to fetch room users:', error);
+    }
+  };
+
+  // Fetch private messages
+  const fetchPrivateMessages = async (userId) => {
+    try {
+      const response = await api.get(`${API}/private-messages/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPrivateMessages(response.data);
+    } catch (error) {
+      console.error('Failed to fetch private messages:', error);
+    }
+  };
+
+  // Send private message
+  const sendPrivateMessage = async (e) => {
+    e.preventDefault();
+    if (!newPrivateMessage.trim() || !privateChatUser) return;
+
+    try {
+      const response = await api.post(`${API}/private-messages`, {
+        content: newPrivateMessage.trim(),
+        recipient_id: privateChatUser.id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setPrivateMessages(prev => [...prev, response.data]);
+      setNewPrivateMessage('');
+    } catch (error) {
+      console.error('Failed to send private message:', error);
+      alert('Nu s-a putut trimite mesajul privat. Încearcă din nou.');
+    }
+  };
+
+  // Add to favorites (friends)
+  const addToFavorites = async (userId) => {
+    try {
+      await api.post(`${API}/friends/request`, {
+        friend_user_id: userId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Update user list to reflect friend status
+      setRoomUsers(prev => 
+        prev.map(u => u.id === userId ? {...u, is_friend: true} : u)
+      );
+      
+      alert('Utilizator adăugat la favorit!');
+    } catch (error) {
+      console.error('Failed to add to favorites:', error);
+      alert('Nu s-a putut adăuga la favorit.');
+    }
+  };
+
+  // Open private chat
+  const openPrivateChat = (user) => {
+    setPrivateChatUser(user);
+    setShowPrivateChat(true);
+    setShowUserList(false);
+    fetchPrivateMessages(user.id);
+  };
+
   useEffect(() => {
     // Initial fetch
     fetchMessages();
