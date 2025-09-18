@@ -1282,9 +1282,15 @@ const ChatRoom = ({ room, onBack }) => {
               {isPolling ? 'Sincronizare...' : 'Online'}
             </span>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20">
+          <button
+            onClick={() => setShowUserList(!showUserList)}
+            className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center space-x-2"
+          >
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+            </svg>
             <span className="text-white text-sm font-medium">{room.member_count} membri</span>
-          </div>
+          </button>
         </div>
       </div>
 
