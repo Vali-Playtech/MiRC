@@ -100,6 +100,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const { changeLanguage } = useLanguage();
 
   useEffect(() => {
     if (token) {
@@ -115,6 +116,10 @@ const AuthProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);
+      // Set user's saved language if available
+      if (response.data.language) {
+        changeLanguage(response.data.language);
+      }
     } catch (error) {
       console.error('Failed to fetch user:', error);
       logout();
@@ -147,6 +152,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateProfile = async (updates) => {
+    try {
+      const response = await api.put(`${API}/auth/profile`, updates, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUser(response.data);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message || 'Update failed' };
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
@@ -154,7 +171,16 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      loading, 
+      login, 
+      register, 
+      updateProfile,
+      logout,
+      fetchCurrentUser 
+    }}>
       {children}
     </AuthContext.Provider>
   );
