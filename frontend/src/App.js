@@ -561,6 +561,75 @@ const AccountSettings = ({ onBack }) => {
                   </div>
                 )}
                 
+                {/* Nickname Change Request Modal */}
+                {showNicknameModal && (
+                  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-6 w-full max-w-md border border-white/20 shadow-2xl">
+                      <div className="text-center mb-6">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </div>
+                        <h3 className="text-white text-xl font-bold mb-2">{t('requestNicknameChange')}</h3>
+                        <p className="text-gray-300 text-sm">{t('nicknameChangeExplanation', 'Nickname changes require admin approval')}</p>
+                      </div>
+
+                      <form onSubmit={handleNicknameRequest} className="space-y-4">
+                        <div>
+                          <label className="block text-gray-300 text-sm font-medium mb-2">{t('currentNickname')}</label>
+                          <input
+                            type="text"
+                            value={profileData.nickname}
+                            disabled
+                            className="w-full bg-gray-700/50 text-gray-400 px-4 py-3 rounded-xl border border-white/10 cursor-not-allowed"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-gray-300 text-sm font-medium mb-2">{t('newNickname')}</label>
+                          <input
+                            type="text"
+                            value={nicknameRequestData.newNickname}
+                            onChange={(e) => setNicknameRequestData({...nicknameRequestData, newNickname: e.target.value})}
+                            className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 border border-white/20"
+                            required
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-gray-300 text-sm font-medium mb-2">{t('reasonForChange')}</label>
+                          <textarea
+                            value={nicknameRequestData.reason}
+                            onChange={(e) => setNicknameRequestData({...nicknameRequestData, reason: e.target.value})}
+                            placeholder={t('reasonPlaceholder')}
+                            className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 border border-white/20 resize-none"
+                            rows="3"
+                            required
+                          />
+                        </div>
+
+                        <div className="flex space-x-3 pt-4">
+                          <button
+                            type="button"
+                            onClick={() => setShowNicknameModal(false)}
+                            className="flex-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white py-3 rounded-xl transition-all duration-200 font-medium border border-white/20"
+                          >
+                            {t('cancel')}
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={loading}
+                            className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white py-3 rounded-xl transition-all duration-200 font-medium shadow-lg disabled:opacity-50"
+                          >
+                            {loading ? t('pleaseWait') : t('submitRequest')}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-gray-300 text-sm font-medium mb-2">{t('firstName')}</label>
