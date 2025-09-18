@@ -1631,60 +1631,74 @@ const ChatRoom = ({ room, onBack }) => {
             </div>
           </div>
           <div className="overflow-y-auto max-h-80">
-            {roomUsers.map((roomUser) => (
-              <div key={roomUser.id} className="p-3 border-b border-white/5 hover:bg-white/5 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden border border-purple-500/30">
-                      {roomUser.avatar_url ? (
-                        roomUser.avatar_url.startsWith('data:') ? (
-                          <img 
-                            src={roomUser.avatar_url} 
-                            alt="Avatar" 
-                            className="w-full h-full object-cover" 
-                          />
-                        ) : (
-                          <div 
-                            className="w-full h-full"
-                            dangerouslySetInnerHTML={{ 
-                              __html: defaultAvatars.find(a => a.id === roomUser.avatar_url)?.svg || '' 
-                            }}
-                          />
-                        )
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                          <span className="text-white text-sm font-semibold">
-                            {roomUser.nickname?.charAt(0)?.toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="text-white font-medium">{roomUser.nickname}</div>
-                      {roomUser.is_friend && (
-                        <div className="text-green-400 text-xs">★ Favorit</div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => openPrivateChat(roomUser)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
-                    >
-                      Chat
-                    </button>
-                    {!roomUser.is_friend && (
-                      <button
-                        onClick={() => addToFavorites(roomUser.id)}
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
-                      >
-                        ★ Favorit
-                      </button>
-                    )}
-                  </div>
-                </div>
+            {roomUsers.length === 0 ? (
+              <div className="p-6 text-center text-gray-400">
+                <div className="text-4xl mb-2">👥</div>
+                <p>Nu ai prieteni activi în această cameră</p>
+                <p className="text-sm mt-1">Adaugă utilizatori la favorite pentru a-i vedea aici</p>
               </div>
-            ))}
+            ) : (
+              roomUsers.map((roomUser) => (
+                <div key={roomUser.id} className="p-3 border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <button
+                    onClick={() => navigateToFirstUnreadMessage(roomUser)}
+                    className="w-full flex items-center justify-between hover:bg-white/10 rounded-lg p-2 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border border-purple-500/30">
+                          {roomUser.avatar_url ? (
+                            roomUser.avatar_url.startsWith('data:') ? (
+                              <img 
+                                src={roomUser.avatar_url} 
+                                alt="Avatar" 
+                                className="w-full h-full object-cover" 
+                              />
+                            ) : (
+                              <div 
+                                className="w-full h-full"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: defaultAvatars.find(a => a.id === roomUser.avatar_url)?.svg || '' 
+                                }}
+                              />
+                            )
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                              <span className="text-white text-sm font-semibold">
+                                {roomUser.nickname?.charAt(0)?.toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        {roomUser.unread_count > 0 && (
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full border-2 border-gray-800 flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">
+                              {roomUser.unread_count > 99 ? '99+' : roomUser.unread_count}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <div className="text-white font-medium">{roomUser.nickname}</div>
+                        <div className="text-green-400 text-xs flex items-center">
+                          <span>★ Favorit</span>
+                          {roomUser.unread_count > 0 && (
+                            <span className="ml-2 text-orange-400">
+                              • {roomUser.unread_count} mesaje noi
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-gray-400">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
