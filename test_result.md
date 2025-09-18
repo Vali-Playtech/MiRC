@@ -107,9 +107,9 @@ user_problem_statement: "Build a PWA chat platform with email authentication, re
 backend:
   - task: "Email Authentication System"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -119,6 +119,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "Tested successfully - user registration with demo@example.com works perfectly, JWT tokens are properly generated and stored, authentication redirects to room list as expected. Minor: Error handling for invalid credentials could show clearer error messages."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL AUTHENTICATION BUG DISCOVERED: Registration works perfectly (johndoe@test.com created successfully), but LOGIN COMPLETELY BROKEN. All login attempts return HTTP 401 Unauthorized, even with valid credentials. Tested both newly created account (johndoe@test.com/TestPass123!) and existing account (test@vonex.com/Test123!) - both fail with 401 errors. Backend API is responding but rejecting all authentication attempts. This is a critical backend authentication validation issue preventing all user access."
 
   - task: "User Management API"
     implemented: true
