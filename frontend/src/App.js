@@ -1035,12 +1035,41 @@ const ChatRoom = ({ room, onBack }) => {
   const pollingInterval = useRef(null);
   const { token, user } = useAuth();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToBottom = (force = false) => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      setIsAtBottom(true);
+      setShowScrollToBottom(false);
+      if (force) {
+        setUserScrolled(false);
+      }
+    }
   };
 
+  // Check if user is at bottom of chat
+  const checkIfAtBottom = () => {
+    if (messagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+      const atBottom = scrollHeight - scrollTop - clientHeight < 50; // 50px threshold
+      setIsAtBottom(atBottom);
+      setShowScrollToBottom(!atBottom);
+    }
+  };
+
+  // Handle scroll events
+  const handleScroll = () => {
+    setUserScrolled(true);
+    checkIfAtBottom();
+  };
+
+  // Only auto-scroll to bottom when:
+  // 1. User sends a new message
+  // 2. User is at bottom and new messages arrive
+  // 3. Initial load
   useEffect(() => {
-    scrollToBottom();
+    if (!userScrolled || isAtBottom) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   // Fetch messages function
