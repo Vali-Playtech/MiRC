@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, createContext, useRef } from 'react';
 import './App.css';
-import { languages, translations, getTranslation } from './i18n';
+import { languages, translations, getTranslation, defaultAvatars, getAvatarUrl, svgToBase64 } from './i18n';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
