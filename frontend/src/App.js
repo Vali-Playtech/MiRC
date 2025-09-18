@@ -659,7 +659,9 @@ const AccountSettings = ({ onBack }) => {
 const LoginForm = ({ isLogin, onToggle }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login, register } = useAuth();
@@ -672,7 +674,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
 
     const result = isLogin 
       ? await login(email, password)
-      : await register(email, password, name);
+      : await register(email, password, firstName, lastName, nickname);
 
     if (!result.success) {
       setError(result.error);
