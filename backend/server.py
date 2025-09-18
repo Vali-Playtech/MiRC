@@ -688,7 +688,7 @@ async def get_room_messages(room_id: str, current_user: User = Depends(get_curre
             content=msg["content"],
             room_id=msg["room_id"],
             user_id=msg["user_id"],
-            user_name=msg["user_name"],
+            user_name=msg.get("user_name") or "Unknown User",
             user_avatar=msg.get("user_avatar"),
             created_at=msg["created_at"]
         ))
