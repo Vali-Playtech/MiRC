@@ -41,10 +41,19 @@ export const translations = {
     registerHere: 'Register here',
     signInHere: 'Sign in here',
     
-    // Dashboard
-    welcome: 'Welcome',
-    newRoom: 'New Room',
-    logout: 'Logout',
+    // Navigation
+    worldWide: 'World Wide',
+    myRooms: 'My Rooms',
+    globalFeed: 'Global Feed',
+    publicConversations: 'Public Conversations',
+    seeWhatsHappening: 'See what\'s happening around the world',
+    noGlobalMessages: 'No public messages yet',
+    noGlobalMessagesDesc: 'Join a public room and start the global conversation!',
+    fromRoom: 'from',
+    viewRoom: 'View Room',
+    joinConversation: 'Join Conversation',
+    loadingFeed: 'Loading feed...',
+    loadMoreMessages: 'Load More Messages',
     
     // Rooms
     createNewRoom: 'Create New Room',
