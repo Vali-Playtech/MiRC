@@ -1051,10 +1051,29 @@ const ChatRoom = ({ room, onBack }) => {
               </div>
               
               {message.user_id === user?.id && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0 mb-1">
-                  <span className="text-white text-xs font-semibold">
-                    {user?.name?.charAt(0)?.toUpperCase()}
-                  </span>
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-green-500/30 flex-shrink-0 mb-1">
+                  {user?.avatar_url ? (
+                    user.avatar_url.startsWith('data:') ? (
+                      <img 
+                        src={user.avatar_url} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div 
+                        className="w-full h-full"
+                        dangerouslySetInnerHTML={{ 
+                          __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
+                        }}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                      <span className="text-white text-xs font-semibold">
+                        {user?.name?.charAt(0)?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
