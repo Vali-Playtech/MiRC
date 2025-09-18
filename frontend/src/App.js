@@ -186,6 +186,14 @@ const AuthProvider = ({ children }) => {
   );
 };
 
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
+
 // Account Settings Component
 const AccountSettings = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState('profile');
