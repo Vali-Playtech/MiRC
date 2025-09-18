@@ -1161,6 +1161,7 @@ const ChatRoom = ({ room, onBack }) => {
     setShowUserList(false);
     setShowAvatarBubble(null);
     fetchPrivateMessages(user.id);
+    checkFriendStatus(user.id);
   };
 
   // Handle avatar click/hover
