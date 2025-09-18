@@ -1025,14 +1025,15 @@ class BackendTester:
             return self.log_test("Private Chat System Integration", False, f"Exception: {str(e)}")
     
     async def run_all_tests(self):
-        """Run all backend tests"""
-        print("🚀 Starting Comprehensive Backend Testing")
+        """Run all backend tests including NEW Private Chat and Friends System"""
+        print("🚀 Starting Comprehensive Backend Testing - INCLUDING NEW PRIVATE CHAT & FRIENDS SYSTEM")
         print(f"Backend URL: {API_BASE}")
         print(f"WebSocket URL: {WS_BASE}")
-        print("=" * 60)
+        print("=" * 80)
         
         test_results = {}
         
+        # EXISTING CORE TESTS
         # Test 1: Email Authentication System
         test_results['auth'] = self.test_email_authentication_system()
         
@@ -1051,24 +1052,74 @@ class BackendTester:
         # Test 6: Message Persistence
         test_results['message_persist'] = self.test_message_persistence()
         
+        # NEW PRIVATE CHAT AND FRIENDS SYSTEM TESTS
+        print("\n" + "🆕" * 20 + " NEW PRIVATE CHAT & FRIENDS SYSTEM TESTS " + "🆕" * 20)
+        
+        # Test 7: Room Users & Discovery (Phase 1)
+        test_results['room_users_discovery'] = self.test_room_users_discovery()
+        
+        # Test 8: Private Messaging Core Feature (Phase 2)
+        test_results['private_messaging'] = self.test_private_messaging_core()
+        
+        # Test 9: Friends/Favorites System (Phase 3)
+        test_results['friends_system'] = self.test_friends_system()
+        
+        # Test 10: Private Conversations Management (Phase 4)
+        test_results['private_conversations'] = self.test_private_conversations_management()
+        
+        # Test 11: Integration Testing (Phase 5)
+        test_results['integration_private_chat'] = self.test_integration_private_chat_system()
+        
         # Summary
-        print("\n" + "=" * 60)
-        print("📊 TEST SUMMARY")
-        print("=" * 60)
+        print("\n" + "=" * 80)
+        print("📊 COMPREHENSIVE TEST SUMMARY - PRIVATE CHAT & FRIENDS SYSTEM")
+        print("=" * 80)
+        
+        # Separate core tests from new private chat tests
+        core_tests = ['auth', 'user_mgmt', 'room_mgmt', 'websocket', 'http_messaging', 'message_persist']
+        private_chat_tests = ['room_users_discovery', 'private_messaging', 'friends_system', 'private_conversations', 'integration_private_chat']
+        
+        print("CORE SYSTEM TESTS:")
+        core_passed = 0
+        for test_name in core_tests:
+            if test_name in test_results:
+                result = test_results[test_name]
+                status = "✅ PASS" if result else "❌ FAIL"
+                print(f"  {status} {test_name.replace('_', ' ').title()}")
+                if result:
+                    core_passed += 1
+        
+        print(f"\nCore System: {core_passed}/{len(core_tests)} tests passed")
+        
+        print("\nNEW PRIVATE CHAT & FRIENDS SYSTEM TESTS:")
+        private_chat_passed = 0
+        for test_name in private_chat_tests:
+            if test_name in test_results:
+                result = test_results[test_name]
+                status = "✅ PASS" if result else "❌ FAIL"
+                print(f"  {status} {test_name.replace('_', ' ').title()}")
+                if result:
+                    private_chat_passed += 1
+        
+        print(f"\nPrivate Chat System: {private_chat_passed}/{len(private_chat_tests)} tests passed")
         
         passed = sum(test_results.values())
         total = len(test_results)
         
-        for test_name, result in test_results.items():
-            status = "✅ PASS" if result else "❌ FAIL"
-            print(f"{status} {test_name.replace('_', ' ').title()}")
-        
-        print(f"\nOverall Result: {passed}/{total} tests passed")
+        print(f"\n🎯 OVERALL RESULT: {passed}/{total} tests passed")
         
         if passed == total:
-            print("🎉 All backend tests PASSED! Backend is working correctly.")
+            print("🎉 ALL TESTS PASSED! Private Chat and Friends System is fully functional!")
+            print("✅ Users can send private messages to anyone without being friends")
+            print("✅ Friends system works for adding favorites")
+            print("✅ Room users endpoint returns active users for private chat suggestions")
+            print("✅ Private conversations endpoint manages all chats efficiently")
+            print("✅ Unread counts and timestamps work correctly")
+            print("✅ No data corruption or security issues detected")
         else:
-            print("⚠️  Some backend tests FAILED. Check the details above.")
+            print("⚠️  Some tests FAILED. Check the details above.")
+            if private_chat_passed < len(private_chat_tests):
+                print("🚨 PRIVATE CHAT SYSTEM has issues that need attention!")
         
         return test_results
 
