@@ -327,6 +327,18 @@ export const translations = {
   }
 };
 
+// Helper function to get translation with fallback
+export const getTranslation = (key, lang = 'en', variables = {}) => {
+  let translation = translations[lang]?.[key] || translations['en'][key] || key;
+  
+  // Replace variables in translation
+  Object.keys(variables).forEach(variable => {
+    translation = translation.replace(`{${variable}}`, variables[variable]);
+  });
+  
+  return translation;
+};
+
 // Default avatars - beautiful gradient designs
 export const defaultAvatars = [
   {
