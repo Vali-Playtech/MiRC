@@ -1442,6 +1442,10 @@ const ChatRoom = ({ room, onBack }) => {
         
         // Clear input after successful HTTP send (response means success)
         setNewMessage('');
+        // Force scroll to bottom when user sends message
+        setTimeout(() => {
+          scrollToBottom(true);
+        }, 100);
         // Immediately fetch messages to show the new message
         setTimeout(fetchMessages, 500);
       }
