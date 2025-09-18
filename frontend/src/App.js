@@ -1031,13 +1031,14 @@ const getRoomIcon = (roomName, isPrivate) => {
   );
 };
 
-const RoomList = ({ onRoomSelect }) => {
+const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [rooms, setRooms] = useState([]);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomDescription, setNewRoomDescription] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
   const { token, user, logout } = useAuth();
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchRooms();
