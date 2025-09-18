@@ -457,15 +457,12 @@ async def get_friends(current_user: User = Depends(get_current_user)):
     
     return friend_list
 
-@api_router.post("/friends/message", response_model=PrivateMessage)
+@api_router.post("/private-messages", response_model=PrivateMessage)
 async def send_private_message(message_data: PrivateMessageCreate, current_user: User = Depends(get_current_user)):
-    # Verify friendship exists
-    friendship = await db.friends.find_one({
-        "user_id": current_user.id,
-        "friend_user_id": message_data.recipient_id
-    })
-    if not friendship:
-        raise HTTPException(status_code=403, detail="Not friends with this user")
+    # Check if recipient exists
+    recipient = await db.users.find_one({"id": message_data.recipient_id})
+    if not recipient:
+        raise HTTPException(status_code=404, detail="Recipient not found")
     
     # Create message
     message_id = str(uuid.uuid4())
@@ -482,23 +479,28 @@ async def send_private_message(message_data: PrivateMessageCreate, current_user:
     
     await db.private_messages.insert_one(message_doc)
     
-    # Update friendship last message
-    await db.friends.update_one(
-        {"user_id": current_user.id, "friend_user_id": message_data.recipient_id},
-        {"$set": {
-            "last_message": message_data.content,
-            "last_message_time": datetime.utcnow()
-        }}
-    )
-    
-    # Update recipient's friendship unread count and last message
-    await db.friends.update_one(
-        {"user_id": message_data.recipient_id, "friend_user_id": current_user.id},
-        {"$set": {
-            "last_message": message_data.content,
-            "last_message_time": datetime.utcnow()
-        }, "$inc": {"unread_count": 1}}
-    )
+    # Update friendship last message if they are friends
+    friendship = await db.friends.find_one({
+        "user_id": current_user.id,
+        "friend_user_id": message_data.recipient_id
+    })
+    if friendship:
+        await db.friends.update_one(
+            {"user_id": current_user.id, "friend_user_id": message_data.recipient_id},
+            {"$set": {
+                "last_message": message_data.content,
+                "last_message_time": datetime.utcnow()
+            }}
+        )
+        
+        # Update recipient's friendship unread count and last message
+        await db.friends.update_one(
+            {"user_id": message_data.recipient_id, "friend_user_id": current_user.id},
+            {"$set": {
+                "last_message": message_data.content,
+                "last_message_time": datetime.utcnow()
+            }, "$inc": {"unread_count": 1}}
+        )
     
     return PrivateMessage(**message_doc)
 
