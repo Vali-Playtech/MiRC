@@ -140,9 +140,15 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (email, password, name) => {
+  const register = async (email, password, firstName, lastName, nickname) => {
     try {
-      const response = await api.post(`${API}/auth/register`, { email, password, name });
+      const response = await api.post(`${API}/auth/register`, { 
+        email, 
+        password, 
+        first_name: firstName,
+        last_name: lastName,
+        nickname 
+      });
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       setToken(access_token);
