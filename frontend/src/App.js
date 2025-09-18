@@ -1619,7 +1619,7 @@ const ChatRoom = ({ room, onBack }) => {
         <div className="absolute top-16 right-6 w-80 bg-gray-800/95 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl z-50 max-h-96 overflow-hidden">
           <div className="p-4 border-b border-white/10">
             <div className="flex items-center justify-between">
-              <h3 className="text-white font-semibold">Utilizatori online</h3>
+              <h3 className="text-white font-semibold">Prieteni activi</h3>
               <button
                 onClick={() => setShowUserList(false)}
                 className="text-gray-400 hover:text-white"
