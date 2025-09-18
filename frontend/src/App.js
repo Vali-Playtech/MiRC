@@ -1330,6 +1330,9 @@ const ChatRoom = ({ room, onBack }) => {
     // Initial fetch
     fetchMessages();
     fetchRoomFriends();
+    
+    // Initialize scroll detection
+    checkIfAtBottom();
 
     // Try WebSocket connection first
     const wsUrl = `${BACKEND_URL.replace('https:', 'wss:').replace('http:', 'ws:')}/ws/${room.id}`;
