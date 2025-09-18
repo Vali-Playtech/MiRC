@@ -80,6 +80,7 @@ class UserLogin(BaseModel):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     language: Optional[str] = None
+    avatar_url: Optional[str] = None
 
 class PasswordChange(BaseModel):
     current_password: str
