@@ -491,7 +491,10 @@ class BackendTester:
         # Test 4: Real-time WebSocket Chat
         test_results['websocket'] = await self.test_websocket_chat()
         
-        # Test 5: Message Persistence
+        # Test 5: HTTP Message Sending API (Critical Bug Fix)
+        test_results['http_messaging'] = self.test_http_message_sending()
+        
+        # Test 6: Message Persistence
         test_results['message_persist'] = self.test_message_persistence()
         
         # Summary
