@@ -104,6 +104,36 @@ class User(BaseModel):
     is_active: bool = True
     created_at: datetime
 
+class FriendRequest(BaseModel):
+    friend_user_id: str
+
+class PrivateMessageCreate(BaseModel):
+    content: str
+    recipient_id: str
+
+class Friend(BaseModel):
+    id: str
+    user_id: str
+    friend_user_id: str
+    friend_nickname: str
+    friend_first_name: str
+    friend_last_name: str
+    friend_avatar_url: Optional[str] = None
+    created_at: datetime
+    last_message: Optional[str] = None
+    last_message_time: Optional[datetime] = None
+    unread_count: int = 0
+
+class PrivateMessage(BaseModel):
+    id: str
+    sender_id: str
+    recipient_id: str
+    content: str
+    sender_nickname: str
+    sender_avatar_url: Optional[str] = None
+    created_at: datetime
+    is_read: bool = False
+
 class NicknameRequest(BaseModel):
     id: str
     user_id: str
