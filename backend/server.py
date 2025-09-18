@@ -591,7 +591,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 "content": message_data["content"],
                 "room_id": room_id,
                 "user_id": user_id,
-                "user_name": user["name"],
+                "user_name": user["nickname"],  # Use nickname instead of name
                 "user_avatar": user.get("avatar_url"),
                 "created_at": datetime.utcnow()
             }
@@ -604,7 +604,7 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str):
                 "content": message_data["content"],
                 "room_id": room_id,
                 "user_id": user_id,
-                "user_name": user["name"],
+                "user_name": user["nickname"],  # Use nickname instead of name
                 "user_avatar": user.get("avatar_url"),
                 "created_at": message_doc["created_at"].isoformat(),
                 "type": "message"
