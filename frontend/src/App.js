@@ -1027,7 +1027,11 @@ const ChatRoom = ({ room, onBack }) => {
   const [showAvatarBubble, setShowAvatarBubble] = useState(null);
   const [avatarBubblePosition, setAvatarBubblePosition] = useState({ x: 0, y: 0 });
   const [isPrivateChatUserFriend, setIsPrivateChatUserFriend] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [userScrolled, setUserScrolled] = useState(false);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const pollingInterval = useRef(null);
   const { token, user } = useAuth();
 
