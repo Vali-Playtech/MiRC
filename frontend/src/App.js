@@ -151,7 +151,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
             </svg>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent mb-3">
-            {isLogin ? 'Bun venit înapoi' : 'Alătură-te nouă'}
+            {isLogin ? 'Bun venit în VONEX' : 'Alătură-te la VONEX'}
           </h1>
           <p className="text-gray-300 text-lg">
             {isLogin ? 'Conectează-te pentru a continua să discuți' : 'Creează-ți contul pentru a începe'}
