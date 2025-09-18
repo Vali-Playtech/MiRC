@@ -499,6 +499,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login, register } = useAuth();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -532,20 +533,20 @@ const LoginForm = ({ isLogin, onToggle }) => {
             </svg>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent mb-3">
-            {isLogin ? 'Bun venit în VONEX' : 'Alătură-te la VONEX'}
+            {isLogin ? t('welcomeBack') : t('joinVonex')}
           </h1>
           <p className="text-gray-300 text-lg">
-            {isLogin ? 'Conectează-te pentru a continua să discuți' : 'Creează-ți contul pentru a începe'}
+            {isLogin ? t('signInSubtitle') : t('createAccountSubtitle')}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {!isLogin && (
             <div className="space-y-2">
-              <label className="text-gray-300 text-sm font-medium">Numele complet</label>
+              <label className="text-gray-300 text-sm font-medium">{t('fullName')}</label>
               <input
                 type="text"
-                placeholder="ex. Ion Popescu"
+                placeholder={t('fullNamePlaceholder')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
@@ -555,10 +556,10 @@ const LoginForm = ({ isLogin, onToggle }) => {
           )}
           
           <div className="space-y-2">
-            <label className="text-gray-300 text-sm font-medium">Adresa de email</label>
+            <label className="text-gray-300 text-sm font-medium">{t('emailAddress')}</label>
             <input
               type="email"
-              placeholder="nume@exemplu.com"
+              placeholder={t('emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
@@ -567,10 +568,10 @@ const LoginForm = ({ isLogin, onToggle }) => {
           </div>
           
           <div className="space-y-2">
-            <label className="text-gray-300 text-sm font-medium">Parola</label>
+            <label className="text-gray-300 text-sm font-medium">{t('password')}</label>
             <input
               type="password"
-              placeholder="Parola ta secretă"
+              placeholder={t('passwordPlaceholder')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:bg-white/20 transition-all duration-200"
@@ -600,14 +601,14 @@ const LoginForm = ({ isLogin, onToggle }) => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Te rugăm să aștepți...</span>
+                <span>{t('pleaseWait')}</span>
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                <span>{isLogin ? 'Conectează-te' : 'Creează contul'}</span>
+                <span>{isLogin ? t('signIn') : t('createAccount')}</span>
               </>
             )}
           </button>
@@ -620,7 +621,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-gray-300">
-                {isLogin ? "Nu ai cont încă?" : "Ai deja un cont?"}
+                {isLogin ? t('noAccountYet') : t('alreadyHaveAccount')}
               </span>
             </div>
           </div>
@@ -628,7 +629,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
             onClick={onToggle}
             className="mt-4 text-purple-400 hover:text-purple-300 font-semibold transition-colors text-lg"
           >
-            {isLogin ? 'Înregistrează-te aici' : 'Conectează-te aici'}
+            {isLogin ? t('registerHere') : t('signInHere')}
           </button>
         </div>
       </div>
