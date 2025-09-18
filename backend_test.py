@@ -47,7 +47,9 @@ class BackendTester:
         test_user = {
             "email": "alice.johnson@example.com",
             "password": "SecurePass123!",
-            "name": "Alice Johnson"
+            "first_name": "Alice",
+            "last_name": "Johnson",
+            "nickname": "alice_j"
         }
         
         try:
