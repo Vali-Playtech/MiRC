@@ -229,6 +229,8 @@ async def update_profile(user_updates: UserUpdate, current_user: User = Depends(
         update_data["name"] = user_updates.name
     if user_updates.language is not None:
         update_data["language"] = user_updates.language
+    if user_updates.avatar_url is not None:
+        update_data["avatar_url"] = user_updates.avatar_url
     
     if update_data:
         await db.users.update_one(
