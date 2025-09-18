@@ -135,7 +135,7 @@ class BackendTester:
                     return False
                 
                 profile = response.json()
-                required_fields = ['id', 'email', 'name', 'is_active', 'created_at']
+                required_fields = ['id', 'email', 'first_name', 'last_name', 'nickname', 'is_active', 'created_at']
                 for field in required_fields:
                     if field not in profile:
                         return self.log_test(f"Profile Field Validation ({field})", False,
