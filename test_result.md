@@ -189,9 +189,9 @@ backend:
 frontend:
   - task: "Authentication UI"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -201,6 +201,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "Tested successfully - beautiful glass morphism login/register UI loads perfectly, form switching between login/signup works smoothly, all form fields are properly styled and functional. Registration and login flows work correctly with proper redirects to room list."
+      - working: false
+        agent: "testing"
+        comment: "AUTHENTICATION UI BLOCKED BY BACKEND: Frontend UI is perfect - forms work flawlessly, error handling displays correctly, registration creates accounts successfully. However, LOGIN FUNCTIONALITY COMPLETELY BROKEN due to backend returning HTTP 401 for all valid credentials. Users can register but cannot login. Frontend is working correctly but blocked by critical backend authentication bug."
 
   - task: "Room List Interface"
     implemented: true
