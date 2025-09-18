@@ -96,9 +96,9 @@ class PasswordChange(BaseModel):
 class User(BaseModel):
     id: str
     email: str
-    first_name: str
-    last_name: str
-    nickname: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    nickname: Optional[str] = None
     avatar_url: Optional[str] = None
     language: Optional[str] = 'en'
     is_active: bool = True
