@@ -1256,6 +1256,43 @@ const ChatRoom = ({ room, onBack }) => {
     checkFriendStatus(chatUser.id);
   };
 
+  // Navigate to first unread message from a friend
+  const navigateToFirstUnreadMessage = (friendUser) => {
+    if (friendUser.first_unread_message_id) {
+      // Find the message element and scroll to it
+      const messageElement = document.getElementById(`message-${friendUser.first_unread_message_id}`);
+      if (messageElement) {
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight the message temporarily
+        messageElement.classList.add('bg-yellow-200/20', 'border', 'border-yellow-400/50', 'rounded-lg');
+        setTimeout(() => {
+          messageElement.classList.remove('bg-yellow-200/20', 'border', 'border-yellow-400/50', 'rounded-lg');
+        }, 3000);
+      } else {
+        // If message not found in current view, reload messages and try again
+        fetchMessages().then(() => {
+          setTimeout(() => {
+            const retryElement = document.getElementById(`message-${friendUser.first_unread_message_id}`);
+            if (retryElement) {
+              retryElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              retryElement.classList.add('bg-yellow-200/20', 'border', 'border-yellow-400/50', 'rounded-lg');
+              setTimeout(() => {
+                retryElement.classList.remove('bg-yellow-200/20', 'border', 'border-yellow-400/50', 'rounded-lg');
+              }, 3000);
+            }
+          }, 500);
+        });
+      }
+    }
+    
+    // Update last seen time for this friend
+    updateLastSeenTime(friendUser.id);
+    // Refresh the friends list to update unread counts
+    setTimeout(() => fetchRoomFriends(), 1000);
+    // Close the users panel
+    setShowUserList(false);
+  };
+
   useEffect(() => {
     // Initial fetch
     fetchMessages();
