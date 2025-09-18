@@ -77,11 +77,20 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    language: Optional[str] = None
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str
+
 class User(BaseModel):
     id: str
     email: str
     name: str
     avatar_url: Optional[str] = None
+    language: Optional[str] = 'en'
     is_active: bool = True
     created_at: datetime
 
