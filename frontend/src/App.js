@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, createContext, useRef } from 'react';
 import './App.css';
+import { languages, translations, getTranslation } from './i18n';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -32,7 +33,64 @@ const api = {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return { data: await response.json() };
+  },
+  put: async (url, data, options = {}) => {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return { data: await response.json() };
+  },
+  delete: async (url, options = {}) => {
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return { data: await response.json() };
   }
+};
+
+// Language Context
+const LanguageContext = createContext();
+
+const LanguageProvider = ({ children }) => {
+  const [currentLanguage, setCurrentLanguage] = useState(
+    localStorage.getItem('vonex_language') || 'en'
+  );
+
+  const changeLanguage = (langCode) => {
+    setCurrentLanguage(langCode);
+    localStorage.setItem('vonex_language', langCode);
+  };
+
+  const t = (key, variables = {}) => getTranslation(key, currentLanguage, variables);
+
+  return (
+    <LanguageContext.Provider value={{ currentLanguage, changeLanguage, t, languages }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within LanguageProvider');
+  }
+  return context;
 };
 
 // Auth Context
