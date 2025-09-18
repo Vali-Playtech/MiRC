@@ -1424,6 +1424,184 @@ const ChatRoom = ({ room, onBack }) => {
           </button>
         </div>
       </form>
+
+      {/* Users List Panel */}
+      {showUserList && (
+        <div className="absolute top-16 right-6 w-80 bg-gray-800/95 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl z-50 max-h-96 overflow-hidden">
+          <div className="p-4 border-b border-white/10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-white font-semibold">Utilizatori online</h3>
+              <button
+                onClick={() => setShowUserList(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div className="overflow-y-auto max-h-80">
+            {roomUsers.map((roomUser) => (
+              <div key={roomUser.id} className="p-3 border-b border-white/5 hover:bg-white/5 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden border border-purple-500/30">
+                      {roomUser.avatar_url ? (
+                        roomUser.avatar_url.startsWith('data:') ? (
+                          <img 
+                            src={roomUser.avatar_url} 
+                            alt="Avatar" 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          <div 
+                            className="w-full h-full"
+                            dangerouslySetInnerHTML={{ 
+                              __html: defaultAvatars.find(a => a.id === roomUser.avatar_url)?.svg || '' 
+                            }}
+                          />
+                        )
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                          <span className="text-white text-sm font-semibold">
+                            {roomUser.nickname?.charAt(0)?.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-white font-medium">{roomUser.nickname}</div>
+                      {roomUser.is_friend && (
+                        <div className="text-green-400 text-xs">★ Favorit</div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => openPrivateChat(roomUser)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+                    >
+                      Chat
+                    </button>
+                    {!roomUser.is_friend && (
+                      <button
+                        onClick={() => addToFavorites(roomUser.id)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+                      >
+                        ★ Favorit
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Private Chat Panel */}
+      {showPrivateChat && privateChatUser && (
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-800/95 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl w-full max-w-2xl h-96 flex flex-col">
+            {/* Private Chat Header */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-purple-500/30">
+                  {privateChatUser.avatar_url ? (
+                    privateChatUser.avatar_url.startsWith('data:') ? (
+                      <img 
+                        src={privateChatUser.avatar_url} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div 
+                        className="w-full h-full"
+                        dangerouslySetInnerHTML={{ 
+                          __html: defaultAvatars.find(a => a.id === privateChatUser.avatar_url)?.svg || '' 
+                        }}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                      <span className="text-white text-sm font-semibold">
+                        {privateChatUser.nickname?.charAt(0)?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">Chat privat cu {privateChatUser.nickname}</h3>
+                  <p className="text-gray-400 text-sm">Conversație privată</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowPrivateChat(false);
+                  setPrivateChatUser(null);
+                  setPrivateMessages([]);
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Private Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {privateMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                    msg.sender_id === user?.id
+                      ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white'
+                      : 'bg-white/10 text-gray-100'
+                  }`}>
+                    <div className="break-words">{msg.content}</div>
+                    <div className={`text-xs mt-1 opacity-70 ${
+                      msg.sender_id === user?.id ? 'text-purple-100' : 'text-gray-400'
+                    }`}>
+                      {formatTime(msg.created_at)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {privateMessages.length === 0 && (
+                <div className="text-center text-gray-400">
+                  <p>Încă nu aveți mesaje. Începeți conversația!</p>
+                </div>
+              )}
+            </div>
+
+            {/* Private Message Input */}
+            <form onSubmit={sendPrivateMessage} className="p-4 border-t border-white/10">
+              <div className="flex space-x-3">
+                <input
+                  type="text"
+                  value={newPrivateMessage}
+                  onChange={(e) => setNewPrivateMessage(e.target.value)}
+                  placeholder={`Mesaj pentru ${privateChatUser.nickname}...`}
+                  className="flex-1 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20"
+                />
+                <button
+                  type="submit"
+                  disabled={!newPrivateMessage.trim()}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-4 py-2 rounded-xl transition-all duration-200 disabled:cursor-not-allowed"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
