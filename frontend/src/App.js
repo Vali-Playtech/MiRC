@@ -1282,7 +1282,7 @@ const ChatRoom = ({ room, onBack }) => {
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
                       <span className="text-white text-xs font-semibold">
-                        {user?.name?.charAt(0)?.toUpperCase()}
+                        {user?.nickname?.charAt(0)?.toUpperCase()}
                       </span>
                     </div>
                   )}
