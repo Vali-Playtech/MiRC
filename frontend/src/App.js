@@ -1517,7 +1517,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             <h1 className="text-white text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
               {t('appName')}
             </h1>
-            <p className="text-gray-400 text-sm">{t('welcome')}, <span className="text-purple-400 font-medium">{user?.name}</span></p>
+            <p className="text-gray-400 text-sm">{t('welcome')}, <span className="text-purple-400 font-medium">{user?.nickname}</span></p>
           </div>
         </div>
         
