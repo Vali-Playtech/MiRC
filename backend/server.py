@@ -248,8 +248,10 @@ async def get_me(current_user: User = Depends(get_current_user)):
 @api_router.put("/auth/profile", response_model=User)
 async def update_profile(user_updates: UserUpdate, current_user: User = Depends(get_current_user)):
     update_data = {}
-    if user_updates.name is not None:
-        update_data["name"] = user_updates.name
+    if user_updates.first_name is not None:
+        update_data["first_name"] = user_updates.first_name
+    if user_updates.last_name is not None:
+        update_data["last_name"] = user_updates.last_name
     if user_updates.language is not None:
         update_data["language"] = user_updates.language
     if user_updates.avatar_url is not None:
@@ -266,6 +268,125 @@ async def update_profile(user_updates: UserUpdate, current_user: User = Depends(
         return User(**updated_user)
     
     return current_user
+
+@api_router.post("/auth/nickname-request")
+async def request_nickname_change(request_data: NicknameChangeRequest, current_user: User = Depends(get_current_user)):
+    # Check if nickname is already taken
+    existing_user = await db.users.find_one({"nickname": request_data.new_nickname})
+    if existing_user and existing_user["id"] != current_user.id:
+        raise HTTPException(status_code=400, detail="Nickname already taken")
+    
+    # Check if user already has a pending request
+    existing_request = await db.nickname_requests.find_one({
+        "user_id": current_user.id,
+        "status": "pending"
+    })
+    if existing_request:
+        raise HTTPException(status_code=400, detail="You already have a pending nickname change request")
+    
+    # Create nickname change request
+    request_id = str(uuid.uuid4())
+    request_doc = {
+        "id": request_id,
+        "user_id": current_user.id,
+        "current_nickname": current_user.nickname,
+        "new_nickname": request_data.new_nickname,
+        "reason": request_data.reason,
+        "status": "pending",
+        "created_at": datetime.utcnow(),
+        "reviewed_at": None,
+        "reviewed_by": None,
+        "admin_comment": None
+    }
+    
+    await db.nickname_requests.insert_one(request_doc)
+    
+    return {"message": "Nickname change request submitted successfully", "request_id": request_id}
+
+@api_router.get("/auth/nickname-requests")
+async def get_user_nickname_requests(current_user: User = Depends(get_current_user)):
+    requests = await db.nickname_requests.find({"user_id": current_user.id}).sort("created_at", -1).to_list(10)
+    
+    request_list = []
+    for req in requests:
+        request_list.append(NicknameRequest(**req))
+    
+    return request_list
+
+# Admin endpoints for nickname management (simplified - in production you'd want proper admin auth)
+@api_router.get("/admin/nickname-requests")
+async def get_all_nickname_requests(current_user: User = Depends(get_current_user)):
+    # In production, add proper admin role check here
+    requests = await db.nickname_requests.find({"status": "pending"}).sort("created_at", 1).to_list(50)
+    
+    request_list = []
+    for req in requests:
+        # Get user info
+        user = await db.users.find_one({"id": req["user_id"]})
+        request_with_user = {**req}
+        if user:
+            request_with_user["user_email"] = user["email"]
+            request_with_user["user_full_name"] = f"{user['first_name']} {user['last_name']}"
+        
+        request_list.append(request_with_user)
+    
+    return request_list
+
+@api_router.post("/admin/nickname-requests/{request_id}/approve")
+async def approve_nickname_request(request_id: str, admin_comment: str = "", current_user: User = Depends(get_current_user)):
+    # In production, add proper admin role check here
+    
+    # Get the request
+    request_doc = await db.nickname_requests.find_one({"id": request_id})
+    if not request_doc:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if request_doc["status"] != "pending":
+        raise HTTPException(status_code=400, detail="Request already processed")
+    
+    # Update user's nickname
+    await db.users.update_one(
+        {"id": request_doc["user_id"]},
+        {"$set": {"nickname": request_doc["new_nickname"]}}
+    )
+    
+    # Update request status
+    await db.nickname_requests.update_one(
+        {"id": request_id},
+        {"$set": {
+            "status": "approved",
+            "reviewed_at": datetime.utcnow(),
+            "reviewed_by": current_user.id,
+            "admin_comment": admin_comment
+        }}
+    )
+    
+    return {"message": "Nickname change request approved"}
+
+@api_router.post("/admin/nickname-requests/{request_id}/reject")
+async def reject_nickname_request(request_id: str, admin_comment: str = "", current_user: User = Depends(get_current_user)):
+    # In production, add proper admin role check here
+    
+    # Get the request
+    request_doc = await db.nickname_requests.find_one({"id": request_id})
+    if not request_doc:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if request_doc["status"] != "pending":
+        raise HTTPException(status_code=400, detail="Request already processed")
+    
+    # Update request status
+    await db.nickname_requests.update_one(
+        {"id": request_id},
+        {"$set": {
+            "status": "rejected",
+            "reviewed_at": datetime.utcnow(),
+            "reviewed_by": current_user.id,
+            "admin_comment": admin_comment
+        }}
+    )
+    
+    return {"message": "Nickname change request rejected"}
 
 @api_router.post("/auth/change-password")
 async def change_password(password_data: PasswordChange, current_user: User = Depends(get_current_user)):
