@@ -43,13 +43,15 @@ class BackendTester:
         """Test 1: Email Authentication System"""
         print("\n=== Testing Email Authentication System ===")
         
-        # Test user registration
+        # Test user registration with unique timestamp
+        import time
+        timestamp = str(int(time.time()))
         test_user = {
-            "email": "alice.johnson@example.com",
+            "email": f"alice.test.{timestamp}@example.com",
             "password": "SecurePass123!",
             "first_name": "Alice",
             "last_name": "Johnson",
-            "nickname": "alice_j"
+            "nickname": f"alice_{timestamp}"
         }
         
         try:
