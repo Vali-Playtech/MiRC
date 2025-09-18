@@ -202,6 +202,22 @@ export const translations = {
     newPassword: 'Parola Nouă',
     confirmPassword: 'Confirmă Parola Nouă',
     
+    // Avatar Settings
+    avatar: 'Avatar',
+    changeAvatar: 'Schimbă Avatar',
+    chooseAvatar: 'Alege Avatar',
+    defaultAvatars: 'Avataruri Implicite',
+    uploadCustomAvatar: 'Încarcă Avatar Personal',
+    uploadImage: 'Încarcă Imagine',
+    removeAvatar: 'Șterge Avatar',
+    avatarUpdated: 'Avatar actualizat cu succes',
+    selectDefaultAvatar: 'Selectează un avatar implicit',
+    orUploadCustom: 'sau încarcă propria imagine',
+    supportedFormats: 'Formate suportate: JPG, PNG, GIF (max 2MB)',
+    profileUpdated: 'Profil actualizat cu succes',
+    passwordChanged: 'Parolă schimbată cu succes',
+    passwordMismatch: 'Parolele nu se potrivesc',
+    
     // Common
     close: 'Închide',
     back: 'Înapoi',
