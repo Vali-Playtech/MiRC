@@ -111,12 +111,14 @@ class BackendTester:
         
         try:
             # Create another test user
+            import time
+            timestamp = str(int(time.time()))
             test_user2 = {
-                "email": "bob.smith@example.com",
+                "email": f"bob.test.{timestamp}@example.com",
                 "password": "AnotherPass456!",
                 "first_name": "Bob",
                 "last_name": "Smith",
-                "nickname": "bob_s"
+                "nickname": f"bob_{timestamp}"
             }
             
             response = self.session.post(f"{API_BASE}/auth/register", json=test_user2)
