@@ -382,7 +382,130 @@ const AccountSettings = ({ onBack }) => {
                 <p className="text-gray-400">{t('updateProfileInfo', 'Update your profile information')}</p>
               </div>
               
-              <form onSubmit={handleProfileUpdate} className="space-y-4">
+              <form onSubmit={handleProfileUpdate} className="space-y-6">
+                {/* Avatar Section */}
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-4">{t('avatar')}</label>
+                  <div className="flex items-center space-x-6">
+                    {/* Current Avatar Display */}
+                    <div className="relative">
+                      {selectedAvatar ? (
+                        <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-purple-500 shadow-lg">
+                          {selectedAvatar.startsWith('data:') ? (
+                            <img src={selectedAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            <div 
+                              className="w-full h-full"
+                              dangerouslySetInnerHTML={{ 
+                                __html: defaultAvatars.find(a => a.id === selectedAvatar)?.svg || '' 
+                              }}
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center border-4 border-gray-500 shadow-lg">
+                          <span className="text-white text-2xl font-bold">
+                            {user?.name?.charAt(0)?.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Avatar Change Buttons */}
+                    <div className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAvatarSection(true)}
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm"
+                      >
+                        {t('changeAvatar')}
+                      </button>
+                      {selectedAvatar && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedAvatar(null)}
+                          className="block bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm"
+                        >
+                          {t('removeAvatar')}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Avatar Selection Modal */}
+                {showAvatarSection && (
+                  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-xl rounded-3xl p-6 w-full max-w-2xl border border-white/20 shadow-2xl max-h-[80vh] overflow-y-auto">
+                      <div className="text-center mb-6">
+                        <h3 className="text-white text-xl font-bold mb-2">{t('chooseAvatar')}</h3>
+                        <p className="text-gray-300 text-sm">{t('selectDefaultAvatar')}</p>
+                      </div>
+
+                      {/* Default Avatars Grid */}
+                      <div className="mb-8">
+                        <h4 className="text-white font-semibold mb-4">{t('defaultAvatars')}</h4>
+                        <div className="grid grid-cols-5 gap-4">
+                          {defaultAvatars.map((avatar) => (
+                            <button
+                              key={avatar.id}
+                              onClick={() => handleDefaultAvatarSelect(avatar.id)}
+                              className={`relative group transition-all duration-200 ${
+                                selectedAvatar === avatar.id ? 'ring-4 ring-purple-500 rounded-full' : ''
+                              }`}
+                            >
+                              <div 
+                                className="w-16 h-16 rounded-full overflow-hidden hover:scale-110 transition-transform duration-200 shadow-lg"
+                                dangerouslySetInnerHTML={{ __html: avatar.svg }}
+                              />
+                              <div className="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Custom Upload Section */}
+                      <div className="mb-6">
+                        <h4 className="text-white font-semibold mb-4">{t('uploadCustomAvatar')}</h4>
+                        <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
+                          >
+                            <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            {t('uploadImage')}
+                          </button>
+                          <p className="text-gray-400 text-xs mt-2">{t('supportedFormats')}</p>
+                        </div>
+                      </div>
+
+                      {/* Modal Close Button */}
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => setShowAvatarSection(false)}
+                          className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-lg transition-all duration-200 font-medium border border-white/20"
+                        >
+                          {t('close')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 <div>
                   <label className="block text-gray-300 text-sm font-medium mb-2">{t('fullName')}</label>
                   <input
