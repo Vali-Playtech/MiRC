@@ -71,16 +71,23 @@ manager = ConnectionManager()
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
-    name: str
+    first_name: str
+    last_name: str
+    nickname: str
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
 class UserUpdate(BaseModel):
-    name: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     language: Optional[str] = None
     avatar_url: Optional[str] = None
+
+class NicknameChangeRequest(BaseModel):
+    new_nickname: str
+    reason: str
 
 class PasswordChange(BaseModel):
     current_password: str
@@ -89,11 +96,25 @@ class PasswordChange(BaseModel):
 class User(BaseModel):
     id: str
     email: str
-    name: str
+    first_name: str
+    last_name: str
+    nickname: str
     avatar_url: Optional[str] = None
     language: Optional[str] = 'en'
     is_active: bool = True
     created_at: datetime
+
+class NicknameRequest(BaseModel):
+    id: str
+    user_id: str
+    current_nickname: str
+    new_nickname: str
+    reason: str
+    status: str  # pending, approved, rejected
+    created_at: datetime
+    reviewed_at: Optional[datetime] = None
+    reviewed_by: Optional[str] = None
+    admin_comment: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str
