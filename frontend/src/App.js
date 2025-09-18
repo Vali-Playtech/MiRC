@@ -1121,7 +1121,55 @@ const ChatRoom = ({ room, onBack }) => {
     setPrivateChatUser(user);
     setShowPrivateChat(true);
     setShowUserList(false);
+    setShowAvatarBubble(null);
     fetchPrivateMessages(user.id);
+  };
+
+  // Handle avatar click/hover
+  const handleAvatarClick = (event, messageUser) => {
+    if (messageUser.user_id === user?.id) return; // Don't show for current user
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    setAvatarBubblePosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top - 10
+    });
+    
+    setShowAvatarBubble({
+      id: messageUser.user_id,
+      nickname: messageUser.user_name,
+      avatar_url: messageUser.user_avatar
+    });
+  };
+
+  // Close avatar bubble
+  const closeAvatarBubble = () => {
+    setShowAvatarBubble(null);
+  };
+
+  // Add to favorites from message avatar
+  const addToFavoritesFromAvatar = async (userId) => {
+    try {
+      await api.post(`${API}/friends/request`, {
+        friend_user_id: userId
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      alert('Utilizator adăugat la favorit!');
+      setShowAvatarBubble(null);
+    } catch (error) {
+      console.error('Failed to add to favorites:', error);
+      alert('Nu s-a putut adăuga la favorit.');
+    }
+  };
+
+  // Open private chat from avatar
+  const openPrivateChatFromAvatar = (chatUser) => {
+    setPrivateChatUser(chatUser);
+    setShowPrivateChat(true);
+    setShowAvatarBubble(null);
+    fetchPrivateMessages(chatUser.id);
   };
 
   useEffect(() => {
