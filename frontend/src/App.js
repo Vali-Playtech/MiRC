@@ -294,7 +294,8 @@ const AccountSettings = ({ onBack }) => {
     
     try {
       const updates = {
-        name: profileData.name,
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
         language: currentLanguage,
         avatar_url: selectedAvatar
       };
@@ -308,6 +309,32 @@ const AccountSettings = ({ onBack }) => {
       }
     } catch (error) {
       setMessage({ type: 'error', text: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNicknameRequest = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const response = await api.post(`${API}/auth/nickname-request`, {
+        new_nickname: nicknameRequestData.newNickname,
+        reason: nicknameRequestData.reason
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data) {
+        setMessage({ type: 'success', text: t('nicknameRequestSubmitted') });
+        setNicknameRequestData({ newNickname: '', reason: '' });
+        setShowNicknameModal(false);
+        fetchNicknameRequests();
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message || t('nicknameAlreadyTaken') });
     } finally {
       setLoading(false);
     }
