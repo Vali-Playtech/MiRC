@@ -504,21 +504,18 @@ async def send_private_message(message_data: PrivateMessageCreate, current_user:
     
     return PrivateMessage(**message_doc)
 
-@api_router.get("/friends/{friend_id}/messages", response_model=List[PrivateMessage])
-async def get_private_messages(friend_id: str, current_user: User = Depends(get_current_user)):
-    # Verify friendship
-    friendship = await db.friends.find_one({
-        "user_id": current_user.id,
-        "friend_user_id": friend_id
-    })
-    if not friendship:
-        raise HTTPException(status_code=403, detail="Not friends with this user")
+@api_router.get("/private-messages/{user_id}", response_model=List[PrivateMessage])
+async def get_private_messages(user_id: str, current_user: User = Depends(get_current_user)):
+    # Check if other user exists
+    other_user = await db.users.find_one({"id": user_id})
+    if not other_user:
+        raise HTTPException(status_code=404, detail="User not found")
     
-    # Get messages
+    # Get messages between current user and specified user
     messages = await db.private_messages.find({
         "$or": [
-            {"sender_id": current_user.id, "recipient_id": friend_id},
-            {"sender_id": friend_id, "recipient_id": current_user.id}
+            {"sender_id": current_user.id, "recipient_id": user_id},
+            {"sender_id": user_id, "recipient_id": current_user.id}
         ]
     }).sort("created_at", -1).limit(50).to_list(50)
     
@@ -526,15 +523,20 @@ async def get_private_messages(friend_id: str, current_user: User = Depends(get_
     
     # Mark messages as read
     await db.private_messages.update_many(
-        {"sender_id": friend_id, "recipient_id": current_user.id, "is_read": False},
+        {"sender_id": user_id, "recipient_id": current_user.id, "is_read": False},
         {"$set": {"is_read": True}}
     )
     
-    # Reset unread count
-    await db.friends.update_one(
-        {"user_id": current_user.id, "friend_user_id": friend_id},
-        {"$set": {"unread_count": 0}}
-    )
+    # Reset unread count if they are friends
+    friendship = await db.friends.find_one({
+        "user_id": current_user.id,
+        "friend_user_id": user_id
+    })
+    if friendship:
+        await db.friends.update_one(
+            {"user_id": current_user.id, "friend_user_id": user_id},
+            {"$set": {"unread_count": 0}}
+        )
     
     message_list = []
     for msg in messages:
