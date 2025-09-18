@@ -1004,10 +1004,29 @@ const ChatRoom = ({ room, onBack }) => {
           >
             <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
               {message.user_id !== user?.id && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0 mb-1">
-                  <span className="text-white text-xs font-semibold">
-                    {message.user_name?.charAt(0)?.toUpperCase()}
-                  </span>
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-purple-500/30 flex-shrink-0 mb-1">
+                  {message.user_avatar ? (
+                    message.user_avatar.startsWith('data:') ? (
+                      <img 
+                        src={message.user_avatar} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div 
+                        className="w-full h-full"
+                        dangerouslySetInnerHTML={{ 
+                          __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
+                        }}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                      <span className="text-white text-xs font-semibold">
+                        {message.user_name?.charAt(0)?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
               
