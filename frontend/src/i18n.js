@@ -295,14 +295,170 @@ export const translations = {
   }
 };
 
-// Helper function to get translation with fallback
-export const getTranslation = (key, lang = 'en', variables = {}) => {
-  let translation = translations[lang]?.[key] || translations['en'][key] || key;
+// Default avatars - beautiful gradient designs
+export const defaultAvatars = [
+  {
+    id: 'gradient-1',
+    name: 'Purple Blaze',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#8b5cf6"/>
+          <stop offset="100%" style="stop-color:#3b82f6"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad1)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-2', 
+    name: 'Ocean Wave',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#06b6d4"/>
+          <stop offset="100%" style="stop-color:#1d4ed8"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad2)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-3',
+    name: 'Sunset Glow', 
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#f59e0b"/>
+          <stop offset="100%" style="stop-color:#ef4444"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad3)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-4',
+    name: 'Forest Green',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#10b981"/>
+          <stop offset="100%" style="stop-color:#059669"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad4)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-5',
+    name: 'Rose Gold',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad5" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#f472b6"/>
+          <stop offset="100%" style="stop-color:#be185d"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad5)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-6',
+    name: 'Electric Blue',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad6" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#3b82f6"/>
+          <stop offset="100%" style="stop-color:#1e40af"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad6)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-7',
+    name: 'Lavender Dream',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad7" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#a78bfa"/>
+          <stop offset="100%" style="stop-color:#7c3aed"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad7)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-8',
+    name: 'Ember Fire',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad8" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#fb7185"/>
+          <stop offset="100%" style="stop-color:#e11d48"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad8)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-9',
+    name: 'Cosmic Purple',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad9" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#6366f1"/>
+          <stop offset="100%" style="stop-color:#4338ca"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad9)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  },
+  {
+    id: 'gradient-10',
+    name: 'Golden Hour',
+    svg: `<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad10" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#fbbf24"/>
+          <stop offset="100%" style="stop-color:#f59e0b"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="50" fill="url(#grad10)"/>
+      <circle cx="50" cy="40" r="15" fill="white" opacity="0.9"/>
+      <path d="M25 75 Q50 60 75 75 L75 100 L25 100 Z" fill="white" opacity="0.9"/>
+    </svg>`
+  }
+];
+
+// Helper function to convert SVG to base64
+export const svgToBase64 = (svgString) => {
+  return `data:image/svg+xml;base64,${btoa(svgString)}`;
+};
+
+export const getAvatarUrl = (avatar) => {
+  if (!avatar) return null;
+  if (avatar.startsWith('data:')) return avatar; // Already base64
   
-  // Replace variables in translation
-  Object.keys(variables).forEach(variable => {
-    translation = translation.replace(`{${variable}}`, variables[variable]);
-  });
-  
-  return translation;
+  // Find default avatar
+  const defaultAvatar = defaultAvatars.find(a => a.id === avatar);
+  return defaultAvatar ? svgToBase64(defaultAvatar.svg) : null;
 };
