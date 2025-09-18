@@ -303,7 +303,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Email Authentication System"
     - "Real-time Chat Interface"
     - "Real-time WebSocket Chat"
   stuck_tasks:
