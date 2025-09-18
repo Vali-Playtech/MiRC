@@ -2140,6 +2140,53 @@ const AppContent = () => {
   const [newPrivateMessage, setNewPrivateMessage] = useState('');
   const { user, loading, token } = useAuth();
 
+  // Functions for private chat
+  const openPrivateChat = (chatUser) => {
+    setPrivateChatUser(chatUser);
+    setShowPrivateChat(true);
+    fetchPrivateMessages(chatUser.id);
+  };
+
+  const fetchPrivateMessages = async (userId) => {
+    try {
+      const response = await api.get(`${API}/private-messages/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPrivateMessages(response.data);
+    } catch (error) {
+      console.error('Failed to fetch private messages:', error);
+    }
+  };
+
+  const sendPrivateMessage = async (e) => {
+    e.preventDefault();
+    if (!newPrivateMessage.trim() || !privateChatUser) return;
+
+    try {
+      const response = await api.post(`${API}/private-messages`, {
+        content: newPrivateMessage.trim(),
+        recipient_id: privateChatUser.id
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setPrivateMessages(prev => [...prev, response.data]);
+      setNewPrivateMessage('');
+    } catch (error) {
+      console.error('Failed to send private message:', error);
+      alert('Nu s-a putut trimite mesajul privat. Încearcă din nou.');
+    }
+  };
+
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
