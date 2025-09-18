@@ -186,12 +186,301 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
+// Account Settings Component
+const AccountSettings = ({ onBack }) => {
+  const [activeTab, setActiveTab] = useState('profile');
+  const [profileData, setProfileData] = useState({
+    name: '',
+    email: ''
+  });
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const { user, updateProfile, token } = useAuth();
+  const { t, currentLanguage, changeLanguage, languages } = useLanguage();
+
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || '',
+        email: user.email || ''
+      });
+    }
+  }, [user]);
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const updates = {
+        name: profileData.name,
+        language: currentLanguage
+      };
+      
+      const result = await updateProfile(updates);
+      if (result.success) {
+        setMessage({ type: 'success', text: t('profileUpdated', 'Profile updated successfully') });
+      } else {
+        setMessage({ type: 'error', text: result.error });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setMessage({ type: 'error', text: t('passwordMismatch', 'Passwords do not match') });
+      return;
+    }
+    
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const response = await api.post(`${API}/auth/change-password`, {
+        current_password: passwordData.currentPassword,
+        new_password: passwordData.newPassword
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data) {
+        setMessage({ type: 'success', text: t('passwordChanged', 'Password changed successfully') });
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const tabs = [
+    { id: 'profile', icon: '👤', label: t('profile') },
+    { id: 'preferences', icon: '⚙️', label: t('preferences') },
+    { id: 'security', icon: '🔒', label: t('security') },
+    { id: 'about', icon: 'ℹ️', label: t('about') }
+  ];
+
+  return (
+    <div className="h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-4 flex items-center justify-between border-b border-white/10">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={onBack}
+            className="text-gray-400 hover:text-white transition-all duration-200 p-2 rounded-lg hover:bg-white/10"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <h1 className="text-white text-xl font-bold">{t('accountSettings')}</h1>
+            <p className="text-gray-400 text-sm">{user?.email}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* Sidebar */}
+        <div className="w-64 bg-gray-800/50 backdrop-blur-sm border-r border-white/10 p-4">
+          <nav className="space-y-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                    : 'text-gray-400 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">{tab.icon}</span>
+                <span className="font-medium">{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {message && (
+            <div className={`mb-6 p-4 rounded-xl backdrop-blur-sm ${
+              message.type === 'success' 
+                ? 'bg-green-500/20 border border-green-500/50 text-green-200'
+                : 'bg-red-500/20 border border-red-500/50 text-red-200'
+            }`}>
+              {message.text}
+            </div>
+          )}
+
+          {/* Profile Tab */}
+          {activeTab === 'profile' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('editProfile')}</h2>
+                <p className="text-gray-400">{t('updateProfileInfo', 'Update your profile information')}</p>
+              </div>
+              
+              <form onSubmit={handleProfileUpdate} className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('fullName')}</label>
+                  <input
+                    type="text"
+                    value={profileData.name}
+                    onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                    className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('emailAddress')}</label>
+                  <input
+                    type="email"
+                    value={profileData.email}
+                    disabled
+                    className="w-full bg-gray-700/50 text-gray-400 px-4 py-3 rounded-xl border border-white/10 cursor-not-allowed"
+                  />
+                  <p className="text-gray-500 text-xs mt-1">{t('emailCannotBeChanged', 'Email address cannot be changed')}</p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold disabled:opacity-50"
+                >
+                  {loading ? t('pleaseWait') : t('saveChanges')}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Preferences Tab */}
+          {activeTab === 'preferences' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('preferences')}</h2>
+                <p className="text-gray-400">{t('customizeExperience', 'Customize your VONEX experience')}</p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Language Selection */}
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-4">{t('language')}</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {Object.entries(languages).map(([code, lang]) => (
+                      <button
+                        key={code}
+                        onClick={() => changeLanguage(code)}
+                        className={`flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
+                          currentLanguage === code
+                            ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                            : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-xl">{lang.flag}</span>
+                        <span className="font-medium">{lang.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Security Tab */}
+          {activeTab === 'security' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('security')}</h2>
+                <p className="text-gray-400">{t('manageAccountSecurity', 'Manage your account security settings')}</p>
+              </div>
+
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('currentPassword')}</label>
+                  <input
+                    type="password"
+                    value={passwordData.currentPassword}
+                    onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                    className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('newPassword')}</label>
+                  <input
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                    className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('confirmPassword')}</label>
+                  <input
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                    className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold disabled:opacity-50"
+                >
+                  {loading ? t('pleaseWait') : t('changePassword')}
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* About Tab */}
+          {activeTab === 'about' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('about')}</h2>
+                <p className="text-gray-400">{t('aboutVonex', 'About VONEX and your account')}</p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{t('appName')}</h3>
+                  <p className="text-gray-300">{t('appDescription')}</p>
+                  <p className="text-gray-400 text-sm">
+                    {t('version', 'Version')} 1.0.0
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 // Components
