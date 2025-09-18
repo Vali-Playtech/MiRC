@@ -718,7 +718,7 @@ const RoomList = ({ onRoomSelect }) => {
           </div>
           <div>
             <h1 className="text-white text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              ChatRooms
+              VONEX
             </h1>
             <p className="text-gray-400 text-sm">Bun venit, <span className="text-purple-400 font-medium">{user?.name}</span></p>
           </div>
