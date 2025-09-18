@@ -325,6 +325,18 @@ frontend:
         agent: "testing"
         comment: "CRITICAL MESSAGING ISSUE: Send button not functional due to missing axios library in browser. Form submission (Enter key) works correctly - messages send and display properly. Message persistence fails after page reload. UI is excellent but core messaging functionality is broken for button clicks. URGENT: Need to fix axios dependency and message persistence."
 
+  - task: "Avatar Interaction System"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented new avatar interaction feature where users can click on message avatars to get popup bubble with Chat and Favorit options. Includes hover effects with plus sign, positioned bubble with user info and action buttons, integration with private chat and friends system. Only works on other users' avatars, not current user's own avatar."
+
   - task: "Mobile-Optimized PWA Design"
     implemented: true
     working: true
