@@ -185,6 +185,7 @@ async def register(user_data: UserCreate):
         "name": user_data.name,
         "hashed_password": hashed_password,
         "avatar_url": None,
+        "language": "en",  # Default language
         "is_active": True,
         "created_at": datetime.utcnow()
     }
