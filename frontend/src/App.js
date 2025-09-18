@@ -1320,24 +1320,21 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   );
 };
 
-// Main App Component
+// Main App Component  
 const App = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [selectedRoom, setSelectedRoom] = useState(null);
-
   return (
-    <AuthProvider>
-      <AuthenticatedApp
-        isLogin={isLogin}
-        setIsLogin={setIsLogin}
-        selectedRoom={selectedRoom}
-        setSelectedRoom={setSelectedRoom}
-      />
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </LanguageProvider>
   );
 };
 
-const AuthenticatedApp = ({ isLogin, setIsLogin, selectedRoom, setSelectedRoom }) => {
+const AppContent = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -1357,6 +1354,12 @@ const AuthenticatedApp = ({ isLogin, setIsLogin, selectedRoom, setSelectedRoom }
     );
   }
 
+  if (showAccountSettings) {
+    return (
+      <AccountSettings onBack={() => setShowAccountSettings(false)} />
+    );
+  }
+
   if (selectedRoom) {
     return (
       <ChatRoom
@@ -1367,7 +1370,10 @@ const AuthenticatedApp = ({ isLogin, setIsLogin, selectedRoom, setSelectedRoom }
   }
 
   return (
-    <RoomList onRoomSelect={setSelectedRoom} />
+    <RoomList 
+      onRoomSelect={setSelectedRoom}
+      onAccountSettings={() => setShowAccountSettings(true)}
+    />
   );
 };
 
