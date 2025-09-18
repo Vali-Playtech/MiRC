@@ -580,6 +580,74 @@ async def get_room_users(room_id: str, current_user: User = Depends(get_current_
     
     return users_info
 
+@api_router.get("/private-conversations")
+async def get_private_conversations(current_user: User = Depends(get_current_user)):
+    # Get all private messages where current user is involved
+    messages = await db.private_messages.aggregate([
+        {
+            "$match": {
+                "$or": [
+                    {"sender_id": current_user.id},
+                    {"recipient_id": current_user.id}
+                ]
+            }
+        },
+        {
+            "$sort": {"created_at": -1}
+        },
+        {
+            "$group": {
+                "_id": {
+                    "$cond": [
+                        {"$eq": ["$sender_id", current_user.id]},
+                        "$recipient_id",
+                        "$sender_id"
+                    ]
+                },
+                "last_message": {"$first": "$content"},
+                "last_message_time": {"$first": "$created_at"},
+                "unread_count": {
+                    "$sum": {
+                        "$cond": [
+                            {"$and": [
+                                {"$eq": ["$recipient_id", current_user.id]},
+                                {"$eq": ["$is_read", False]}
+                            ]},
+                            1,
+                            0
+                        ]
+                    }
+                }
+            }
+        }
+    ]).to_list(50)
+    
+    conversations = []
+    for msg in messages:
+        other_user_id = msg["_id"]
+        # Get user info
+        other_user = await db.users.find_one({"id": other_user_id})
+        if other_user:
+            # Check if they are friends
+            is_friend = await db.friends.find_one({
+                "user_id": current_user.id,
+                "friend_user_id": other_user_id
+            }) is not None
+            
+            conversations.append({
+                "user_id": other_user_id,
+                "nickname": other_user.get("nickname", "Unknown"),
+                "first_name": other_user.get("first_name", ""),
+                "last_name": other_user.get("last_name", ""),
+                "avatar_url": other_user.get("avatar_url"),
+                "last_message": msg["last_message"],
+                "last_message_time": msg["last_message_time"],
+                "unread_count": msg["unread_count"],
+                "is_friend": is_friend
+            })
+    
+    return conversations
+
 @api_router.post("/auth/change-password")
 async def change_password(password_data: PasswordChange, current_user: User = Depends(get_current_user)):
     # Get user with password
