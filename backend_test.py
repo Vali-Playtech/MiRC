@@ -475,6 +475,555 @@ class BackendTester:
         except Exception as e:
             return self.log_test("Message Persistence", False, f"Exception: {str(e)}")
     
+    def test_room_users_discovery(self):
+        """Test 7: Room Users & Discovery (Phase 1 - NEW PRIVATE CHAT FEATURE)"""
+        print("\n=== Testing Room Users & Discovery ===")
+        
+        try:
+            if not self.test_rooms:
+                self.log_test("Room Users Discovery", False, "No test rooms available")
+                return False
+            
+            room_id = self.test_rooms[0]['id']  # Use first public room
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Ensure both users have sent messages to populate room users
+            alice_msg = {"content": "Alice's message for room user discovery"}
+            bob_msg = {"content": "Bob's message for room user discovery"}
+            
+            # Send messages from both users
+            response = self.session.post(f"{API_BASE}/rooms/{room_id}/messages", 
+                                       json=alice_msg, headers=headers_alice)
+            if not self.log_test("Alice Room Message", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            response = self.session.post(f"{API_BASE}/rooms/{room_id}/messages", 
+                                       json=bob_msg, headers=headers_bob)
+            if not self.log_test("Bob Room Message", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test GET /api/rooms/{room_id}/users endpoint
+            response = self.session.get(f"{API_BASE}/rooms/{room_id}/users", headers=headers_alice)
+            if not self.log_test("Room Users Endpoint", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            room_users = response.json()
+            
+            # Validate room users structure
+            if not isinstance(room_users, list):
+                return self.log_test("Room Users Structure", False, "Response is not a list")
+            
+            # Should have at least Bob (Alice is excluded as current user)
+            if len(room_users) < 1:
+                return self.log_test("Room Users Content", False, "No other users found in room")
+            
+            # Validate user structure
+            for user in room_users:
+                required_fields = ['id', 'nickname', 'is_friend']
+                for field in required_fields:
+                    if field not in user:
+                        return self.log_test("Room User Structure", False,
+                                           f"Missing field: {field}")
+            
+            # Test from Bob's perspective
+            response = self.session.get(f"{API_BASE}/rooms/{room_id}/users", headers=headers_bob)
+            if not self.log_test("Room Users (Bob's View)", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_view_users = response.json()
+            if len(bob_view_users) < 1:
+                return self.log_test("Room Users (Bob's View) Content", False, "No other users found")
+            
+            self.log_test("Room Users & Discovery", True, "Room users endpoint working correctly")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Room Users & Discovery", False, f"Exception: {str(e)}")
+    
+    def test_private_messaging_core(self):
+        """Test 8: Private Messaging Core Feature (Phase 2 - NEW PRIVATE CHAT FEATURE)"""
+        print("\n=== Testing Private Messaging Core Feature ===")
+        
+        try:
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Get user IDs from profile endpoints
+            alice_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_alice).json()
+            bob_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_bob).json()
+            
+            alice_id = alice_profile['id']
+            bob_id = bob_profile['id']
+            
+            # Test 1: Alice sends private message to Bob
+            private_msg_data = {
+                "content": "Hello Bob! This is a private message from Alice.",
+                "recipient_id": bob_id
+            }
+            
+            response = self.session.post(f"{API_BASE}/private-messages", 
+                                       json=private_msg_data, headers=headers_alice)
+            if not self.log_test("Send Private Message", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            sent_message = response.json()
+            
+            # Validate sent message structure
+            required_fields = ['id', 'sender_id', 'recipient_id', 'content', 'sender_nickname', 'created_at', 'is_read']
+            for field in required_fields:
+                if field not in sent_message:
+                    return self.log_test("Private Message Structure", False,
+                                       f"Missing field: {field}")
+            
+            # Validate message content
+            if sent_message['content'] != private_msg_data['content']:
+                return self.log_test("Private Message Content", False, "Content mismatch")
+            
+            if sent_message['sender_id'] != alice_id:
+                return self.log_test("Private Message Sender", False, "Sender ID mismatch")
+            
+            if sent_message['recipient_id'] != bob_id:
+                return self.log_test("Private Message Recipient", False, "Recipient ID mismatch")
+            
+            # Test 2: Bob retrieves private messages from Alice
+            response = self.session.get(f"{API_BASE}/private-messages/{alice_id}", headers=headers_bob)
+            if not self.log_test("Retrieve Private Messages", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_messages = response.json()
+            
+            if not isinstance(bob_messages, list):
+                return self.log_test("Private Messages List", False, "Response is not a list")
+            
+            if len(bob_messages) < 1:
+                return self.log_test("Private Messages Content", False, "No messages found")
+            
+            # Find the message we just sent
+            found_message = None
+            for msg in bob_messages:
+                if msg['content'] == private_msg_data['content']:
+                    found_message = msg
+                    break
+            
+            if not found_message:
+                return self.log_test("Private Message Retrieval", False, "Sent message not found in conversation")
+            
+            # Test 3: Bidirectional messaging - Bob replies to Alice
+            reply_msg_data = {
+                "content": "Hi Alice! Thanks for your message. This is Bob's reply.",
+                "recipient_id": alice_id
+            }
+            
+            response = self.session.post(f"{API_BASE}/private-messages", 
+                                       json=reply_msg_data, headers=headers_bob)
+            if not self.log_test("Send Reply Message", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 4: Alice retrieves conversation with Bob
+            response = self.session.get(f"{API_BASE}/private-messages/{bob_id}", headers=headers_alice)
+            if not self.log_test("Retrieve Conversation", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_conversation = response.json()
+            
+            if len(alice_conversation) < 2:
+                return self.log_test("Bidirectional Messages", False, 
+                                   f"Expected at least 2 messages, got {len(alice_conversation)}")
+            
+            # Verify both messages are in the conversation
+            contents = [msg['content'] for msg in alice_conversation]
+            if private_msg_data['content'] not in contents:
+                return self.log_test("Original Message in Conversation", False, "Original message missing")
+            
+            if reply_msg_data['content'] not in contents:
+                return self.log_test("Reply Message in Conversation", False, "Reply message missing")
+            
+            # Test 5: Test messaging with non-existent user (should fail)
+            invalid_msg_data = {
+                "content": "Message to non-existent user",
+                "recipient_id": "non-existent-user-id"
+            }
+            
+            response = self.session.post(f"{API_BASE}/private-messages", 
+                                       json=invalid_msg_data, headers=headers_alice)
+            if not self.log_test("Invalid Recipient Handling", response.status_code == 404,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            self.log_test("Private Messaging Core Feature", True, "All private messaging tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Private Messaging Core Feature", False, f"Exception: {str(e)}")
+    
+    def test_friends_system(self):
+        """Test 9: Friends/Favorites System (Phase 3 - NEW PRIVATE CHAT FEATURE)"""
+        print("\n=== Testing Friends/Favorites System ===")
+        
+        try:
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Get user IDs
+            alice_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_alice).json()
+            bob_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_bob).json()
+            
+            alice_id = alice_profile['id']
+            bob_id = bob_profile['id']
+            
+            # Test 1: Alice adds Bob to favorites (friends list)
+            friend_request_data = {
+                "friend_user_id": bob_id
+            }
+            
+            response = self.session.post(f"{API_BASE}/friends/request", 
+                                       json=friend_request_data, headers=headers_alice)
+            if not self.log_test("Add Friend Request", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            # Test 2: Get Alice's friends list
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_alice)
+            if not self.log_test("Get Friends List (Alice)", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_friends = response.json()
+            
+            if not isinstance(alice_friends, list):
+                return self.log_test("Friends List Structure", False, "Response is not a list")
+            
+            if len(alice_friends) < 1:
+                return self.log_test("Friends List Content", False, "No friends found")
+            
+            # Validate friend structure
+            bob_friend = alice_friends[0]
+            required_fields = ['id', 'user_id', 'friend_user_id', 'friend_nickname', 'friend_first_name', 'friend_last_name', 'created_at']
+            for field in required_fields:
+                if field not in bob_friend:
+                    return self.log_test("Friend Structure", False,
+                                       f"Missing field: {field}")
+            
+            if bob_friend['friend_user_id'] != bob_id:
+                return self.log_test("Friend User ID", False, "Friend user ID mismatch")
+            
+            # Test 3: Verify friendship is bidirectional - Check Bob's friends list
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_bob)
+            if not self.log_test("Get Friends List (Bob)", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_friends = response.json()
+            
+            if len(bob_friends) < 1:
+                return self.log_test("Bidirectional Friendship", False, "Bob doesn't have Alice as friend")
+            
+            alice_friend = bob_friends[0]
+            if alice_friend['friend_user_id'] != alice_id:
+                return self.log_test("Bidirectional Friend ID", False, "Alice not found in Bob's friends")
+            
+            # Test 4: Try to add same friend again (should fail)
+            response = self.session.post(f"{API_BASE}/friends/request", 
+                                       json=friend_request_data, headers=headers_alice)
+            if not self.log_test("Duplicate Friend Prevention", response.status_code == 400,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 5: Test friend info (nickname, avatar, etc.)
+            if not bob_friend.get('friend_nickname'):
+                return self.log_test("Friend Nickname", False, "Friend nickname is missing")
+            
+            if not bob_friend.get('friend_first_name'):
+                return self.log_test("Friend First Name", False, "Friend first name is missing")
+            
+            # Test 6: Verify room users endpoint now shows is_friend = true
+            if self.test_rooms:
+                room_id = self.test_rooms[0]['id']
+                response = self.session.get(f"{API_BASE}/rooms/{room_id}/users", headers=headers_alice)
+                if response.status_code == 200:
+                    room_users = response.json()
+                    for user in room_users:
+                        if user['id'] == bob_id:
+                            if not user.get('is_friend'):
+                                return self.log_test("Friend Status in Room Users", False, 
+                                                   "is_friend not updated in room users")
+                            break
+            
+            self.log_test("Friends/Favorites System", True, "All friends system tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Friends/Favorites System", False, f"Exception: {str(e)}")
+    
+    def test_private_conversations_management(self):
+        """Test 10: Private Conversations Management (Phase 4 - NEW PRIVATE CHAT FEATURE)"""
+        print("\n=== Testing Private Conversations Management ===")
+        
+        try:
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Test 1: Get Alice's private conversations
+            response = self.session.get(f"{API_BASE}/private-conversations", headers=headers_alice)
+            if not self.log_test("Get Private Conversations", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            alice_conversations = response.json()
+            
+            if not isinstance(alice_conversations, list):
+                return self.log_test("Conversations List Structure", False, "Response is not a list")
+            
+            if len(alice_conversations) < 1:
+                return self.log_test("Conversations List Content", False, "No conversations found")
+            
+            # Validate conversation structure
+            conversation = alice_conversations[0]
+            required_fields = ['user_id', 'nickname', 'first_name', 'last_name', 'last_message', 'last_message_time', 'unread_count', 'is_friend']
+            for field in required_fields:
+                if field not in conversation:
+                    return self.log_test("Conversation Structure", False,
+                                       f"Missing field: {field}")
+            
+            # Test 2: Verify conversation includes both friends and non-friends
+            # (We already have Bob as friend, let's verify is_friend is true)
+            bob_conversation = None
+            for conv in alice_conversations:
+                alice_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_alice).json()
+                bob_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_bob).json()
+                if conv['user_id'] == bob_profile['id']:
+                    bob_conversation = conv
+                    break
+            
+            if not bob_conversation:
+                return self.log_test("Friend Conversation Found", False, "Bob conversation not found")
+            
+            if not bob_conversation.get('is_friend'):
+                return self.log_test("Friend Status in Conversations", False, "is_friend not set correctly")
+            
+            # Test 3: Check unread message counts and last message info
+            if 'unread_count' not in bob_conversation:
+                return self.log_test("Unread Count Field", False, "unread_count field missing")
+            
+            if not bob_conversation.get('last_message'):
+                return self.log_test("Last Message Field", False, "last_message field missing or empty")
+            
+            if not bob_conversation.get('last_message_time'):
+                return self.log_test("Last Message Time", False, "last_message_time field missing")
+            
+            # Test 4: Send a new message and verify conversation updates
+            alice_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_alice).json()
+            bob_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_bob).json()
+            
+            new_message_data = {
+                "content": "Testing conversation management update",
+                "recipient_id": bob_profile['id']
+            }
+            
+            response = self.session.post(f"{API_BASE}/private-messages", 
+                                       json=new_message_data, headers=headers_alice)
+            if not self.log_test("Send Message for Conversation Update", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 5: Verify Bob's conversations show updated unread count
+            response = self.session.get(f"{API_BASE}/private-conversations", headers=headers_bob)
+            if not self.log_test("Get Updated Conversations (Bob)", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_conversations = response.json()
+            alice_conversation_for_bob = None
+            for conv in bob_conversations:
+                if conv['user_id'] == alice_profile['id']:
+                    alice_conversation_for_bob = conv
+                    break
+            
+            if not alice_conversation_for_bob:
+                return self.log_test("Alice Conversation for Bob", False, "Alice conversation not found for Bob")
+            
+            # Check if unread count increased (should be > 0)
+            if alice_conversation_for_bob.get('unread_count', 0) <= 0:
+                return self.log_test("Unread Count Update", False, 
+                                   f"Unread count not updated: {alice_conversation_for_bob.get('unread_count')}")
+            
+            # Check if last message updated
+            if alice_conversation_for_bob.get('last_message') != new_message_data['content']:
+                return self.log_test("Last Message Update", False, "Last message not updated correctly")
+            
+            self.log_test("Private Conversations Management", True, "All conversation management tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Private Conversations Management", False, f"Exception: {str(e)}")
+    
+    def test_integration_private_chat_system(self):
+        """Test 11: Integration Testing (Phase 5 - NEW PRIVATE CHAT FEATURE)"""
+        print("\n=== Testing Private Chat System Integration ===")
+        
+        try:
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Get user profiles
+            alice_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_alice).json()
+            bob_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_bob).json()
+            
+            alice_id = alice_profile['id']
+            bob_id = bob_profile['id']
+            
+            # Test 1: Create a third user for non-friend messaging
+            import time
+            timestamp = str(int(time.time()))
+            charlie_user = {
+                "email": f"charlie.test.{timestamp}@example.com",
+                "password": "CharliePass789!",
+                "first_name": "Charlie",
+                "last_name": "Brown",
+                "nickname": f"charlie_{timestamp}"
+            }
+            
+            response = self.session.post(f"{API_BASE}/auth/register", json=charlie_user)
+            if not self.log_test("Third User Registration", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            token_data = response.json()
+            self.auth_tokens['charlie'] = token_data['access_token']
+            headers_charlie = {"Authorization": f"Bearer {self.auth_tokens['charlie']}"}
+            
+            charlie_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_charlie).json()
+            charlie_id = charlie_profile['id']
+            
+            # Test 2: Mixed scenarios - friends + non-friends private messages
+            # Alice sends message to Charlie (non-friend)
+            non_friend_msg = {
+                "content": "Hello Charlie! We're not friends yet but I can still message you.",
+                "recipient_id": charlie_id
+            }
+            
+            response = self.session.post(f"{API_BASE}/private-messages", 
+                                       json=non_friend_msg, headers=headers_alice)
+            if not self.log_test("Message to Non-Friend", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 3: Verify messaging works without being friends
+            response = self.session.get(f"{API_BASE}/private-messages/{alice_id}", headers=headers_charlie)
+            if not self.log_test("Retrieve Messages from Non-Friend", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            charlie_messages = response.json()
+            if len(charlie_messages) < 1:
+                return self.log_test("Non-Friend Message Content", False, "No messages from non-friend found")
+            
+            # Verify the message content
+            found_non_friend_msg = False
+            for msg in charlie_messages:
+                if msg['content'] == non_friend_msg['content']:
+                    found_non_friend_msg = True
+                    break
+            
+            if not found_non_friend_msg:
+                return self.log_test("Non-Friend Message Verification", False, "Non-friend message not found")
+            
+            # Test 4: Test edge cases
+            # Try to send message to self (should work but is unusual)
+            self_msg = {
+                "content": "Message to myself for testing",
+                "recipient_id": alice_id
+            }
+            
+            response = self.session.post(f"{API_BASE}/private-messages", 
+                                       json=self_msg, headers=headers_alice)
+            # This might be allowed or not depending on business logic - let's check
+            self_message_allowed = response.status_code == 200
+            self.log_test("Self-Messaging", self_message_allowed, 
+                         f"Status: {response.status_code} - {'Allowed' if self_message_allowed else 'Blocked'}")
+            
+            # Test 5: Verify data consistency across endpoints
+            # Check that private conversations include both friend and non-friend chats
+            response = self.session.get(f"{API_BASE}/private-conversations", headers=headers_alice)
+            if not self.log_test("All Conversations Retrieval", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_all_conversations = response.json()
+            
+            # Should have conversations with both Bob (friend) and Charlie (non-friend)
+            bob_conv_found = False
+            charlie_conv_found = False
+            
+            for conv in alice_all_conversations:
+                if conv['user_id'] == bob_id:
+                    bob_conv_found = True
+                    if not conv.get('is_friend'):
+                        return self.log_test("Friend Status Consistency", False, "Bob should be marked as friend")
+                elif conv['user_id'] == charlie_id:
+                    charlie_conv_found = True
+                    if conv.get('is_friend'):
+                        return self.log_test("Non-Friend Status Consistency", False, "Charlie should not be marked as friend")
+            
+            if not bob_conv_found:
+                return self.log_test("Friend Conversation in All Conversations", False, "Bob conversation missing")
+            
+            if not charlie_conv_found:
+                return self.log_test("Non-Friend Conversation in All Conversations", False, "Charlie conversation missing")
+            
+            # Test 6: Verify room users endpoint shows correct friend status
+            if self.test_rooms:
+                # Add Charlie to room by sending a message
+                room_id = self.test_rooms[0]['id']
+                
+                # Join room first
+                response = self.session.post(f"{API_BASE}/rooms/{room_id}/join", headers=headers_charlie)
+                if response.status_code == 200:
+                    # Send message to appear in room users
+                    charlie_room_msg = {"content": "Charlie joining the conversation"}
+                    response = self.session.post(f"{API_BASE}/rooms/{room_id}/messages", 
+                                               json=charlie_room_msg, headers=headers_charlie)
+                    
+                    if response.status_code == 200:
+                        # Check room users from Alice's perspective
+                        response = self.session.get(f"{API_BASE}/rooms/{room_id}/users", headers=headers_alice)
+                        if response.status_code == 200:
+                            room_users = response.json()
+                            
+                            bob_in_room = False
+                            charlie_in_room = False
+                            
+                            for user in room_users:
+                                if user['id'] == bob_id:
+                                    bob_in_room = True
+                                    if not user.get('is_friend'):
+                                        return self.log_test("Room User Friend Status (Bob)", False, 
+                                                           "Bob should be marked as friend in room users")
+                                elif user['id'] == charlie_id:
+                                    charlie_in_room = True
+                                    if user.get('is_friend'):
+                                        return self.log_test("Room User Friend Status (Charlie)", False, 
+                                                           "Charlie should not be marked as friend in room users")
+                            
+                            if bob_in_room and charlie_in_room:
+                                self.log_test("Room Users Friend Status Integration", True, 
+                                             "Friend status correctly shown in room users")
+            
+            self.log_test("Private Chat System Integration", True, "All integration tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Private Chat System Integration", False, f"Exception: {str(e)}")
+    
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Comprehensive Backend Testing")
