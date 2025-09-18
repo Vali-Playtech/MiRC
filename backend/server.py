@@ -204,7 +204,9 @@ async def register(user_data: UserCreate):
     user_doc = {
         "id": user_id,
         "email": email,
-        "name": user_data.name,
+        "first_name": user_data.first_name,
+        "last_name": user_data.last_name,
+        "nickname": user_data.nickname,
         "hashed_password": hashed_password,
         "avatar_url": None,
         "language": "en",  # Default language
