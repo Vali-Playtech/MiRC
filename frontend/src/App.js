@@ -199,7 +199,8 @@ const AccountSettings = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState('profile');
   const [profileData, setProfileData] = useState({
     name: '',
-    email: ''
+    email: '',
+    avatar_url: null
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -208,6 +209,9 @@ const AccountSettings = ({ onBack }) => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [showAvatarSection, setShowAvatarSection] = useState(false);
+  const fileInputRef = useRef(null);
   const { user, updateProfile, token } = useAuth();
   const { t, currentLanguage, changeLanguage, languages } = useLanguage();
 
@@ -215,10 +219,45 @@ const AccountSettings = ({ onBack }) => {
     if (user) {
       setProfileData({
         name: user.name || '',
-        email: user.email || ''
+        email: user.email || '',
+        avatar_url: user.avatar_url || null
       });
+      setSelectedAvatar(user.avatar_url || null);
     }
   }, [user]);
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: t('invalidFileType', 'Please select a valid image file') });
+      return;
+    }
+
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage({ type: 'error', text: t('fileTooLarge', 'File size must be less than 2MB') });
+      return;
+    }
+
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setSelectedAvatar(e.target.result);
+      setShowAvatarSection(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDefaultAvatarSelect = (avatarId) => {
+    const avatar = defaultAvatars.find(a => a.id === avatarId);
+    if (avatar) {
+      setSelectedAvatar(avatarId);
+      setShowAvatarSection(false);
+    }
+  };
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -228,12 +267,14 @@ const AccountSettings = ({ onBack }) => {
     try {
       const updates = {
         name: profileData.name,
-        language: currentLanguage
+        language: currentLanguage,
+        avatar_url: selectedAvatar
       };
       
       const result = await updateProfile(updates);
       if (result.success) {
-        setMessage({ type: 'success', text: t('profileUpdated', 'Profile updated successfully') });
+        setMessage({ type: 'success', text: t('profileUpdated') });
+        setProfileData(prev => ({ ...prev, avatar_url: selectedAvatar }));
       } else {
         setMessage({ type: 'error', text: result.error });
       }
