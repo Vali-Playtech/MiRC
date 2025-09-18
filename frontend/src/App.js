@@ -1051,16 +1051,60 @@ const ChatRoom = ({ room, onBack }) => {
     }
   };
 
-  // Fetch room users function
-  const fetchRoomUsers = async () => {
+  // Fetch room friends function (only show friends, not all users)
+  const fetchRoomFriends = async () => {
     try {
-      const response = await api.get(`${API}/rooms/${room.id}/users`, {
+      // Get friends list
+      const friendsResponse = await api.get(`${API}/friends`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setRoomUsers(response.data);
+      
+      // Get recent messages to find friends who are active in this room
+      const messagesResponse = await api.get(`${API}/rooms/${room.id}/messages`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const friends = friendsResponse.data;
+      const messages = messagesResponse.data;
+      
+      // Filter friends who have messages in this room and count unread messages
+      const roomFriends = friends.filter(friend => {
+        return messages.some(msg => msg.user_id === friend.friend_user_id);
+      }).map(friend => {
+        // Count unread messages from this friend in this room
+        const friendMessages = messages.filter(msg => 
+          msg.user_id === friend.friend_user_id && 
+          new Date(msg.created_at) > getLastSeenTime(friend.friend_user_id)
+        );
+        
+        return {
+          id: friend.friend_user_id,
+          nickname: friend.friend_nickname,
+          avatar_url: friend.friend_avatar_url,
+          is_friend: true,
+          unread_count: friendMessages.length,
+          first_unread_message_id: friendMessages.length > 0 ? friendMessages[0].id : null
+        };
+      });
+      
+      setRoomUsers(roomFriends);
     } catch (error) {
-      console.error('Failed to fetch room users:', error);
+      console.error('Failed to fetch room friends:', error);
     }
+  };
+
+  // Get last seen time for a user in this room (placeholder - would be stored locally or in backend)
+  const getLastSeenTime = (userId) => {
+    // For now, use localStorage to track last seen time per user per room
+    const key = `last_seen_${room.id}_${userId}`;
+    const lastSeen = localStorage.getItem(key);
+    return lastSeen ? new Date(lastSeen) : new Date(0); // If no record, show all messages as unread
+  };
+
+  // Update last seen time for a user in this room
+  const updateLastSeenTime = (userId) => {
+    const key = `last_seen_${room.id}_${userId}`;
+    localStorage.setItem(key, new Date().toISOString());
   };
 
   // Fetch private messages
