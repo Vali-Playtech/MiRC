@@ -561,15 +561,74 @@ const AccountSettings = ({ onBack }) => {
                   </div>
                 )}
                 
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-300 text-sm font-medium mb-2">{t('firstName')}</label>
+                    <input
+                      type="text"
+                      value={profileData.firstName}
+                      onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
+                      className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-300 text-sm font-medium mb-2">{t('lastName')}</label>
+                    <input
+                      type="text"
+                      value={profileData.lastName}
+                      onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
+                      className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Nickname Section - Read Only with Change Request */}
                 <div>
-                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('fullName')}</label>
-                  <input
-                    type="text"
-                    value={profileData.name}
-                    onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                    className="w-full bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 border border-white/20"
-                    required
-                  />
+                  <label className="block text-gray-300 text-sm font-medium mb-2">{t('nickname')}</label>
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="text"
+                      value={profileData.nickname}
+                      disabled
+                      className="flex-1 bg-gray-700/50 text-gray-400 px-4 py-3 rounded-xl border border-white/10 cursor-not-allowed"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNicknameModal(true)}
+                      className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm"
+                    >
+                      {t('requestNicknameChange')}
+                    </button>
+                  </div>
+                  <p className="text-gray-500 text-xs mt-1">{t('nicknameVisibleInChat', 'This nickname is visible in chat messages')}</p>
+                  
+                  {/* Show recent nickname requests */}
+                  {nicknameRequests.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-gray-300 font-medium mb-2">{t('nicknameChangeRequests')}</h4>
+                      <div className="space-y-2">
+                        {nicknameRequests.slice(0, 3).map((request) => (
+                          <div key={request.id} className="bg-white/5 rounded-lg p-3 border border-white/10">
+                            <div className="flex items-center justify-between">
+                              <span className="text-gray-300 text-sm">{request.new_nickname}</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                request.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300' :
+                                request.status === 'approved' ? 'bg-green-500/20 text-green-300' :
+                                'bg-red-500/20 text-red-300'
+                              }`}>
+                                {t(`${request.status}Request`)}
+                              </span>
+                            </div>
+                            {request.admin_comment && (
+                              <p className="text-gray-400 text-xs mt-1">{request.admin_comment}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 <div>
