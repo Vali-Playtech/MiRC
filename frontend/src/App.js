@@ -1432,6 +1432,10 @@ const ChatRoom = ({ room, onBack }) => {
         }));
         // Clear input immediately for WebSocket (real-time)
         setNewMessage('');
+        // Force scroll to bottom when user sends message
+        setTimeout(() => {
+          scrollToBottom(true);
+        }, 100);
       } else {
         // Send via HTTP API (fallback)
         const response = await api.post(`${API}/rooms/${room.id}/messages`, {
