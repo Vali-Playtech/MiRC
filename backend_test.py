@@ -112,7 +112,9 @@ class BackendTester:
             test_user2 = {
                 "email": "bob.smith@example.com",
                 "password": "AnotherPass456!",
-                "name": "Bob Smith"
+                "first_name": "Bob",
+                "last_name": "Smith",
+                "nickname": "bob_s"
             }
             
             response = self.session.post(f"{API_BASE}/auth/register", json=test_user2)
