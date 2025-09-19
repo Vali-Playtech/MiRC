@@ -1527,60 +1527,41 @@ const ChatRoom = ({ room, onBack }) => {
             className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'} w-full relative`}
           >
             <div className="flex flex-col space-y-1 max-w-full relative">
-              {/* Avatar and Name Row - WhatsApp Style */}
+              {/* Avatar and Name Row with Action Buttons - WhatsApp Style */}
               {message.user_id !== user?.id && (
-                <div className="flex items-center space-x-2 mb-1">
-                  <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500/50 flex-shrink-0">
-                    {message.user_avatar ? (
-                      message.user_avatar.startsWith('data:') ? (
-                        <img 
-                          src={message.user_avatar} 
-                          alt="Avatar" 
-                          className="w-full h-full object-cover" 
-                        />
+                <div className="flex items-center justify-between mb-1 group">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500/50 flex-shrink-0">
+                      {message.user_avatar ? (
+                        message.user_avatar.startsWith('data:') ? (
+                          <img 
+                            src={message.user_avatar} 
+                            alt="Avatar" 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          <div 
+                            className="w-full h-full"
+                            dangerouslySetInnerHTML={{ 
+                              __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
+                            }}
+                          />
+                        )
                       ) : (
-                        <div 
-                          className="w-full h-full"
-                          dangerouslySetInnerHTML={{ 
-                            __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
-                          }}
-                        />
-                      )
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold">
-                          {message.user_name?.charAt(0)?.toUpperCase()}
-                        </span>
-                      </div>
-                    )}
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                          <span className="text-white text-xs font-semibold">
+                            {message.user_name?.charAt(0)?.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="text-xs font-semibold text-purple-300 opacity-90">
+                      {message.user_name}
+                    </div>
                   </div>
                   
-                  <div className="text-xs font-semibold text-purple-300 opacity-90">
-                    {message.user_name}
-                  </div>
-                </div>
-              )}
-              
-              {/* Message Row with Bubble and Action Buttons */}
-              <div className="flex items-center space-x-3 group">
-                {/* Message Bubble */}
-                <div
-                  className={`px-4 py-3 rounded-2xl shadow-lg backdrop-blur-sm border flex-shrink-0 ${
-                    message.user_id === user?.id
-                      ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white border-purple-500/30 ml-auto order-2'
-                      : 'bg-white/10 text-gray-100 border-white/20 max-w-xs sm:max-w-sm lg:max-w-md'
-                  } ${message.user_id === user?.id ? 'rounded-br-md' : 'rounded-tl-md'}`}
-                >
-                  <div className="break-words leading-relaxed">{message.content}</div>
-                  <div className={`text-xs mt-2 opacity-70 ${
-                    message.user_id === user?.id ? 'text-purple-100' : 'text-gray-400'
-                  }`}>
-                    {formatTime(message.created_at)}
-                  </div>
-                </div>
-                
-                {/* Action Buttons - only for other users' messages */}
-                {message.user_id !== user?.id && (
+                  {/* Action Buttons - in the name row */}
                   <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200 flex-shrink-0">
                     <button
                       onClick={() => openPrivateChatFromAvatar({
@@ -1607,7 +1588,23 @@ const ChatRoom = ({ room, onBack }) => {
                       <span>★</span>
                     </button>
                   </div>
-                )}
+                </div>
+              )}
+              
+              {/* Message Bubble - Clean without action buttons */}
+              <div
+                className={`px-4 py-3 rounded-2xl shadow-lg backdrop-blur-sm border ${
+                  message.user_id === user?.id
+                    ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white border-purple-500/30 ml-auto'
+                    : 'bg-white/10 text-gray-100 border-white/20 max-w-xs sm:max-w-sm lg:max-w-md'
+                } ${message.user_id === user?.id ? 'rounded-br-md' : 'rounded-tl-md'}`}
+              >
+                <div className="break-words leading-relaxed">{message.content}</div>
+                <div className={`text-xs mt-2 opacity-70 ${
+                  message.user_id === user?.id ? 'text-purple-100' : 'text-gray-400'
+                }`}>
+                  {formatTime(message.created_at)}
+                </div>
               </div>
               
               {/* Own Avatar - positioned at top right for own messages */}
