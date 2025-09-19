@@ -1709,10 +1709,10 @@ const ChatRoom = ({ room, onBack }) => {
               </div>
             ) : (
               roomUsers.map((roomUser) => (
-                <div key={roomUser.id} className="p-3 border-b border-white/5 hover:bg-white/5 transition-colors">
+                <div key={roomUser.id} className="border-b border-white/5 last:border-b-0">
                   <button
                     onClick={() => navigateToFirstUnreadMessage(roomUser)}
-                    className="w-full flex items-center justify-between hover:bg-white/10 rounded-lg p-2 transition-colors"
+                    className="w-full flex items-center justify-between hover:bg-white/5 p-4 transition-all duration-200 group"
                   >
                     <div className="flex items-center space-x-3">
                       <div className="relative">
