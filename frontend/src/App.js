@@ -1524,9 +1524,9 @@ const ChatRoom = ({ room, onBack }) => {
           <div
             key={message.id}
             id={`message-${message.id}`}
-            className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'} w-full`}
+            className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'} w-full relative`}
           >
-            <div className="flex items-end space-x-2 max-w-xs lg:max-w-md">
+            <div className="flex items-end space-x-2 sm:space-x-3 max-w-xs sm:max-w-sm lg:max-w-md relative">
               {message.user_id !== user?.id && (
                 <div className="relative group">
                   <button
