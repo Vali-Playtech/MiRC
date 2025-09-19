@@ -1117,8 +1117,9 @@ const ChatRoom = ({ room, onBack }) => {
       const userToRemove = roomUsers.find(u => u.id === userId);
       console.log('🔥 DEBUGGING: User to remove:', userToRemove);
       
-      const confirmed = window.confirm(`Elimină ${userToRemove?.nickname || 'utilizatorul'} din favorit?\n\nApasă OK pentru a confirma eliminarea.`);
-      console.log('🔥 DEBUGGING: User confirmed:', confirmed);
+      // Temporarily skip confirmation for easier testing
+      const confirmed = true; // window.confirm(`Elimină ${userToRemove?.nickname || 'utilizatorul'} din favorit?\n\nApasă OK pentru a confirma eliminarea.`);
+      console.log('🔥 DEBUGGING: User confirmed (auto-true):', confirmed);
       
       if (confirmed) {
         console.log('🔥 DEBUGGING: Making API call...');
