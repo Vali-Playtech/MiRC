@@ -1110,29 +1110,47 @@ const ChatRoom = ({ room, onBack }) => {
 
   // Remove from favorites
   const removeFromFavorites = async (userId) => {
+    console.log('🔥 DEBUGGING: removeFromFavorites called with userId:', userId);
+    console.log('🔥 DEBUGGING: Current roomUsers:', roomUsers);
+    
     try {
       const userToRemove = roomUsers.find(u => u.id === userId);
+      console.log('🔥 DEBUGGING: User to remove:', userToRemove);
+      
       const confirmed = window.confirm(`Elimină ${userToRemove?.nickname || 'utilizatorul'} din favorit?\n\nApasă OK pentru a confirma eliminarea.`);
+      console.log('🔥 DEBUGGING: User confirmed:', confirmed);
       
       if (confirmed) {
+        console.log('🔥 DEBUGGING: Making API call...');
+        
         // Call backend to remove friendship
-        await api.delete(`${API}/friends/${userId}`, {
+        const response = await api.delete(`${API}/friends/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
+        console.log('🔥 DEBUGGING: API response:', response);
+        
         // Remove from local state immediately
-        setRoomUsers(prev => prev.filter(user => user.id !== userId));
+        setRoomUsers(prev => {
+          const newUsers = prev.filter(user => user.id !== userId);
+          console.log('🔥 DEBUGGING: New roomUsers after filter:', newUsers);
+          return newUsers;
+        });
         
         // Show success message
         alert(`${userToRemove?.nickname || 'Utilizatorul'} a fost eliminat din favorite!`);
+        console.log('🔥 DEBUGGING: User removal completed successfully');
+      } else {
+        console.log('🔥 DEBUGGING: User cancelled the removal');
       }
     } catch (error) {
-      console.error('Failed to remove from favorites:', error);
+      console.error('🔥 DEBUGGING: Error in removeFromFavorites:', error);
       
       // If backend call fails, try to remove locally anyway
       const removeLocally = window.confirm('Nu s-a putut elimina din backend. Vrei să elimini doar local?');
       if (removeLocally) {
         setRoomUsers(prev => prev.filter(user => user.id !== userId));
+        console.log('🔥 DEBUGGING: Removed locally after backend error');
       }
     }
   };
