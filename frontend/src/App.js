@@ -1654,9 +1654,9 @@ const ChatRoom = ({ room, onBack }) => {
         )}
       </div>
 
-      {/* Message Input */}
-      <form onSubmit={sendMessage} className="p-6 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-xl border-t border-white/10">
-        <div className="flex space-x-4">
+      {/* Message Input - Responsive */}
+      <form onSubmit={sendMessage} className="p-3 sm:p-6 bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-xl border-t border-white/10">
+        <div className="flex space-x-2 sm:space-x-4">
           <div className="flex-1 relative">
             <input
               type="text"
