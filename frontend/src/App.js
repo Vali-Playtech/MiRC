@@ -1287,6 +1287,25 @@ const ChatRoom = ({ room, onBack }) => {
     checkFriendStatus(chatUser.id);
   };
 
+  // Toggle permanent buttons for a message
+  const togglePermanentButtons = (messageId) => {
+    setPermanentButtons(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(messageId)) {
+        newSet.delete(messageId); // Hide buttons if already showing
+      } else {
+        newSet.clear(); // Clear all other permanent buttons
+        newSet.add(messageId); // Show buttons for this message only
+      }
+      return newSet;
+    });
+  };
+
+  // Handle avatar click to toggle permanent buttons
+  const handleAvatarClick = (messageId) => {
+    togglePermanentButtons(messageId);
+  };
+
   // Navigate to first unread message from a friend
   const navigateToFirstUnreadMessage = (friendUser) => {
     if (friendUser.first_unread_message_id) {
