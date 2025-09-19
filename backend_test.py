@@ -1305,6 +1305,9 @@ class BackendTester:
         # Test 11: Integration Testing (Phase 5)
         test_results['integration_private_chat'] = self.test_integration_private_chat_system()
         
+        # Test 12: Unfavorite/Friend Removal Functionality (NEW FEATURE)
+        test_results['unfavorite_friend_removal'] = self.test_unfavorite_friend_removal()
+        
         # Summary
         print("\n" + "=" * 80)
         print("📊 COMPREHENSIVE TEST SUMMARY - PRIVATE CHAT & FRIENDS SYSTEM")
@@ -1312,7 +1315,7 @@ class BackendTester:
         
         # Separate core tests from new private chat tests
         core_tests = ['auth', 'user_mgmt', 'room_mgmt', 'websocket', 'http_messaging', 'message_persist']
-        private_chat_tests = ['room_users_discovery', 'private_messaging', 'friends_system', 'private_conversations', 'integration_private_chat']
+        private_chat_tests = ['room_users_discovery', 'private_messaging', 'friends_system', 'private_conversations', 'integration_private_chat', 'unfavorite_friend_removal']
         
         print("CORE SYSTEM TESTS:")
         core_passed = 0
