@@ -1531,7 +1531,7 @@ const ChatRoom = ({ room, onBack }) => {
                 <div className="relative group">
                   <button
                     onClick={(e) => handleAvatarClick(e, message)}
-                    className="w-8 h-8 rounded-full overflow-hidden border border-purple-500/30 flex-shrink-0 mb-1 relative hover:border-purple-400 transition-all duration-200 cursor-pointer hover:scale-110"
+                    className="w-10 h-10 md:w-8 md:h-8 rounded-full overflow-hidden border-2 border-purple-500/50 hover:border-purple-400 hover:border-3 flex-shrink-0 mb-1 relative cursor-pointer hover:scale-110 transform transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30"
                   >
                     {message.user_avatar ? (
                       message.user_avatar.startsWith('data:') ? (
@@ -1556,13 +1556,21 @@ const ChatRoom = ({ room, onBack }) => {
                       </div>
                     )}
                     
-                    {/* Plus indicator */}
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border-2 border-gray-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                    {/* Interactive indicator - always visible but subtle */}
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                       </svg>
                     </div>
+                    
+                    {/* Pulse animation to draw attention */}
+                    <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-30 group-hover:opacity-0"></div>
                   </button>
+                  
+                  {/* Tooltip */}
+                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800/90 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                    Click pentru acțiuni
+                  </div>
                 </div>
               )}
               
