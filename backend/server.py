@@ -413,11 +413,13 @@ async def send_friend_request(request_data: FriendRequest, current_user: User = 
     
     # Create friendship (auto-accept for now, can add approval later)
     friendship_id = str(uuid.uuid4())
+    # Handle both 'nickname' and 'name' fields for backward compatibility
+    friend_nickname = friend_user.get("nickname") or friend_user.get("name", "Unknown")
     friendship_doc = {
         "id": friendship_id,
         "user_id": current_user.id,
         "friend_user_id": request_data.friend_user_id,
-        "friend_nickname": friend_user.get("nickname", "Unknown"),
+        "friend_nickname": friend_nickname,
         "friend_first_name": friend_user.get("first_name", ""),
         "friend_last_name": friend_user.get("last_name", ""),
         "friend_avatar_url": friend_user.get("avatar_url"),
