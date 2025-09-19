@@ -1471,6 +1471,12 @@ const ChatRoom = ({ room, onBack }) => {
         // Clear input immediately for WebSocket (real-time)
         console.log('🔥 DEBUG: Clearing input after WebSocket send');
         setNewMessage('');
+        console.log('🔥 DEBUG: setNewMessage(\'\') called after WebSocket, should be empty now');
+        
+        // Double-check by using callback version to ensure state is set
+        setTimeout(() => {
+          console.log('🔥 DEBUG: Timeout check WS - current newMessage state:', newMessage);
+        }, 100);
         // Force scroll to bottom when user sends message
         setTimeout(() => {
           scrollToBottom(true);
