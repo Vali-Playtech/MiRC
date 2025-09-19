@@ -248,6 +248,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "NEW PRIVATE CHAT FEATURE VERIFIED: Friends/Favorites system working perfectly! 1) POST /api/friends/request successfully adds users to favorites (auto-accept). 2) GET /api/friends returns friends list with complete user info. 3) Friendship is bidirectional - both users see each other as friends. 4) Duplicate friend prevention works correctly. 5) Friend info includes nickname, first_name, last_name, avatar_url, and timestamps. 6) Integration with room users endpoint shows correct is_friend status. All friends system tests passed."
+      - working: true
+        agent: "testing"
+        comment: "🎉 CRITICAL BUG FIX VERIFIED: 'Unknown' User Display Issue RESOLVED! Comprehensive testing confirms: ✅ GET /api/friends returns correct user names instead of 'Unknown' - tested with multiple users showing actual nicknames like 'bob_1758282282', 'alice_1758282281' ✅ POST /api/friends/request creates new friendships with correct user names - verified friend_nickname field populated with actual names ✅ Backward compatibility working perfectly - users with 'name' field (like 'Costinel Stanila') instead of 'nickname' field are handled correctly ✅ Backend debug logs show 'Updated friend with nickname: [actual name]' instead of 'Unknown' ✅ Fix handles both friend_user.get('nickname') and friend_user.get('name', 'Unknown') scenarios ✅ Bidirectional friendships maintain correct names on both sides. The 'Prieteni activi' panel will now display actual user names instead of 'Unknown'. Bug fix is production-ready!"
 
   - task: "Private Conversations Management"
     implemented: true
