@@ -2187,8 +2187,8 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-5 flex items-center justify-between border-b border-white/10 shadow-lg">
-        <div className="flex items-center space-x-4">
-          {/* Logo retro VONEX cu glitch și font gros */}
+        <div className="flex items-center">
+          {/* Logo retro VONEX cu glitch și font gros - doar logo-ul */}
           <div className="w-auto h-12 flex items-center">
             <img 
               src="/vonex-glitch-compact.svg" 
@@ -2198,21 +2198,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                 filter: 'drop-shadow(0 0 12px rgba(255, 51, 51, 0.4)) drop-shadow(0 0 20px rgba(51, 136, 255, 0.3)) drop-shadow(0 0 8px rgba(136, 255, 51, 0.2))'
               }}
             />
-          </div>
-          <div>
-            <h1 className="text-white text-xl font-bold" style={{
-              background: 'linear-gradient(90deg, #ff3333 0%, #ff6633 20%, #ffaa33 40%, #88ff33 60%, #33ff88 80%, #3388ff 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              textShadow: '0 0 15px rgba(255, 255, 255, 0.15)',
-              fontFamily: 'monospace',
-              letterSpacing: '0.1em',
-              fontWeight: '900'
-            }}>
-              {t('appName')}
-            </h1>
-            <p className="text-gray-400 text-sm">{t('welcome')}, <span className="text-purple-400 font-medium">{user?.nickname}</span></p>
           </div>
         </div>
         
