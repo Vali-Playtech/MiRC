@@ -1013,7 +1013,7 @@ class BackendTester:
                                     if user.get('is_friend'):
                                         return self.log_test("Room User Friend Status (Charlie)", False, 
                                                            "Charlie should not be marked as friend in room users")
-                            
+            
                             if bob_in_room and charlie_in_room:
                                 self.log_test("Room Users Friend Status Integration", True, 
                                              "Friend status correctly shown in room users")
@@ -1023,6 +1023,241 @@ class BackendTester:
             
         except Exception as e:
             return self.log_test("Private Chat System Integration", False, f"Exception: {str(e)}")
+    
+    def test_unfavorite_friend_removal(self):
+        """Test 12: Unfavorite/Friend Removal Functionality (NEW FEATURE)"""
+        print("\n=== Testing Unfavorite/Friend Removal Functionality ===")
+        
+        try:
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Get user profiles
+            alice_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_alice).json()
+            bob_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_bob).json()
+            
+            alice_id = alice_profile['id']
+            bob_id = bob_profile['id']
+            
+            # PHASE 1: Setup Friends (Create test users and establish friendship)
+            print("Phase 1: Setting up friendship...")
+            
+            # Create a new user for clean testing
+            import time
+            timestamp = str(int(time.time()))
+            david_user = {
+                "email": f"david.test.{timestamp}@example.com",
+                "password": "DavidPass123!",
+                "first_name": "David",
+                "last_name": "Wilson",
+                "nickname": f"david_{timestamp}"
+            }
+            
+            response = self.session.post(f"{API_BASE}/auth/register", json=david_user)
+            if not self.log_test("Setup: David User Registration", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            token_data = response.json()
+            self.auth_tokens['david'] = token_data['access_token']
+            headers_david = {"Authorization": f"Bearer {self.auth_tokens['david']}"}
+            
+            david_profile = self.session.get(f"{API_BASE}/auth/me", headers=headers_david).json()
+            david_id = david_profile['id']
+            
+            # Alice adds David as friend
+            friend_request_data = {
+                "friend_user_id": david_id
+            }
+            
+            response = self.session.post(f"{API_BASE}/friends/request", 
+                                       json=friend_request_data, headers=headers_alice)
+            if not self.log_test("Setup: Add David as Friend", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Verify friendship exists (Alice's side)
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_alice)
+            if not self.log_test("Setup: Verify Alice's Friends List", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_friends = response.json()
+            david_found_in_alice_friends = False
+            for friend in alice_friends:
+                if friend['friend_user_id'] == david_id:
+                    david_found_in_alice_friends = True
+                    break
+            
+            if not david_found_in_alice_friends:
+                return self.log_test("Setup: David in Alice's Friends", False, "David not found in Alice's friends list")
+            
+            # Verify friendship exists (David's side)
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_david)
+            if not self.log_test("Setup: Verify David's Friends List", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            david_friends = response.json()
+            alice_found_in_david_friends = False
+            for friend in david_friends:
+                if friend['friend_user_id'] == alice_id:
+                    alice_found_in_david_friends = True
+                    break
+            
+            if not alice_found_in_david_friends:
+                return self.log_test("Setup: Alice in David's Friends", False, "Alice not found in David's friends list")
+            
+            self.log_test("Phase 1: Friendship Setup", True, "Bidirectional friendship established successfully")
+            
+            # PHASE 2: Test Friend Removal
+            print("Phase 2: Testing friend removal...")
+            
+            # Test 1: Remove friend using DELETE endpoint
+            response = self.session.delete(f"{API_BASE}/friends/{david_id}", headers=headers_alice)
+            if not self.log_test("DELETE Friend Endpoint", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:200]}"):
+                return False
+            
+            removal_response = response.json()
+            if 'message' not in removal_response:
+                return self.log_test("Friend Removal Response", False, "No message in removal response")
+            
+            # Test 2: Verify friend is removed from Alice's side
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_alice)
+            if not self.log_test("Alice Friends After Removal", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_friends_after = response.json()
+            david_still_in_alice_friends = False
+            for friend in alice_friends_after:
+                if friend['friend_user_id'] == david_id:
+                    david_still_in_alice_friends = True
+                    break
+            
+            if david_still_in_alice_friends:
+                return self.log_test("Alice Side Removal", False, "David still found in Alice's friends list after removal")
+            
+            # Test 3: Verify friend is removed from David's side (bidirectional removal)
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_david)
+            if not self.log_test("David Friends After Removal", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            david_friends_after = response.json()
+            alice_still_in_david_friends = False
+            for friend in david_friends_after:
+                if friend['friend_user_id'] == alice_id:
+                    alice_still_in_david_friends = True
+                    break
+            
+            if alice_still_in_david_friends:
+                return self.log_test("David Side Removal", False, "Alice still found in David's friends list after removal")
+            
+            self.log_test("Bidirectional Friend Removal", True, "Friend removed from both sides successfully")
+            
+            # Test 4: Test error handling for non-existent friendship
+            response = self.session.delete(f"{API_BASE}/friends/{david_id}", headers=headers_alice)
+            if not self.log_test("Non-existent Friendship Removal", response.status_code == 404,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 5: Test removing non-existent user
+            fake_user_id = "non-existent-user-id-12345"
+            response = self.session.delete(f"{API_BASE}/friends/{fake_user_id}", headers=headers_alice)
+            if not self.log_test("Non-existent User Removal", response.status_code == 404,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # PHASE 3: Verify Data Consistency
+            print("Phase 3: Verifying data consistency...")
+            
+            # Test 6: Verify other friendships remain intact
+            # Check if Alice-Bob friendship still exists (from earlier tests)
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_alice)
+            if response.status_code == 200:
+                alice_remaining_friends = response.json()
+                bob_still_friend = False
+                for friend in alice_remaining_friends:
+                    if friend['friend_user_id'] == bob_id:
+                        bob_still_friend = True
+                        break
+                
+                if bob_still_friend:
+                    self.log_test("Other Friendships Intact", True, "Alice-Bob friendship remains after David removal")
+                else:
+                    self.log_test("Other Friendships Intact", False, "Alice-Bob friendship was affected by David removal")
+            
+            # Test 7: Verify room users endpoint reflects friendship removal
+            if self.test_rooms:
+                room_id = self.test_rooms[0]['id']
+                
+                # Have David join room and send message
+                response = self.session.post(f"{API_BASE}/rooms/{room_id}/join", headers=headers_david)
+                if response.status_code == 200:
+                    david_room_msg = {"content": "David's message after friendship removal"}
+                    response = self.session.post(f"{API_BASE}/rooms/{room_id}/messages", 
+                                               json=david_room_msg, headers=headers_david)
+                    
+                    if response.status_code == 200:
+                        # Check room users from Alice's perspective
+                        response = self.session.get(f"{API_BASE}/rooms/{room_id}/users", headers=headers_alice)
+                        if response.status_code == 200:
+                            room_users = response.json()
+                            
+                            for user in room_users:
+                                if user['id'] == david_id:
+                                    if user.get('is_friend'):
+                                        return self.log_test("Room Users Friend Status Update", False, 
+                                                           "David still marked as friend in room users after removal")
+                                    else:
+                                        self.log_test("Room Users Friend Status Update", True, 
+                                                     "David correctly not marked as friend in room users")
+                                    break
+            
+            # Test 8: Verify private conversations still exist but is_friend is updated
+            response = self.session.get(f"{API_BASE}/private-conversations", headers=headers_alice)
+            if response.status_code == 200:
+                alice_conversations = response.json()
+                
+                for conv in alice_conversations:
+                    if conv['user_id'] == david_id:
+                        if conv.get('is_friend'):
+                            return self.log_test("Conversation Friend Status Update", False, 
+                                               "David still marked as friend in conversations after removal")
+                        else:
+                            self.log_test("Conversation Friend Status Update", True, 
+                                         "David correctly not marked as friend in conversations")
+                        break
+            
+            # Test 9: Test re-adding friend after removal
+            response = self.session.post(f"{API_BASE}/friends/request", 
+                                       json=friend_request_data, headers=headers_alice)
+            if not self.log_test("Re-add Friend After Removal", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Verify re-added friendship
+            response = self.session.get(f"{API_BASE}/friends", headers=headers_alice)
+            if response.status_code == 200:
+                alice_friends_readded = response.json()
+                david_readded = False
+                for friend in alice_friends_readded:
+                    if friend['friend_user_id'] == david_id:
+                        david_readded = True
+                        break
+                
+                if not david_readded:
+                    return self.log_test("Re-added Friend Verification", False, "David not found after re-adding")
+                else:
+                    self.log_test("Re-added Friend Verification", True, "Friend successfully re-added")
+            
+            self.log_test("Unfavorite/Friend Removal Functionality", True, "All friend removal tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Unfavorite/Friend Removal Functionality", False, f"Exception: {str(e)}")
     
     async def run_all_tests(self):
         """Run all backend tests including NEW Private Chat and Friends System"""
