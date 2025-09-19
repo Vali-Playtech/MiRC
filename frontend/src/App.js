@@ -1526,66 +1526,66 @@ const ChatRoom = ({ room, onBack }) => {
             id={`message-${message.id}`}
             className={`flex ${message.user_id === user?.id ? 'justify-end' : 'justify-start'} w-full relative`}
           >
-            <div className="flex items-end space-x-2 sm:space-x-3 max-w-xs sm:max-w-sm lg:max-w-md relative">
+            <div className="flex flex-col space-y-1 max-w-xs sm:max-w-sm lg:max-w-md relative">
+              {/* Avatar and Name Row - WhatsApp Style */}
               {message.user_id !== user?.id && (
-                <div className="relative group">
-                  <button
-                    onClick={(e) => handleAvatarClick(e, message)}
-                    className="w-10 h-10 md:w-8 md:h-8 rounded-full overflow-hidden border-2 border-purple-500/50 hover:border-purple-400 hover:border-3 flex-shrink-0 mb-1 relative cursor-pointer hover:scale-110 transform transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30"
-                  >
-                    {message.user_avatar ? (
-                      message.user_avatar.startsWith('data:') ? (
-                        <img 
-                          src={message.user_avatar} 
-                          alt="Avatar" 
-                          className="w-full h-full object-cover" 
-                        />
+                <div className="flex items-center space-x-2 mb-1">
+                  <div className="relative group">
+                    <button
+                      onClick={(e) => handleAvatarClick(e, message)}
+                      className="w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500/50 hover:border-purple-400 flex-shrink-0 cursor-pointer hover:scale-110 transform transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30"
+                    >
+                      {message.user_avatar ? (
+                        message.user_avatar.startsWith('data:') ? (
+                          <img 
+                            src={message.user_avatar} 
+                            alt="Avatar" 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          <div 
+                            className="w-full h-full"
+                            dangerouslySetInnerHTML={{ 
+                              __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
+                            }}
+                          />
+                        )
                       ) : (
-                        <div 
-                          className="w-full h-full"
-                          dangerouslySetInnerHTML={{ 
-                            __html: defaultAvatars.find(a => a.id === message.user_avatar)?.svg || '' 
-                          }}
-                        />
-                      )
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                        <span className="text-white text-xs font-semibold">
-                          {message.user_name?.charAt(0)?.toUpperCase()}
-                        </span>
+                        <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                          <span className="text-white text-xs font-semibold">
+                            {message.user_name?.charAt(0)?.toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Interactive indicator - smaller and more subtle */}
+                      <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border border-white shadow-sm flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all duration-200">
+                        <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                        </svg>
                       </div>
-                    )}
+                    </button>
                     
-                    {/* Interactive indicator - always visible but subtle */}
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200">
-                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                      </svg>
+                    {/* Tooltip */}
+                    <div className="absolute left-10 top-0 bg-gray-800/95 text-white px-2 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-20 pointer-events-none shadow-lg border border-white/20">
+                      Click pentru acțiuni
                     </div>
-                    
-                    {/* Pulse animation to draw attention - contained */}
-                    <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-20 group-hover:opacity-0 pointer-events-none"></div>
-                  </button>
+                  </div>
                   
-                  {/* Tooltip - Fixed positioning */}
-                  <div className="absolute left-12 top-0 bg-gray-800/95 text-white px-2 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-20 pointer-events-none shadow-lg border border-white/20">
-                    Click pentru acțiuni
+                  <div className="text-xs font-semibold text-purple-300 opacity-90">
+                    {message.user_name}
                   </div>
                 </div>
               )}
               
+              {/* Message Bubble */}
               <div
                 className={`px-4 py-3 rounded-2xl shadow-lg backdrop-blur-sm border ${
                   message.user_id === user?.id
-                    ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white border-purple-500/30'
+                    ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white border-purple-500/30 ml-auto'
                     : 'bg-white/10 text-gray-100 border-white/20'
-                } ${message.user_id === user?.id ? 'rounded-br-md' : 'rounded-bl-md'}`}
+                } ${message.user_id === user?.id ? 'rounded-br-md' : 'rounded-tl-md'}`}
               >
-                {message.user_id !== user?.id && (
-                  <div className="text-xs font-semibold mb-1 opacity-75">
-                    {message.user_name}
-                  </div>
-                )}
                 <div className="break-words leading-relaxed">{message.content}</div>
                 <div className={`text-xs mt-2 opacity-70 ${
                   message.user_id === user?.id ? 'text-purple-100' : 'text-gray-400'
@@ -1594,30 +1594,33 @@ const ChatRoom = ({ room, onBack }) => {
                 </div>
               </div>
               
+              {/* Own Avatar - positioned at top right for own messages */}
               {message.user_id === user?.id && (
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-green-500/30 flex-shrink-0 mb-1">
-                  {user?.avatar_url ? (
-                    user.avatar_url.startsWith('data:') ? (
-                      <img 
-                        src={user.avatar_url} 
-                        alt="Avatar" 
-                        className="w-full h-full object-cover" 
-                      />
+                <div className="flex justify-end mb-1">
+                  <div className="w-8 h-8 rounded-full overflow-hidden border border-green-500/30 flex-shrink-0">
+                    {user?.avatar_url ? (
+                      user.avatar_url.startsWith('data:') ? (
+                        <img 
+                          src={user.avatar_url} 
+                          alt="Avatar" 
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <div 
+                          className="w-full h-full"
+                          dangerouslySetInnerHTML={{ 
+                            __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
+                          }}
+                        />
+                      )
                     ) : (
-                      <div 
-                        className="w-full h-full"
-                        dangerouslySetInnerHTML={{ 
-                          __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
-                        }}
-                      />
-                    )
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold">
-                        {user?.nickname?.charAt(0)?.toUpperCase()}
-                      </span>
-                    </div>
-                  )}
+                      <div className="w-full h-full bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">
+                          {user?.nickname?.charAt(0)?.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
