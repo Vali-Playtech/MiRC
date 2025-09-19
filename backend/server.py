@@ -462,7 +462,9 @@ async def get_friends(current_user: User = Depends(get_current_user)):
         
         if friend_user:
             # Update friend data with fresh user info
-            friend["friend_nickname"] = friend_user.get("nickname", "Unknown")
+            # Handle both 'nickname' and 'name' fields for backward compatibility
+            nickname = friend_user.get("nickname") or friend_user.get("name", "Unknown")
+            friend["friend_nickname"] = nickname
             friend["friend_avatar_url"] = friend_user.get("avatar_url", None)
             print(f"🔥 DEBUG: Updated friend with nickname: {friend['friend_nickname']}")
         else:
