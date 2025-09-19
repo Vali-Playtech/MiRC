@@ -1030,6 +1030,7 @@ const ChatRoom = ({ room, onBack }) => {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [userScrolled, setUserScrolled] = useState(false);
+  const [permanentButtons, setPermanentButtons] = useState(new Set()); // Track which messages have permanent buttons
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const pollingInterval = useRef(null);
