@@ -1111,16 +1111,24 @@ const ChatRoom = ({ room, onBack }) => {
   // Remove from favorites
   const removeFromFavorites = async (userId) => {
     try {
-      // For now show confirmation
       if (window.confirm('Sigur vrei să elimini acest utilizator din favorit?')) {
-        // Implement unfriend endpoint call here when backend is ready
-        alert('Funcționalitatea de eliminare din favorite va fi implementată în backend.');
-        // Remove from local state for now
+        // Call backend to remove friendship
+        await api.delete(`${API}/friends/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // Remove from local state immediately
         setRoomUsers(prev => prev.filter(user => user.id !== userId));
+        
+        // Show success message
+        alert('Utilizator eliminat din favorite!');
       }
     } catch (error) {
       console.error('Failed to remove from favorites:', error);
-      alert('Nu s-a putut elimina din favorite.');
+      // If backend call fails, try to remove locally anyway
+      if (window.confirm('Nu s-a putut elimina din backend. Vrei să elimini doar local?')) {
+        setRoomUsers(prev => prev.filter(user => user.id !== userId));
+      }
     }
   };
 
