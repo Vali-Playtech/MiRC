@@ -1625,15 +1625,15 @@ const ChatRoom = ({ room, onBack }) => {
         ))}
         <div ref={messagesEndRef} />
         
-        {/* Scroll to Bottom Button - Subtle like Messenger */}
+        {/* Scroll to Bottom Button - Subtle like Messenger, positioned above input */}
         {showScrollToBottom && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+          <div className="absolute bottom-20 sm:bottom-24 left-1/2 transform -translate-x-1/2 z-10">
             <button
               onClick={() => scrollToBottom(true)}
-              className="bg-gray-700/40 backdrop-blur-sm hover:bg-gray-600/50 text-white/70 hover:text-white/90 p-2 rounded-full shadow-sm border border-white/10 transition-all duration-300 opacity-60 hover:opacity-100"
+              className="bg-gray-700/60 backdrop-blur-md hover:bg-gray-600/70 text-white/80 hover:text-white p-2.5 rounded-full shadow-lg border border-white/20 transition-all duration-300 opacity-70 hover:opacity-100 hover:scale-105"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7" />
               </svg>
             </button>
           </div>
