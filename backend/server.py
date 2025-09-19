@@ -453,6 +453,13 @@ async def get_friends(current_user: User = Depends(get_current_user)):
     
     friend_list = []
     for friend in friends:
+        # Get fresh user data for each friend
+        friend_user = await db.users.find_one({"id": friend["friend_user_id"]})
+        if friend_user:
+            # Update friend data with fresh user info
+            friend["friend_nickname"] = friend_user.get("nickname", "Unknown")
+            friend["friend_avatar_url"] = friend_user.get("avatar_url", None)
+        
         friend_list.append(Friend(**friend))
     
     return friend_list
