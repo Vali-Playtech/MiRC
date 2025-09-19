@@ -449,19 +449,28 @@ async def send_friend_request(request_data: FriendRequest, current_user: User = 
 
 @api_router.get("/friends", response_model=List[Friend])
 async def get_friends(current_user: User = Depends(get_current_user)):
+    print(f"🔥 DEBUG: Getting friends for user {current_user.id}")
     friends = await db.friends.find({"user_id": current_user.id}).sort("last_message_time", -1).to_list(50)
+    print(f"🔥 DEBUG: Found {len(friends)} friends in database")
     
     friend_list = []
     for friend in friends:
+        print(f"🔥 DEBUG: Processing friend: {friend}")
         # Get fresh user data for each friend
         friend_user = await db.users.find_one({"id": friend["friend_user_id"]})
+        print(f"🔥 DEBUG: Friend user data: {friend_user}")
+        
         if friend_user:
             # Update friend data with fresh user info
             friend["friend_nickname"] = friend_user.get("nickname", "Unknown")
             friend["friend_avatar_url"] = friend_user.get("avatar_url", None)
+            print(f"🔥 DEBUG: Updated friend with nickname: {friend['friend_nickname']}")
+        else:
+            print(f"🔥 DEBUG: Friend user not found for ID: {friend['friend_user_id']}")
         
         friend_list.append(Friend(**friend))
     
+    print(f"🔥 DEBUG: Returning {len(friend_list)} friends")
     return friend_list
 
 @api_router.delete("/friends/{friend_user_id}")
