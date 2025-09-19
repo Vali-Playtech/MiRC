@@ -1514,11 +1514,11 @@ const ChatRoom = ({ room, onBack }) => {
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Messages - Responsive */}
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-6 space-y-4 relative"
+        className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 sm:space-y-4 relative"
       >
         {messages.map((message) => (
           <div
