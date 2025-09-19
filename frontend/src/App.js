@@ -1084,45 +1084,42 @@ const ChatRoom = ({ room, onBack }) => {
     }
   };
 
-  // Fetch room friends function (only show friends, not all users)
-  const fetchRoomFriends = async () => {
+  // Fetch only real friends (not room users)
+  const fetchFavorites = async () => {
     try {
-      // Get friends list
+      // Get friends list only
       const friendsResponse = await api.get(`${API}/friends`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Get recent messages to find friends who are active in this room
-      const messagesResponse = await api.get(`${API}/rooms/${room.id}/messages`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const friends = friendsResponse.data.map(friend => ({
+        id: friend.friend_user_id,
+        nickname: friend.friend_nickname,
+        avatar_url: friend.friend_avatar_url,
+        is_friend: true,
+        unread_count: 0, // Will be updated by separate call if needed
+        first_unread_message_id: null
+      }));
       
-      const friends = friendsResponse.data;
-      const messages = messagesResponse.data;
-      
-      // Filter friends who have messages in this room and count unread messages
-      const roomFriends = friends.filter(friend => {
-        return messages.some(msg => msg.user_id === friend.friend_user_id);
-      }).map(friend => {
-        // Count unread messages from this friend in this room
-        const friendMessages = messages.filter(msg => 
-          msg.user_id === friend.friend_user_id && 
-          new Date(msg.created_at) > getLastSeenTime(friend.friend_user_id)
-        );
-        
-        return {
-          id: friend.friend_user_id,
-          nickname: friend.friend_nickname,
-          avatar_url: friend.friend_avatar_url,
-          is_friend: true,
-          unread_count: friendMessages.length,
-          first_unread_message_id: friendMessages.length > 0 ? friendMessages[0].id : null
-        };
-      });
-      
-      setRoomUsers(roomFriends);
+      setRoomUsers(friends);
     } catch (error) {
-      console.error('Failed to fetch room friends:', error);
+      console.error('Failed to fetch favorites:', error);
+    }
+  };
+
+  // Remove from favorites
+  const removeFromFavorites = async (userId) => {
+    try {
+      // For now show confirmation
+      if (window.confirm('Sigur vrei să elimini acest utilizator din favorit?')) {
+        // Implement unfriend endpoint call here when backend is ready
+        alert('Funcționalitatea de eliminare din favorite va fi implementată în backend.');
+        // Remove from local state for now
+        setRoomUsers(prev => prev.filter(user => user.id !== userId));
+      }
+    } catch (error) {
+      console.error('Failed to remove from favorites:', error);
+      alert('Nu s-a putut elimina din favorite.');
     }
   };
 
