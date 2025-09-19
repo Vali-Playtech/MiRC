@@ -2657,10 +2657,10 @@ const AppContent = () => {
       />
       <FriendsBar onFriendClick={openPrivateChat} />
       
-      {/* Global Private Chat Overlay */}
+      {/* Global Private Chat Overlay - Responsive */}
       {showPrivateChat && privateChatUser && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800/95 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl w-full max-w-2xl h-96 flex flex-col">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-gray-800/95 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl w-full max-w-full sm:max-w-2xl h-full sm:h-96 flex flex-col">
             {/* Private Chat Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center space-x-3">
