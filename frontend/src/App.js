@@ -1016,7 +1016,6 @@ const LoginForm = ({ isLogin, onToggle }) => {
 const ChatRoom = ({ room, onBack }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  console.log('🔥 DEBUG: newMessage state changed to:', newMessage);
   const [ws, setWs] = useState(null);
   const [isPolling, setIsPolling] = useState(true);
   const [roomUsers, setRoomUsers] = useState([]);
