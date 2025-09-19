@@ -1326,7 +1326,7 @@ const ChatRoom = ({ room, onBack }) => {
   useEffect(() => {
     // Initial fetch
     fetchMessages();
-    fetchRoomFriends();
+    fetchFavorites();
     
     // Initialize scroll detection
     checkIfAtBottom();
