@@ -1563,8 +1563,8 @@ const ChatRoom = ({ room, onBack }) => {
                       </svg>
                     </div>
                     
-                    {/* Pulse animation to draw attention */}
-                    <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-30 group-hover:opacity-0"></div>
+                    {/* Pulse animation to draw attention - contained */}
+                    <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-20 group-hover:opacity-0 pointer-events-none"></div>
                   </button>
                   
                   {/* Tooltip - Fixed positioning */}
