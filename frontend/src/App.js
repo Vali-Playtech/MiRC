@@ -1552,7 +1552,10 @@ const ChatRoom = ({ room, onBack }) => {
                 <div className="flex items-center justify-between mb-1 group">
                   <div className="flex items-center space-x-2">
                     <div className="relative">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500/50 hover:border-purple-400 flex-shrink-0 cursor-pointer transition-all duration-200 hover:scale-105">
+                      <button
+                        onClick={() => handleAvatarClick(message.id)}
+                        className="w-8 h-8 rounded-full overflow-hidden border-2 border-purple-500/50 hover:border-purple-400 flex-shrink-0 cursor-pointer transition-all duration-200 hover:scale-105"
+                      >
                         {message.user_avatar ? (
                           message.user_avatar.startsWith('data:') ? (
                             <img 
@@ -1575,17 +1578,25 @@ const ChatRoom = ({ room, onBack }) => {
                             </span>
                           </div>
                         )}
-                      </div>
+                      </button>
                       
                       {/* Interactive Plus Indicator */}
-                      <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200 pointer-events-none">
+                      <div className={`absolute -top-0.5 -right-0.5 w-4 h-4 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full border-2 border-white shadow-lg flex items-center justify-center transition-all duration-200 pointer-events-none ${
+                        permanentButtons.has(message.id) 
+                          ? 'opacity-100 scale-110' 
+                          : 'opacity-60 group-hover:opacity-100 group-hover:scale-110'
+                      }`}>
                         <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d={
+                            permanentButtons.has(message.id) ? "M20 12H4" : "M12 4v16m8-8H4"
+                          } />
                         </svg>
                       </div>
                       
-                      {/* Subtle pulse animation */}
-                      <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-20 group-hover:opacity-0 pointer-events-none"></div>
+                      {/* Subtle pulse animation - only when not permanent */}
+                      {!permanentButtons.has(message.id) && (
+                        <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-20 group-hover:opacity-0 pointer-events-none"></div>
+                      )}
                     </div>
                     
                     <div className="text-xs font-semibold text-purple-300 opacity-90">
@@ -1593,8 +1604,12 @@ const ChatRoom = ({ room, onBack }) => {
                     </div>
                   </div>
                   
-                  {/* Action Buttons - in the name row */}
-                  <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-all duration-200 flex-shrink-0">
+                  {/* Action Buttons - show on hover OR when permanent */}
+                  <div className={`flex space-x-1 transition-all duration-200 flex-shrink-0 ${
+                    permanentButtons.has(message.id) 
+                      ? 'opacity-100' 
+                      : 'opacity-0 group-hover:opacity-100'
+                  }`}>
                     <button
                       onClick={() => openPrivateChatFromAvatar({
                         id: message.user_id,
