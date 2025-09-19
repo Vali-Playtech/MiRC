@@ -1110,24 +1110,46 @@ const ChatRoom = ({ room, onBack }) => {
 
   // Remove from favorites
   const removeFromFavorites = async (userId) => {
+    console.log('removeFromFavorites called with userId:', userId);
+    console.log('Current roomUsers before removal:', roomUsers);
+    
     try {
-      if (window.confirm('Sigur vrei să elimini acest utilizator din favorit?')) {
+      const confirmed = window.confirm('Sigur vrei să elimini acest utilizator din favorit?');
+      console.log('User confirmed removal:', confirmed);
+      
+      if (confirmed) {
+        console.log('Making API call to remove friend...');
+        
         // Call backend to remove friendship
-        await api.delete(`${API}/friends/${userId}`, {
+        const response = await api.delete(`${API}/friends/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
+        console.log('API response:', response);
+        
         // Remove from local state immediately
-        setRoomUsers(prev => prev.filter(user => user.id !== userId));
+        setRoomUsers(prev => {
+          const filtered = prev.filter(user => user.id !== userId);
+          console.log('Filtered roomUsers:', filtered);
+          return filtered;
+        });
         
         // Show success message
         alert('Utilizator eliminat din favorite!');
+        console.log('User removed successfully from favorites');
       }
     } catch (error) {
       console.error('Failed to remove from favorites:', error);
+      console.error('Error details:', error.response?.data || error.message);
+      
       // If backend call fails, try to remove locally anyway
-      if (window.confirm('Nu s-a putut elimina din backend. Vrei să elimini doar local?')) {
-        setRoomUsers(prev => prev.filter(user => user.id !== userId));
+      const removeLocally = window.confirm('Nu s-a putut elimina din backend. Vrei să elimini doar local?');
+      if (removeLocally) {
+        setRoomUsers(prev => {
+          const filtered = prev.filter(user => user.id !== userId);
+          console.log('Locally filtered roomUsers:', filtered);
+          return filtered;
+        });
       }
     }
   };
