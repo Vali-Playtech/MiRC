@@ -1567,8 +1567,8 @@ const ChatRoom = ({ room, onBack }) => {
                     <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-30 group-hover:opacity-0"></div>
                   </button>
                   
-                  {/* Tooltip */}
-                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800/90 text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-10">
+                  {/* Tooltip - Fixed positioning */}
+                  <div className="absolute left-12 top-0 bg-gray-800/95 text-white px-2 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-20 pointer-events-none shadow-lg border border-white/20">
                     Click pentru acțiuni
                   </div>
                 </div>
