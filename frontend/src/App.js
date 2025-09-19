@@ -1748,13 +1748,16 @@ const ChatRoom = ({ room, onBack }) => {
                           </div>
                         )}
                       </div>
-                      <div className="text-left">
-                        <div className="text-white font-medium">{roomUser.nickname}</div>
-                        <div className="text-green-400 text-xs flex items-center">
-                          <span>★ Favorit</span>
+                      <div className="text-left flex-1">
+                        <div className="text-white font-medium text-base">{roomUser.nickname}</div>
+                        <div className="text-green-400 text-sm flex items-center mt-1">
+                          <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                          <span>Favorit</span>
                           {roomUser.unread_count > 0 && (
-                            <span className="ml-2 text-orange-400">
-                              • {roomUser.unread_count} mesaje noi
+                            <span className="ml-2 text-orange-400 font-medium">
+                              • {roomUser.unread_count} {roomUser.unread_count === 1 ? 'mesaj nou' : 'mesaje noi'}
                             </span>
                           )}
                         </div>
