@@ -1460,6 +1460,10 @@ const ChatRoom = ({ room, onBack }) => {
     console.log('🔥 DEBUG: Message content:', messageContent);
     console.log('🔥 DEBUG: WebSocket state:', ws?.readyState);
     
+    // Clear input IMMEDIATELY at the start after getting content
+    console.log('🔥 DEBUG: Clearing input immediately at start');
+    setNewMessage('');
+    
     try {
       if (ws && ws.readyState === WebSocket.OPEN) {
         console.log('🔥 DEBUG: Sending via WebSocket');
@@ -1468,15 +1472,6 @@ const ChatRoom = ({ room, onBack }) => {
           content: messageContent,
           token: token
         }));
-        // Clear input immediately for WebSocket (real-time)
-        console.log('🔥 DEBUG: Clearing input after WebSocket send');
-        setNewMessage('');
-        console.log('🔥 DEBUG: setNewMessage(\'\') called after WebSocket, should be empty now');
-        
-        // Double-check by using callback version to ensure state is set
-        setTimeout(() => {
-          console.log('🔥 DEBUG: Timeout check WS - current newMessage state:', newMessage);
-        }, 100);
         // Force scroll to bottom when user sends message
         setTimeout(() => {
           scrollToBottom(true);
@@ -1491,15 +1486,6 @@ const ChatRoom = ({ room, onBack }) => {
         });
         
         console.log('🔥 DEBUG: HTTP response:', response.status);
-        // Clear input after successful HTTP send (response means success)
-        console.log('🔥 DEBUG: Clearing input after HTTP send');
-        setNewMessage('');
-        console.log('🔥 DEBUG: setNewMessage(\'\') called, should be empty now');
-        
-        // Double-check by using callback version to ensure state is set
-        setTimeout(() => {
-          console.log('🔥 DEBUG: Timeout check - current newMessage state:', newMessage);
-        }, 100);
         // Force scroll to bottom when user sends message
         setTimeout(() => {
           scrollToBottom(true);
@@ -1511,7 +1497,8 @@ const ChatRoom = ({ room, onBack }) => {
       console.error('🔥 DEBUG: Failed to send message:', error);
       // Show error to user
       alert('Nu s-a putut trimite mesajul. Încearcă din nou.');
-      // Don't clear the input on error so user can retry
+      // Restore the message on error so user can retry
+      setNewMessage(messageContent);
     }
   };
 
