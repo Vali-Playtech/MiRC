@@ -1,0 +1,147 @@
+<svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient principal cu culori intense pentru glitch -->
+    <linearGradient id="glitchGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff4444;stop-opacity:1" />
+      <stop offset="15%" style="stop-color:#ff6644;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#ffaa44;stop-opacity:1" />
+      <stop offset="45%" style="stop-color:#ffff44;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#88ff44;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#44ff88;stop-opacity:1" />
+      <stop offset="90%" style="stop-color:#44ffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4488ff;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Gradient pentru efectul de aberrație cromatică -->
+    <linearGradient id="redShift" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff0000;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ff4444;stop-opacity:0.6" />
+    </linearGradient>
+    
+    <linearGradient id="greenShift" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ff00;stop-opacity:0.7" />
+      <stop offset="100%" style="stop-color:#44ff44;stop-opacity:0.5" />
+    </linearGradient>
+    
+    <linearGradient id="blueShift" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0088ff;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#4488ff;stop-opacity:0.4" />
+    </linearGradient>
+    
+    <!-- Filtre pentru efecte de glitch -->
+    <filter id="glitchFilter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="0.5" result="blur"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" result="normal"/>
+      <feOffset dx="1" dy="0" result="red" in="normal"/>
+      <feOffset dx="-1" dy="0" result="blue" in="normal"/>
+      <feBlend mode="screen" in="red" in2="blue"/>
+    </filter>
+  </defs>
+
+  <!-- V - mai gros și cu efect de glitch -->
+  <g transform="translate(20, 25)">
+    <!-- Main V shape - mult mai gros -->
+    <rect x="0" y="0" width="8" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="8" width="8" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="2" y="16" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="4" y="24" width="4" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="6" y="32" width="2" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="7" y="40" width="2" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    
+    <rect x="24" y="0" width="8" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="24" y="8" width="8" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="24" y="16" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="22" y="24" width="4" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="20" y="32" width="2" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="19" y="40" width="2" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    
+    <!-- Glitch layers pentru V -->
+    <rect x="1" y="2" width="6" height="4" fill="url(#redShift)" opacity="0.6"/>
+    <rect x="25" y="18" width="4" height="4" fill="url(#greenShift)" opacity="0.5"/>
+    <rect x="3" y="35" width="8" height="3" fill="url(#blueShift)" opacity="0.4"/>
+  </g>
+
+  <!-- O - mai gros -->
+  <g transform="translate(80, 25)">
+    <rect x="0" y="0" width="24" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="8" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="18" y="8" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="0" y="16" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="18" y="16" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="24" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="18" y="24" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="0" y="32" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="18" y="32" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="40" width="24" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    
+    <!-- Glitch pentru O -->
+    <rect x="2" y="10" width="4" height="4" fill="url(#redShift)" opacity="0.7"/>
+    <rect x="20" y="26" width="3" height="4" fill="url(#greenShift)" opacity="0.6"/>
+  </g>
+
+  <!-- N - mai gros -->
+  <g transform="translate(130, 25)">
+    <rect x="0" y="0" width="6" height="46" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="8" y="8" width="4" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="12" y="16" width="4" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="16" y="24" width="4" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="20" y="32" width="4" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="24" y="0" width="6" height="46" fill="url(#glitchGradient)" opacity="0.9"/>
+    
+    <!-- Glitch pentru N -->
+    <rect x="1" y="12" width="4" height="8" fill="url(#blueShift)" opacity="0.5"/>
+    <rect x="25" y="20" width="4" height="6" fill="url(#redShift)" opacity="0.6"/>
+  </g>
+
+  <!-- E - mai gros -->
+  <g transform="translate(180, 25)">
+    <rect x="0" y="0" width="24" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="8" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="0" y="16" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="20" width="18" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="0" y="28" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="0" y="36" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="0" y="40" width="24" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    
+    <!-- Glitch pentru E -->
+    <rect x="2" y="2" width="8" height="4" fill="url(#greenShift)" opacity="0.6"/>
+    <rect x="1" y="38" width="10" height="4" fill="url(#blueShift)" opacity="0.5"/>
+  </g>
+
+  <!-- X - mai gros -->
+  <g transform="translate(230, 25)">
+    <rect x="0" y="0" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="18" y="0" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="4" y="8" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="14" y="8" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="8" y="16" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="10" y="20" width="4" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="8" y="24" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="4" y="32" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="14" y="32" width="6" height="6" fill="url(#glitchGradient)" opacity="0.9"/>
+    <rect x="0" y="40" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    <rect x="18" y="40" width="6" height="6" fill="url(#glitchGradient)" opacity="0.95"/>
+    
+    <!-- Glitch puternic pentru X -->
+    <rect x="2" y="2" width="4" height="8" fill="url(#redShift)" opacity="0.8"/>
+    <rect x="16" y="34" width="6" height="6" fill="url(#greenShift)" opacity="0.7"/>
+    <rect x="9" y="18" width="8" height="4" fill="url(#blueShift)" opacity="0.6"/>
+  </g>
+
+  <!-- Efecte suplimentare de glitch random -->
+  <g opacity="0.3">
+    <rect x="45" y="30" width="2" height="15" fill="#ff0000"/>
+    <rect x="125" y="45" width="8" height="2" fill="#00ff00"/>
+    <rect x="195" y="35" width="3" height="8" fill="#0088ff"/>
+    <rect x="265" y="55" width="6" height="2" fill="#ffff00"/>
+  </g>
+  
+  <!-- Scanlines subtile -->
+  <defs>
+    <pattern id="scanlines" patternUnits="userSpaceOnUse" width="1" height="3">
+      <rect width="1" height="1" fill="rgba(255,255,255,0.1)"/>
+      <rect y="1" width="1" height="2" fill="rgba(0,0,0,0)"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="400" height="120" fill="url(#scanlines)" opacity="0.2"/>
+</svg>
