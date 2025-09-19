@@ -876,12 +876,27 @@ const LoginForm = ({ isLogin, onToggle }) => {
       
       <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg">
-            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+          {/* Logo retro VONEX pentru login */}
+          <div className="w-auto h-20 mx-auto mb-6 flex items-center justify-center">
+            <img 
+              src="/vonex-retro-logo.svg" 
+              alt="VONEX" 
+              className="h-16 w-auto"
+              style={{
+                filter: 'drop-shadow(0 0 12px rgba(255, 107, 53, 0.4)) drop-shadow(0 0 24px rgba(33, 150, 243, 0.3)) drop-shadow(0 0 36px rgba(255, 255, 255, 0.1))'
+              }}
+            />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl font-bold mb-3" style={{
+            background: 'linear-gradient(90deg, #ff6b35 0%, #f7931e 20%, #ffd23f 40%, #8bc34a 60%, #4caf50 80%, #2196f3 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            textShadow: '0 0 20px rgba(255, 255, 255, 0.2)',
+            fontFamily: 'monospace',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase'
+          }}>
             {isLogin ? t('welcomeBack') : t('joinVonex')}
           </h1>
           <p className="text-gray-300 text-lg">
