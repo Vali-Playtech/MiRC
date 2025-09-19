@@ -1488,6 +1488,12 @@ const ChatRoom = ({ room, onBack }) => {
         // Clear input after successful HTTP send (response means success)
         console.log('🔥 DEBUG: Clearing input after HTTP send');
         setNewMessage('');
+        console.log('🔥 DEBUG: setNewMessage(\'\') called, should be empty now');
+        
+        // Double-check by using callback version to ensure state is set
+        setTimeout(() => {
+          console.log('🔥 DEBUG: Timeout check - current newMessage state:', newMessage);
+        }, 100);
         // Force scroll to bottom when user sends message
         setTimeout(() => {
           scrollToBottom(true);
