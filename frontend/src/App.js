@@ -1114,7 +1114,8 @@ const ChatRoom = ({ room, onBack }) => {
     console.log('Current roomUsers before removal:', roomUsers);
     
     try {
-      const confirmed = window.confirm('Sigur vrei să elimini acest utilizator din favorit?\n\nClick OK pentru a elimina, Cancel pentru a anula.');
+      // Temporary: skip confirmation for testing
+      const confirmed = true;  // window.confirm('Sigur vrei să elimini acest utilizator din favorit?\n\nClick OK pentru a elimina, Cancel pentru a anula.');
       console.log('User confirmed removal:', confirmed);
       
       if (confirmed) {
