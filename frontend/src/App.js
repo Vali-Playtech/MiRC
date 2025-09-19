@@ -1448,24 +1448,34 @@ const ChatRoom = ({ room, onBack }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    console.log('🔥 DEBUG: sendMessage called, newMessage:', newMessage);
+    
+    if (!newMessage.trim()) {
+      console.log('🔥 DEBUG: Empty message, returning');
+      return;
+    }
 
     const messageContent = newMessage.trim();
+    console.log('🔥 DEBUG: Message content:', messageContent);
+    console.log('🔥 DEBUG: WebSocket state:', ws?.readyState);
     
     try {
       if (ws && ws.readyState === WebSocket.OPEN) {
+        console.log('🔥 DEBUG: Sending via WebSocket');
         // Send via WebSocket
         ws.send(JSON.stringify({
           content: messageContent,
           token: token
         }));
         // Clear input immediately for WebSocket (real-time)
+        console.log('🔥 DEBUG: Clearing input after WebSocket send');
         setNewMessage('');
         // Force scroll to bottom when user sends message
         setTimeout(() => {
           scrollToBottom(true);
         }, 100);
       } else {
+        console.log('🔥 DEBUG: Sending via HTTP fallback');
         // Send via HTTP API (fallback)
         const response = await api.post(`${API}/rooms/${room.id}/messages`, {
           content: messageContent
@@ -1473,7 +1483,9 @@ const ChatRoom = ({ room, onBack }) => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
+        console.log('🔥 DEBUG: HTTP response:', response.status);
         // Clear input after successful HTTP send (response means success)
+        console.log('🔥 DEBUG: Clearing input after HTTP send');
         setNewMessage('');
         // Force scroll to bottom when user sends message
         setTimeout(() => {
@@ -1483,7 +1495,7 @@ const ChatRoom = ({ room, onBack }) => {
         setTimeout(fetchMessages, 500);
       }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('🔥 DEBUG: Failed to send message:', error);
       // Show error to user
       alert('Nu s-a putut trimite mesajul. Încearcă din nou.');
       // Don't clear the input on error so user can retry
