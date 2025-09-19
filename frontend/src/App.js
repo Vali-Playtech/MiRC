@@ -2172,13 +2172,27 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-5 flex items-center justify-between border-b border-white/10 shadow-lg">
         <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+          {/* Logo retro VONEX */}
+          <div className="w-auto h-12 flex items-center">
+            <img 
+              src="/vonex-retro-compact.svg" 
+              alt="VONEX" 
+              className="h-8 w-auto"
+              style={{
+                filter: 'drop-shadow(0 0 8px rgba(255, 107, 53, 0.3)) drop-shadow(0 0 16px rgba(33, 150, 243, 0.2))'
+              }}
+            />
           </div>
           <div>
-            <h1 className="text-white text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            <h1 className="text-white text-xl font-bold" style={{
+              background: 'linear-gradient(90deg, #ff6b35 0%, #f7931e 20%, #ffd23f 40%, #8bc34a 60%, #4caf50 80%, #2196f3 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textShadow: '0 0 10px rgba(255, 255, 255, 0.1)',
+              fontFamily: 'monospace',
+              letterSpacing: '0.05em'
+            }}>
               {t('appName')}
             </h1>
             <p className="text-gray-400 text-sm">{t('welcome')}, <span className="text-purple-400 font-medium">{user?.nickname}</span></p>
