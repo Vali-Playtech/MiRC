@@ -1448,24 +1448,15 @@ const ChatRoom = ({ room, onBack }) => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    console.log('🔥 DEBUG: sendMessage called, newMessage:', newMessage);
-    
-    if (!newMessage.trim()) {
-      console.log('🔥 DEBUG: Empty message, returning');
-      return;
-    }
+    if (!newMessage.trim()) return;
 
     const messageContent = newMessage.trim();
-    console.log('🔥 DEBUG: Message content:', messageContent);
-    console.log('🔥 DEBUG: WebSocket state:', ws?.readyState);
     
-    // Clear input IMMEDIATELY at the start after getting content
-    console.log('🔥 DEBUG: Clearing input immediately at start');
+    // Clear input immediately at the start after getting content
     setNewMessage('');
     
     try {
       if (ws && ws.readyState === WebSocket.OPEN) {
-        console.log('🔥 DEBUG: Sending via WebSocket');
         // Send via WebSocket
         ws.send(JSON.stringify({
           content: messageContent,
@@ -1476,7 +1467,6 @@ const ChatRoom = ({ room, onBack }) => {
           scrollToBottom(true);
         }, 100);
       } else {
-        console.log('🔥 DEBUG: Sending via HTTP fallback');
         // Send via HTTP API (fallback)
         const response = await api.post(`${API}/rooms/${room.id}/messages`, {
           content: messageContent
@@ -1484,7 +1474,6 @@ const ChatRoom = ({ room, onBack }) => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        console.log('🔥 DEBUG: HTTP response:', response.status);
         // Force scroll to bottom when user sends message
         setTimeout(() => {
           scrollToBottom(true);
@@ -1493,7 +1482,7 @@ const ChatRoom = ({ room, onBack }) => {
         setTimeout(fetchMessages, 500);
       }
     } catch (error) {
-      console.error('🔥 DEBUG: Failed to send message:', error);
+      console.error('Failed to send message:', error);
       // Show error to user
       alert('Nu s-a putut trimite mesajul. Încearcă din nou.');
       // Restore the message on error so user can retry
