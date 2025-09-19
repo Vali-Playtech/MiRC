@@ -1743,11 +1743,8 @@ const ChatRoom = ({ room, onBack }) => {
             ) : (
               roomUsers.map((roomUser) => (
                 <div key={roomUser.id} className="border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors">
-                  <div className="p-4 flex items-center justify-between">
-                    <button
-                      onClick={() => navigateToFirstUnreadMessage(roomUser)}
-                      className="flex items-center space-x-3 flex-1 hover:bg-white/5 p-2 rounded-lg transition-all duration-200 group"
-                    >
+                  <div className="p-4">
+                    <div className="flex items-center space-x-3 mb-3">
                       <div className="relative">
                         <div className="w-12 h-12 rounded-full overflow-hidden border border-purple-500/30">
                           {roomUser.avatar_url ? (
@@ -1795,21 +1792,35 @@ const ChatRoom = ({ room, onBack }) => {
                           )}
                         </div>
                       </div>
-                    </button>
+                    </div>
                     
-                    {/* Unfavorite Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFromFavorites(roomUser.id);
-                      }}
-                      className="ml-2 p-2 rounded-full hover:bg-red-600/20 text-red-400 hover:text-red-300 transition-all duration-200 group/unfav"
-                      title="Elimină din favorit"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                      </svg>
-                    </button>
+                    {/* Action Buttons Row */}
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => openPrivateChat({
+                          id: roomUser.id,
+                          nickname: roomUser.nickname,
+                          avatar_url: roomUser.avatar_url
+                        })}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center space-x-2"
+                        title="Chat privat"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span>Chat</span>
+                      </button>
+                      <button
+                        onClick={() => removeFromFavorites(roomUser.id)}
+                        className="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center space-x-2"
+                        title="Elimină din favorit"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                        </svg>
+                        <span>Unfavorite</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))
