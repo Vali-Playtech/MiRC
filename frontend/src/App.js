@@ -2187,26 +2187,27 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-5 flex items-center justify-between border-b border-white/10 shadow-lg">
         <div className="flex items-center space-x-4">
-          {/* Logo retro VONEX */}
+          {/* Logo retro VONEX cu glitch și font gros */}
           <div className="w-auto h-12 flex items-center">
             <img 
-              src="/vonex-retro-compact.svg" 
+              src="/vonex-glitch-compact.svg" 
               alt="VONEX" 
-              className="h-8 w-auto"
+              className="h-10 w-auto"
               style={{
-                filter: 'drop-shadow(0 0 8px rgba(255, 107, 53, 0.3)) drop-shadow(0 0 16px rgba(33, 150, 243, 0.2))'
+                filter: 'drop-shadow(0 0 12px rgba(255, 51, 51, 0.4)) drop-shadow(0 0 20px rgba(51, 136, 255, 0.3)) drop-shadow(0 0 8px rgba(136, 255, 51, 0.2))'
               }}
             />
           </div>
           <div>
             <h1 className="text-white text-xl font-bold" style={{
-              background: 'linear-gradient(90deg, #ff6b35 0%, #f7931e 20%, #ffd23f 40%, #8bc34a 60%, #4caf50 80%, #2196f3 100%)',
+              background: 'linear-gradient(90deg, #ff3333 0%, #ff6633 20%, #ffaa33 40%, #88ff33 60%, #33ff88 80%, #3388ff 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              textShadow: '0 0 10px rgba(255, 255, 255, 0.1)',
+              textShadow: '0 0 15px rgba(255, 255, 255, 0.15)',
               fontFamily: 'monospace',
-              letterSpacing: '0.05em'
+              letterSpacing: '0.1em',
+              fontWeight: '900'
             }}>
               {t('appName')}
             </h1>
