@@ -432,11 +432,13 @@ async def send_friend_request(request_data: FriendRequest, current_user: User = 
     
     # Create reverse friendship
     reverse_friendship_id = str(uuid.uuid4())
+    # Handle both 'nickname' and 'name' fields for backward compatibility  
+    current_user_nickname = current_user.nickname or getattr(current_user, 'name', "Unknown")
     reverse_friendship_doc = {
         "id": reverse_friendship_id,
         "user_id": request_data.friend_user_id,
         "friend_user_id": current_user.id,
-        "friend_nickname": current_user.nickname or "Unknown",
+        "friend_nickname": current_user_nickname,
         "friend_first_name": current_user.first_name or "",
         "friend_last_name": current_user.last_name or "",
         "friend_avatar_url": current_user.avatar_url,
