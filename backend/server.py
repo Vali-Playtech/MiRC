@@ -457,6 +457,23 @@ async def get_friends(current_user: User = Depends(get_current_user)):
     
     return friend_list
 
+@api_router.delete("/friends/{friend_user_id}")
+async def remove_friend(friend_user_id: str, current_user: User = Depends(get_current_user)):
+    # Remove friendship from both sides
+    result1 = await db.friends.delete_one({
+        "user_id": current_user.id, 
+        "friend_user_id": friend_user_id
+    })
+    result2 = await db.friends.delete_one({
+        "user_id": friend_user_id, 
+        "friend_user_id": current_user.id
+    })
+    
+    if result1.deleted_count > 0 or result2.deleted_count > 0:
+        return {"message": "Friend removed successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Friendship not found")
+
 @api_router.post("/private-messages", response_model=PrivateMessage)
 async def send_private_message(message_data: PrivateMessageCreate, current_user: User = Depends(get_current_user)):
     # Check if recipient exists
