@@ -1684,9 +1684,9 @@ const ChatRoom = ({ room, onBack }) => {
         </div>
       </form>
 
-      {/* Friends List Panel */}
+      {/* Friends List Panel - Responsive */}
       {showUserList && (
-        <div className="absolute top-16 right-6 w-96 bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl z-50 max-h-[500px] overflow-hidden">
+        <div className="absolute top-16 right-2 sm:right-6 w-full max-w-sm sm:max-w-md md:w-96 bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl z-50 max-h-[70vh] sm:max-h-[500px] overflow-hidden mx-2 sm:mx-0">
           <div className="p-4 border-b border-white/10 bg-gradient-to-r from-purple-600/20 to-blue-600/20">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
