@@ -492,8 +492,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "World Chat Posting System"
-    - "World Chat Link Preview System"
+    - "Avatar Letters Replacement System"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
