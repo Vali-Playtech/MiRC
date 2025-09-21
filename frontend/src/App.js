@@ -3521,22 +3521,12 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                                   ? 'border-green-500' 
                                   : 'border-gray-500'
                               } ${user.isMuted ? 'opacity-60' : ''}`}>
-                                {user.avatar ? (
-                                  <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className={`w-full h-full flex items-center justify-center ${
-                                    user.isOnline 
-                                      ? 'bg-green-100' 
-                                      : 'bg-gray-100'
-                                  }`}>
-                                    {/* Only status dot, NO LETTERS/TEXT */}
-                                    <div className={`w-2 h-2 rounded-full ${
-                                      user.isOnline 
-                                        ? 'bg-green-500' 
-                                        : 'bg-gray-500'
-                                    } opacity-60`}></div>
-                                  </div>
-                                )}
+                                <img 
+                                  src={user.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'} 
+                                  alt="" 
+                                  className="w-full h-full object-cover"
+                                  style={{ display: 'block' }}
+                                />
                               </div>
 
                               {/* Online Status Dot */}
