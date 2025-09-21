@@ -2391,7 +2391,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         {activeTab === 'recent' && (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
-              <span className="text-6xl mb-4 block">🕒</span>
               <h3 className="text-xl font-semibold text-white mb-2">Camere Recente</h3>
               <p className="text-gray-400">În curând...</p>
             </div>
