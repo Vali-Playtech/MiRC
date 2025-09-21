@@ -2282,7 +2282,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   };
 
   const createPost = async () => {
-    if (!newPost.trim() && uploadedImages.length === 0 && !newPostLink.trim()) {
+    if (!newPost.trim() && uploadedImages.length === 0) {
       return;
     }
 
@@ -2312,11 +2312,13 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         setUploadedImages([]);
         setCharacterCount(0);
       } else {
-        alert('Eroare la crearea postării');
+        const errorData = await response.json();
+        console.error('Error creating post:', errorData);
+        alert('Eroare la crearea postării: ' + (errorData.detail || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Eroare la crearea postării');
+      alert('Eroare de conexiune la crearea postării');
     } finally {
       setIsCreatingPost(false);
     }
