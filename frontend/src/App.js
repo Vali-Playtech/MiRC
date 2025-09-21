@@ -2986,6 +2986,153 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
           </div>
         </div>
       )}
+
+      {/* Share Modal - Facebook Style */}
+      {shareModalPost && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={closeShareModal}>
+          <div className="bg-gray-800 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <h3 className="text-lg font-semibold text-white">Partajează postarea</h3>
+              <button
+                onClick={closeShareModal}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <span className="text-xl">×</span>
+              </button>
+            </div>
+
+            {/* Share Options */}
+            <div className="p-4 space-y-4">
+              {!shareOption ? (
+                /* Option Selection */
+                <div className="space-y-3">
+                  <p className="text-gray-300 text-sm">Alege unde vrei să partajezi:</p>
+                  
+                  {/* Share to Room */}
+                  <button
+                    onClick={() => setShareOption('room')}
+                    className="w-full p-4 bg-gray-700/50 hover:bg-gray-700/70 rounded-lg border border-white/10 transition-colors text-left"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">🏠</span>
+                      <div>
+                        <div className="text-white font-medium">În camera ta</div>
+                        <div className="text-gray-400 text-sm">Partajează în una din camerele tale create</div>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Share to Friend */}
+                  <button
+                    onClick={() => setShareOption('friend')}
+                    className="w-full p-4 bg-gray-700/50 hover:bg-gray-700/70 rounded-lg border border-white/10 transition-colors text-left"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">👥</span>
+                      <div>
+                        <div className="text-white font-medium">Către un prieten</div>
+                        <div className="text-gray-400 text-sm">Trimite direct unui utilizator favorit</div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              ) : (
+                /* Share Form */
+                <div className="space-y-4">
+                  {/* Back Button */}
+                  <button
+                    onClick={() => setShareOption('')}
+                    className="flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 text-sm"
+                  >
+                    <span>←</span>
+                    <span>Înapoi</span>
+                  </button>
+
+                  {/* Target Selection */}
+                  <div className="space-y-2">
+                    <label className="text-white text-sm font-medium">
+                      {shareOption === 'room' ? 'Alege camera:' : 'Alege prietenul:'}
+                    </label>
+                    
+                    {shareOption === 'room' ? (
+                      <select
+                        value={selectedRoom}
+                        onChange={(e) => setSelectedRoom(e.target.value)}
+                        className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                      >
+                        <option value="">Selectează camera...</option>
+                        {userRooms.map(room => (
+                          <option key={room.id} value={room.id}>{room.name}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <select
+                        value={selectedFriend}
+                        onChange={(e) => setSelectedFriend(e.target.value)}
+                        className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                      >
+                        <option value="">Selectează prietenul...</option>
+                        {userFavorites.map(friend => (
+                          <option key={friend.id} value={friend.id}>{friend.name} (@{friend.nickname})</option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+
+                  {/* Comment Section */}
+                  <div className="space-y-2">
+                    <label className="text-white text-sm font-medium">
+                      Adaugă un comentariu (opțional):
+                    </label>
+                    <textarea
+                      value={shareComment}
+                      onChange={(e) => setShareComment(e.target.value)}
+                      placeholder="Scrie un comentariu despre această postare..."
+                      className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                      rows="3"
+                    />
+                  </div>
+
+                  {/* Original Post Preview */}
+                  <div className="bg-gray-700/30 border border-white/10 rounded-lg p-3">
+                    <div className="text-xs text-gray-400 mb-2">Postarea originală:</div>
+                    <div className="flex items-start space-x-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                        {shareModalPost.user_nickname?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-white text-xs font-medium">{shareModalPost.user_name}</div>
+                        <div className="text-gray-300 text-xs mt-1 line-clamp-3">
+                          {shareModalPost.content.substring(0, 100)}
+                          {shareModalPost.content.length > 100 && '...'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3 pt-2">
+                    <button
+                      onClick={closeShareModal}
+                      className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                    >
+                      Anulează
+                    </button>
+                    <button
+                      onClick={handleShare}
+                      disabled={!((shareOption === 'room' && selectedRoom) || (shareOption === 'friend' && selectedFriend))}
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                    >
+                      Partajează
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
