@@ -190,6 +190,44 @@ class Message(BaseModel):
     user_avatar: Optional[str] = None
     created_at: datetime
 
+# World Chat Models
+class LinkPreview(BaseModel):
+    url: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    domain: Optional[str] = None
+    
+class ImageAttachment(BaseModel):
+    id: str
+    filename: str
+    original_filename: str
+    url: str
+    thumbnail_url: str
+    width: int
+    height: int
+    file_size: int
+
+class WorldChatPostCreate(BaseModel):
+    content: str
+    link_url: Optional[str] = None
+    
+class WorldChatPost(BaseModel):
+    id: str
+    content: str
+    user_id: str
+    user_name: str
+    user_nickname: str
+    user_avatar: Optional[str] = None
+    images: List[ImageAttachment] = []
+    link_preview: Optional[LinkPreview] = None
+    created_at: datetime
+    reactions: Dict[str, int] = {}  # {'like': 5, 'love': 2, etc.}
+    comments_count: int = 0
+
+class LinkPreviewRequest(BaseModel):
+    url: str
+
 # Utility functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
