@@ -876,14 +876,14 @@ const LoginForm = ({ isLogin, onToggle }) => {
       
       <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
         <div className="text-center mb-8">
-          {/* Logo VONEX personalizat cu culorile din imaginea ta pentru login */}
+          {/* Logo VONEX original din imaginea ta pentru login */}
           <div className="w-auto h-20 mx-auto mb-6 flex items-center justify-center">
             <img 
-              src="/vonex-custom-logo.svg" 
+              src="/vonex-original-logo.png" 
               alt="VONEX" 
-              className="h-24 w-auto"
+              className="h-16 w-auto object-contain"
               style={{
-                filter: 'drop-shadow(0 0 15px rgba(0, 255, 255, 0.5)) drop-shadow(0 0 25px rgba(68, 255, 68, 0.4)) drop-shadow(0 0 35px rgba(255, 255, 68, 0.3)) drop-shadow(0 0 45px rgba(255, 136, 68, 0.2))'
+                filter: 'drop-shadow(0 0 15px rgba(0, 255, 255, 0.4)) drop-shadow(0 0 25px rgba(68, 255, 68, 0.3)) drop-shadow(0 0 35px rgba(255, 255, 68, 0.2)) drop-shadow(0 0 45px rgba(255, 136, 68, 0.1))'
               }}
             />
           </div>
