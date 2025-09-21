@@ -888,16 +888,16 @@ const LoginForm = ({ isLogin, onToggle }) => {
             />
           </div>
           
-          {/* Slogan VONEX - acronim */}
+          {/* Slogan VONEX - acronim pe un singur rând, mai grupat */}
           <div className="mb-6">
-            <p className="text-2xl font-bold mb-4" style={{
+            <p className="text-xl font-bold mb-4 whitespace-nowrap" style={{
               background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
               textShadow: '0 0 20px rgba(255, 255, 255, 0.2)',
               fontFamily: 'monospace',
-              letterSpacing: '0.1em'
+              letterSpacing: '0.05em'
             }}>
               Voice • Opinions • Network • EXperiences
             </p>
