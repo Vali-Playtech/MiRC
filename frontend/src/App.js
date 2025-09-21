@@ -2472,23 +2472,11 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   }, [activeTab]);
 
   const loadUserCameras = async () => {
-    // Mock data for now - in real implementation, fetch from API
+    // Mock data organized by categories - in real implementation, fetch from API
     setUserCameras([
+      // 1. CAMERELE MELE (create de mine) - prioritate maximă
       {
         id: '1',
-        name: 'Tech Talks România',
-        theme: 'Tehnologie',
-        description: 'Discuții despre ultimele tehnologii, programming, AI și inovații.',
-        rules: '1. Respectă ceilalți membri\n2. Postează doar conținut relevant\n3. Nu spam sau reclame',
-        visibility: 'public',
-        membersCount: 45,
-        messagesCount: 234,
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        isActive: true,
-        pinnedMessage: 'Bun venit în camera Tech Talks! Să discutăm despre tehnologie.'
-      },
-      {
-        id: '2',
         name: 'Presa Liberă',
         theme: 'Știri & Media',
         description: 'Discuții libere despre știri, politică și evenimente curente din România și lume.',
@@ -2498,20 +2486,121 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         messagesCount: 567,
         createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
         isActive: true,
+        isOwned: true, // Camera mea
+        category: 'my-rooms',
         pinnedMessage: null
       },
       {
+        id: '2',
+        name: 'Tech Talks România',
+        theme: 'Tehnologie',
+        description: 'Discuții despre ultimele tehnologii, programming, AI și inovații.',
+        rules: '1. Respectă ceilalți membri\n2. Postează doar conținut relevant\n3. Nu spam sau reclame',
+        visibility: 'public',
+        membersCount: 45,
+        messagesCount: 234,
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        isOwned: true, // Camera mea
+        category: 'my-rooms',
+        pinnedMessage: 'Bun venit în camera Tech Talks! Să discutăm despre tehnologie.'
+      },
+
+      // 2. CAMERELE PE CARE LE URMĂRESC/FAVORITE
+      {
         id: '3',
-        name: 'Gamers Private',
+        name: 'Crypto Romania',
+        theme: 'Criptomonede',
+        description: 'Discuții despre Bitcoin, Ethereum și alte criptomonede. Analize de piață și sfaturi.',
+        rules: '1. Fără sfaturi financiare personalizate\n2. Respectă opinia celorlalți\n3. Postează surse credibile',
+        visibility: 'public',
+        membersCount: 234,
+        messagesCount: 1567,
+        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        isOwned: false,
+        isFollowing: true, // Urmăresc camera
+        category: 'following',
+        owner: 'Andrei Popescu',
+        pinnedMessage: 'Bitcoin la $67,000! Discutăm strategiile pentru 2025.'
+      },
+      {
+        id: '4',
+        name: 'Gaming RO Elite',
         theme: 'Gaming',
-        description: 'Camera privată pentru pasionații de gaming. Discuții despre jocuri, strategi și turnee.',
-        rules: '1. Doar membri invitați\n2. Respectă regulile comunității\n3. Share your gaming moments',
-        visibility: 'private',
-        membersCount: 12,
-        messagesCount: 89,
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-        isActive: false,
-        pinnedMessage: 'Camera temporar închisă pentru mentenanță.'
+        description: 'Pentru gamerii seriosi din România. CS2, Dota 2, LoL și alte competitive games.',
+        rules: '1. Doar gaming content\n2. Respectă echipierile\n3. Fără toxicitate',
+        visibility: 'invite-only',
+        membersCount: 67,
+        messagesCount: 892,
+        createdAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        isOwned: false,
+        isFollowing: true,
+        category: 'following',
+        owner: 'ProGamer_Alex',
+        pinnedMessage: null
+      },
+
+      // 3. CAMERELE ÎN CARE AM INTERACȚIONAT (doar am postat/comentat)
+      {
+        id: '5',
+        name: 'Călătorii în România',
+        theme: 'Travel & Turism',
+        description: 'Descoperă frumusețile României! Sfaturi, recomandări și experiențe de călătorie.',
+        rules: '1. Postează doar experiențe reale\n2. Respectă mediul\n3. Ajută alți călători',
+        visibility: 'public',
+        membersCount: 156,
+        messagesCount: 445,
+        createdAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        isOwned: false,
+        isFollowing: false,
+        hasInteracted: true, // Am postat/comentat
+        category: 'interacted',
+        owner: 'TravelBlogger_Ioana',
+        lastInteraction: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        pinnedMessage: null
+      },
+
+      // 4. CAMERE SUGERATE (pe baza căutărilor/intereselor)
+      {
+        id: '6',
+        name: 'Fotografie Digitală',
+        theme: 'Fotografie',
+        description: 'Pasionați de fotografie digitală. Tehnici, echipamente și feedback pentru poze.',
+        rules: '1. Postează doar conținut original\n2. Oferă feedback constructiv\n3. Respectă drepturile de autor',
+        visibility: 'public',
+        membersCount: 89,
+        messagesCount: 267,
+        createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        isOwned: false,
+        isFollowing: false,
+        hasInteracted: false,
+        category: 'suggested',
+        owner: 'PhotoPro_Mihai',
+        suggestionReason: 'Pe baza căutărilor tale despre "tehnologie" și "gadgets"',
+        pinnedMessage: null
+      },
+      {
+        id: '7',
+        name: 'Antreprenoriat Romania',
+        theme: 'Business',
+        description: 'Pentru antreprenorii români. Sfaturi, experiențe și networking în business.',
+        rules: '1. Fără promovare directă\n2. Împărtășește experiențe reale\n3. Ajută comunitatea',
+        visibility: 'public',
+        membersCount: 198,
+        messagesCount: 756,
+        createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        isOwned: false,
+        isFollowing: false,
+        hasInteracted: false,
+        category: 'suggested',
+        owner: 'BusinessMentor_Dan',
+        suggestionReason: 'Populară în categoria "Știri & Media"',
+        pinnedMessage: 'Webinar gratuit despre startup-uri! Joi, ora 19:00.'
       }
     ]);
   };
