@@ -2642,6 +2642,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   <textarea
                     value={newPost}
                     onChange={handleTextChange}
+                    onKeyDown={handleKeyPress}
                     placeholder="Ce vrei să împarți cu lumea? Poți scrie text, pune link-uri..."
                     className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all duration-200"
                     rows="4"
