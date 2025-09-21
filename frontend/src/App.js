@@ -2301,7 +2301,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             {/* World Chat Header */}
             <div className="bg-gray-800/50 px-6 py-4 border-b border-white/10">
               <div className="flex items-center space-x-4">
-                <span className="text-2xl">🌍</span>
                 <div>
                   <h1 className="text-xl font-bold text-white">World Chat</h1>
                   <p className="text-gray-400 text-sm">Cameră globală publică • Oricine poate posta</p>
