@@ -2383,6 +2383,71 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     }
   };
 
+  // Sharing functions
+  const openShareModal = (post) => {
+    setShareModalPost(post);
+    setShareOption('');
+    setShareComment('');
+    setSelectedRoom('');
+    setSelectedFriend('');
+    // Load user rooms and favorites when opening modal
+    loadUserRooms();
+    loadUserFavorites();
+  };
+
+  const closeShareModal = () => {
+    setShareModalPost(null);
+    setShareOption('');
+    setShareComment('');
+    setSelectedRoom('');
+    setSelectedFriend('');
+  };
+
+  const loadUserRooms = async () => {
+    // Mock data for now - in real implementation, fetch from API
+    setUserRooms([
+      { id: '1', name: 'Camera mea tehnologie', type: 'public' },
+      { id: '2', name: 'Discusii private', type: 'private' },
+      { id: '3', name: 'Hobby & Gaming', type: 'public' }
+    ]);
+  };
+
+  const loadUserFavorites = async () => {
+    // Mock data for now - in real implementation, fetch from favorites API
+    setUserFavorites([
+      { id: '1', name: 'Ana Popescu', nickname: 'ana_pop', avatar: null },
+      { id: '2', name: 'Mihai Ion', nickname: 'mihai_i', avatar: null },
+      { id: '3', name: 'Elena Marin', nickname: 'elena_m', avatar: null }
+    ]);
+  };
+
+  const handleShare = async () => {
+    if (!shareModalPost) return;
+
+    try {
+      const shareData = {
+        post_id: shareModalPost.id,
+        comment: shareComment.trim(),
+        share_type: shareOption,
+        target_id: shareOption === 'room' ? selectedRoom : selectedFriend
+      };
+
+      // For now, just show success message - in real implementation, call API
+      if (shareOption === 'room') {
+        const roomName = userRooms.find(r => r.id === selectedRoom)?.name;
+        alert(`Postarea a fost partajată în camera "${roomName}"!`);
+      } else if (shareOption === 'friend') {
+        const friendName = userFavorites.find(f => f.id === selectedFriend)?.name;
+        alert(`Postarea a fost partajată către "${friendName}"!`);
+      }
+
+      closeShareModal();
+    } catch (error) {
+      console.error('Error sharing post:', error);
+      alert('Eroare la partajarea postării');
+    }
+  };
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header nou cu logo și taburi */}
