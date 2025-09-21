@@ -3514,7 +3514,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                           onClick={() => setSelectedFavorite(user)}
                         >
                           <div className="flex items-center space-x-3">
-                            {/* Avatar */}
+                            {/* Avatar - Only profile pictures with colored borders, NO LETTERS */}
                             <div className="relative flex-shrink-0">
                               <div className={`w-12 h-12 rounded-full border-2 overflow-hidden ${
                                 user.isOnline 
@@ -3529,6 +3529,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                                       ? 'bg-green-100' 
                                       : 'bg-gray-100'
                                   }`}>
+                                    {/* Only status dot, NO LETTERS/TEXT */}
                                     <div className={`w-2 h-2 rounded-full ${
                                       user.isOnline 
                                         ? 'bg-green-500' 
