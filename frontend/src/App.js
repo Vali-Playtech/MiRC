@@ -2686,6 +2686,145 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     }
   };
 
+  // Camera Card Component
+  const CameraCard = ({ camera, onAction }) => {
+    const getCategoryBadge = () => {
+      if (camera.isOwned) return { text: 'A mea', color: 'bg-green-500/20 text-green-400 border-green-500/30' };
+      if (camera.isFollowing) return { text: 'Urmăresc', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' };
+      if (camera.hasInteracted) return { text: 'Vizitată', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' };
+      if (camera.category === 'suggested') return { text: 'Sugerată', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
+      return null;
+    };
+
+    const badge = getCategoryBadge();
+
+    return (
+      <div className={`bg-gray-800/50 rounded-xl border border-white/10 overflow-hidden hover:border-cyan-400/30 transition-all duration-200 ${!camera.isActive ? 'opacity-60' : ''}`}>
+        {/* Camera Header */}
+        <div className="p-4 border-b border-white/10">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-1">
+                <span className="text-lg">{getCameraVisibilityIcon(camera.visibility)}</span>
+                <h3 className="text-white font-semibold text-lg line-clamp-1">{camera.name}</h3>
+                {badge && (
+                  <span className={`text-xs px-2 py-1 rounded-full border ${badge.color}`}>
+                    {badge.text}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center space-x-3 text-xs text-gray-400">
+                <span>{getCameraVisibilityText(camera.visibility)}</span>
+                <span>•</span>
+                <span>{camera.theme}</span>
+                {camera.owner && !camera.isOwned && (
+                  <>
+                    <span>•</span>
+                    <span>de {camera.owner}</span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="relative ml-2">
+              <button className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700/50 transition-colors">
+                <span className="text-sm">⋯</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Camera Content */}
+        <div className="p-4 space-y-3">
+          {camera.description && (
+            <p className="text-gray-300 text-sm line-clamp-2">{camera.description}</p>
+          )}
+          
+          {camera.pinnedMessage && (
+            <div className="bg-cyan-400/10 border border-cyan-400/20 rounded-lg p-2">
+              <div className="text-xs text-cyan-400 mb-1">📌 Mesaj fixat</div>
+              <div className="text-white text-sm line-clamp-2">{camera.pinnedMessage}</div>
+            </div>
+          )}
+
+          {camera.suggestionReason && (
+            <div className="bg-purple-400/10 border border-purple-400/20 rounded-lg p-2">
+              <div className="text-xs text-purple-400 mb-1">💡 Sugerată</div>
+              <div className="text-white text-sm">{camera.suggestionReason}</div>
+            </div>
+          )}
+
+          {/* Stats */}
+          <div className="flex items-center justify-between text-xs text-gray-400">
+            <div className="flex items-center space-x-4">
+              <span>👥 {camera.membersCount} membri</span>
+              <span>💬 {camera.messagesCount} mesaje</span>
+            </div>
+            <span>{camera.createdAt.toLocaleDateString('ro-RO')}</span>
+          </div>
+        </div>
+
+        {/* Camera Actions */}
+        <div className="p-4 border-t border-white/10 flex items-center space-x-2">
+          {camera.isOwned ? (
+            // Actions for my rooms
+            <>
+              <button
+                onClick={() => onAction('enter', camera)}
+                disabled={!camera.isActive}
+                className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 text-sm"
+              >
+                {camera.isActive ? 'Intră' : 'Inactivă'}
+              </button>
+              <button
+                onClick={() => onAction('settings', camera)}
+                className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
+              >
+                ⚙️
+              </button>
+              <button
+                onClick={() => onAction('toggle', camera)}
+                className={`px-3 py-2 rounded-lg transition-colors text-sm ${camera.isActive ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
+              >
+                {camera.isActive ? '⏸️' : '▶️'}
+              </button>
+              <button
+                onClick={() => onAction('delete', camera)}
+                className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+              >
+                🗑️
+              </button>
+            </>
+          ) : (
+            // Actions for other rooms
+            <>
+              <button
+                onClick={() => onAction('enter', camera)}
+                className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-200 text-sm"
+              >
+                Intră
+              </button>
+              {camera.isFollowing ? (
+                <button
+                  onClick={() => onAction('unfollow', camera)}
+                  className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
+                >
+                  Nu mai urmări
+                </button>
+              ) : (
+                <button
+                  onClick={() => onAction('follow', camera)}
+                  className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+                >
+                  Urmărește
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header nou cu logo și taburi */}
