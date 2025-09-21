@@ -2205,26 +2205,29 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             />
           </div>
 
-          {/* Taburi în centru */}
-          <div className="flex space-x-1">
+          {/* Taburi în centru - design ca bule */}
+          <div className="flex space-x-2">
             {[
-              { id: 'world-chat', name: 'World Chat', icon: '🌍' },
-              { id: 'my-room', name: 'Camera ta', icon: '🏠' },
-              { id: 'favorites', name: 'Favoriți', icon: '⭐' },
-              { id: 'recent', name: 'Recente', icon: '🕒' },
-              { id: 'search', name: 'Search', icon: '🔍' }
+              { id: 'world-chat', name: 'World Chat' },
+              { id: 'my-room', name: 'Camera ta' },
+              { id: 'favorites', name: 'Favoriți' },
+              { id: 'recent', name: 'Recente' },
+              { id: 'search', name: 'Search' }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-white border border-cyan-400/30 shadow-lg'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                    ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white border-2 border-cyan-400/50 shadow-lg shadow-cyan-400/20 scale-105'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/30 border-2 border-transparent hover:border-gray-600/30 hover:scale-102'
                 }`}
+                style={activeTab === tab.id ? {
+                  textShadow: '0 0 10px rgba(6, 182, 212, 0.5)',
+                  boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)'
+                } : {}}
               >
-                <span className="text-lg">{tab.icon}</span>
-                <span className="hidden md:block">{tab.name}</span>
+                <span className="text-sm font-semibold">{tab.name}</span>
               </button>
             ))}
           </div>
