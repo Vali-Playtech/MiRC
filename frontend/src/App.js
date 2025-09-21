@@ -2777,7 +2777,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               </div>
             </div>
           )}
-        )}
 
         {activeTab === 'my-room' && (
           <div className="h-full flex items-center justify-center">
