@@ -2292,7 +2292,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         </div>
       </div>
 
-      {/* Conținutul taburilor */}
+      {/* Content tabs */}
       <div className="flex-1 overflow-hidden">
         {activeTab === 'world-chat' && (
           <div className="h-full flex flex-col">
