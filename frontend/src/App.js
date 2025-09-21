@@ -2619,7 +2619,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
           <div className="flex space-x-2">
             {[
               { id: 'world-chat', name: 'World Chat' },
-              { id: 'my-room', name: 'Camera ta' },
+              { id: 'my-room', name: 'Camerele mele' },
               { id: 'favorites', name: 'Favoriți' },
               { id: 'recent', name: 'Recente' },
               { id: 'search', name: 'Search' }
