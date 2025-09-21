@@ -3106,9 +3106,9 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   </div>
                 </div>
 
-                {/* Cameras Grid */}
+                {/* Cameras Organized by Categories */}
                 <div className="flex-1 p-6">
-                  <div className="max-w-full md:max-w-4xl md:mx-auto">
+                  <div className="max-w-full md:max-w-6xl md:mx-auto">
                     {userCameras.length === 0 ? (
                       <div className="text-center py-12">
                         <span className="text-6xl mb-4 block">🏠</span>
@@ -3122,84 +3122,70 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                         </button>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {userCameras.map((camera) => (
-                          <div key={camera.id} className={`bg-gray-800/50 rounded-xl border border-white/10 overflow-hidden hover:border-cyan-400/30 transition-all duration-200 ${!camera.isActive ? 'opacity-60' : ''}`}>
-                            {/* Camera Header */}
-                            <div className="p-4 border-b border-white/10">
-                              <div className="flex items-start justify-between">
-                                <div className="flex-1">
-                                  <div className="flex items-center space-x-2 mb-1">
-                                    <span className="text-lg">{getCameraVisibilityIcon(camera.visibility)}</span>
-                                    <h3 className="text-white font-semibold text-lg line-clamp-1">{camera.name}</h3>
-                                  </div>
-                                  <div className="flex items-center space-x-3 text-xs text-gray-400">
-                                    <span>{getCameraVisibilityText(camera.visibility)}</span>
-                                    <span>•</span>
-                                    <span>{camera.theme}</span>
-                                  </div>
-                                </div>
-                                <div className="relative ml-2">
-                                  <button className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700/50 transition-colors">
-                                    <span className="text-sm">⋯</span>
-                                  </button>
-                                </div>
-                              </div>
+                      <div className="space-y-8">
+                        {/* 1. CAMERELE MELE */}
+                        {userCameras.filter(c => c.category === 'my-rooms').length > 0 && (
+                          <div>
+                            <div className="flex items-center space-x-3 mb-4">
+                              <span className="text-2xl">🏠</span>
+                              <h2 className="text-xl font-bold text-white">Camerele mele</h2>
+                              <span className="text-sm text-gray-400">({userCameras.filter(c => c.category === 'my-rooms').length})</span>
                             </div>
-
-                            {/* Camera Content */}
-                            <div className="p-4 space-y-3">
-                              {camera.description && (
-                                <p className="text-gray-300 text-sm line-clamp-2">{camera.description}</p>
-                              )}
-                              
-                              {camera.pinnedMessage && (
-                                <div className="bg-cyan-400/10 border border-cyan-400/20 rounded-lg p-2">
-                                  <div className="text-xs text-cyan-400 mb-1">📌 Mesaj fixat</div>
-                                  <div className="text-white text-sm line-clamp-2">{camera.pinnedMessage}</div>
-                                </div>
-                              )}
-
-                              {/* Stats */}
-                              <div className="flex items-center justify-between text-xs text-gray-400">
-                                <div className="flex items-center space-x-4">
-                                  <span>👥 {camera.membersCount} membri</span>
-                                  <span>💬 {camera.messagesCount} mesaje</span>
-                                </div>
-                                <span>{camera.createdAt.toLocaleDateString('ro-RO')}</span>
-                              </div>
-                            </div>
-
-                            {/* Camera Actions */}
-                            <div className="p-4 border-t border-white/10 flex items-center space-x-2">
-                              <button
-                                onClick={() => handleCameraAction('enter', camera)}
-                                disabled={!camera.isActive}
-                                className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 text-sm"
-                              >
-                                {camera.isActive ? 'Intră' : 'Inactivă'}
-                              </button>
-                              <button
-                                onClick={() => handleCameraAction('settings', camera)}
-                                className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
-                              >
-                                ⚙️
-                              </button>
-                              <button
-                                onClick={() => handleCameraAction('toggle', camera)}
-                                className={`px-3 py-2 rounded-lg transition-colors text-sm ${camera.isActive ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'} text-white`}
-                              >
-                                {camera.isActive ? '⏸️' : '▶️'}
-                              </button>
-                              <button
-                                onClick={() => handleCameraAction('delete', camera)}
-                                className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
-                              >
-                                🗑️
-                              </button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {userCameras.filter(c => c.category === 'my-rooms').map((camera) => (
+                                <CameraCard key={camera.id} camera={camera} onAction={handleCameraAction} />
+                              ))}
                             </div>
                           </div>
-                        ))}
+                        )}
+
+                        {/* 2. CAMERELE PE CARE LE URMĂRESC */}
+                        {userCameras.filter(c => c.category === 'following').length > 0 && (
+                          <div>
+                            <div className="flex items-center space-x-3 mb-4">
+                              <span className="text-2xl">⭐</span>
+                              <h2 className="text-xl font-bold text-white">Camerele urmărite</h2>
+                              <span className="text-sm text-gray-400">({userCameras.filter(c => c.category === 'following').length})</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {userCameras.filter(c => c.category === 'following').map((camera) => (
+                                <CameraCard key={camera.id} camera={camera} onAction={handleCameraAction} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 3. CAMERELE ÎN CARE AM INTERACȚIONAT */}
+                        {userCameras.filter(c => c.category === 'interacted').length > 0 && (
+                          <div>
+                            <div className="flex items-center space-x-3 mb-4">
+                              <span className="text-2xl">💬</span>
+                              <h2 className="text-xl font-bold text-white">Recent vizitate</h2>
+                              <span className="text-sm text-gray-400">({userCameras.filter(c => c.category === 'interacted').length})</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {userCameras.filter(c => c.category === 'interacted').map((camera) => (
+                                <CameraCard key={camera.id} camera={camera} onAction={handleCameraAction} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 4. CAMERE SUGERATE */}
+                        {userCameras.filter(c => c.category === 'suggested').length > 0 && (
+                          <div>
+                            <div className="flex items-center space-x-3 mb-4">
+                              <span className="text-2xl">🎯</span>
+                              <h2 className="text-xl font-bold text-white">Sugerate pentru tine</h2>
+                              <span className="text-sm text-gray-400">({userCameras.filter(c => c.category === 'suggested').length})</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {userCameras.filter(c => c.category === 'suggested').map((camera) => (
+                                <CameraCard key={camera.id} camera={camera} onAction={handleCameraAction} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
