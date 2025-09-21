@@ -2181,23 +2181,63 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     }
   };
 
+  // State pentru noua interfață cu taburi
+  const [activeTab, setActiveTab] = useState('world-chat');
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState('');
+  const [newPostLink, setNewPostLink] = useState('');
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-5 flex items-center justify-between border-b border-white/10 shadow-lg">
-        <div className="flex items-center justify-end">
-          {/* Logo VONEX original din imaginea ta - făcut cu 50% mai mare */}        
-          <div className="w-auto h-24 flex items-center">
+      {/* Header nou cu logo și taburi */}
+      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-4 border-b border-white/10 shadow-lg">
+        {/* Logo și taburi */}
+        <div className="flex items-center justify-between">
+          {/* Logo VONEX în stânga */}
+          <div className="w-auto h-16 flex items-center">
             <img 
               src="/vonex-original-logo.png" 
               alt="VONEX" 
-              className="h-24 w-auto object-contain"
+              className="h-16 w-auto object-contain"
               style={{
                 filter: 'drop-shadow(0 0 8px rgba(0, 255, 255, 0.3)) drop-shadow(0 0 12px rgba(68, 255, 68, 0.2)) drop-shadow(0 0 16px rgba(255, 136, 68, 0.1))'
               }}
             />
           </div>
+
+          {/* Taburi în centru */}
+          <div className="flex space-x-1">
+            {[
+              { id: 'world-chat', name: 'World Chat', icon: '🌍' },
+              { id: 'my-room', name: 'Camera ta', icon: '🏠' },
+              { id: 'favorites', name: 'Favoriți', icon: '⭐' },
+              { id: 'recent', name: 'Recente', icon: '🕒' },
+              { id: 'search', name: 'Search', icon: '🔍' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-white border border-cyan-400/30 shadow-lg'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                }`}
+              >
+                <span className="text-lg">{tab.icon}</span>
+                <span className="hidden md:block">{tab.name}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Butonul de profil în dreapta */}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all duration-200 hover:scale-105"
+          >
+            {user?.nickname ? user.nickname.charAt(0).toUpperCase() : 'U'}
+          </button>
         </div>
+      </div>
         
         <div className="flex items-center space-x-4">
           <button
