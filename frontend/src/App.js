@@ -2196,6 +2196,170 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [characterCount, setCharacterCount] = useState(0);
   const MAX_CHARACTERS = 5000;
 
+  // World Chat functions
+  const handleTextChange = (e) => {
+    const text = e.target.value;
+    if (text.length <= MAX_CHARACTERS) {
+      setNewPost(text);
+      setCharacterCount(text.length);
+    }
+  };
+
+  const handleLinkChange = async (e) => {
+    const url = e.target.value;
+    setNewPostLink(url);
+    
+    // Generate preview when user types a valid URL
+    if (url.trim() && (url.startsWith('http://') || url.startsWith('https://'))) {
+      await generateLinkPreview(url);
+    } else {
+      setLinkPreview(null);
+    }
+  };
+
+  const generateLinkPreview = async (url) => {
+    setIsLoadingPreview(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/link-preview`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ url })
+      });
+      
+      if (response.ok) {
+        const preview = await response.json();
+        setLinkPreview(preview);
+      } else {
+        setLinkPreview(null);
+      }
+    } catch (error) {
+      console.error('Error generating link preview:', error);
+      setLinkPreview(null);
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  const handleImageUpload = async (files) => {
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/upload-image`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+          });
+          
+          if (response.ok) {
+            const imageData = await response.json();
+            setUploadedImages(prev => [...prev, imageData]);
+          } else {
+            alert('Eroare la încărcarea imaginii');
+          }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          alert('Eroare la încărcarea imaginii');
+        }
+      }
+    }
+  };
+
+  const removeImage = (imageId) => {
+    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
+  };
+
+  const createPost = async () => {
+    if (!newPost.trim() && uploadedImages.length === 0 && !newPostLink.trim()) {
+      return;
+    }
+
+    setIsCreatingPost(true);
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          content: newPost,
+          link_url: newPostLink || null,
+          images: uploadedImages.map(img => img.id)
+        })
+      });
+
+      if (response.ok) {
+        const newPostData = await response.json();
+        setPosts(prev => [newPostData, ...prev]);
+        
+        // Clear form
+        setNewPost('');
+        setNewPostLink('');
+        setLinkPreview(null);
+        setUploadedImages([]);
+        setCharacterCount(0);
+      } else {
+        alert('Eroare la crearea postării');
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Eroare la crearea postării');
+    } finally {
+      setIsCreatingPost(false);
+    }
+  };
+
+  const loadPosts = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/posts`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (response.ok) {
+        const postsData = await response.json();
+        setPosts(postsData);
+      }
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    }
+  };
+
+  // Load posts when World Chat tab becomes active
+  useEffect(() => {
+    if (activeTab === 'world-chat') {
+      loadPosts();
+    }
+  }, [activeTab]);
+  
+  const formatPostDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffHours < 1) {
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      return diffMins < 1 ? 'acum' : `${diffMins}m`;
+    } else if (diffHours < 24) {
+      return `${diffHours}h`;
+    } else if (diffDays < 7) {
+      return `${diffDays}d`;
+    } else {
+      return date.toLocaleDateString('ro-RO');
+    }
+  };
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header nou cu logo și taburi */}
