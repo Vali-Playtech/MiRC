@@ -1361,7 +1361,7 @@ const ChatRoom = ({ room, onBack }) => {
     // Update last seen time for this friend
     updateLastSeenTime(friendUser.id);
     // Refresh the friends list to update unread counts
-    setTimeout(() => fetchRoomFriends(), 1000);
+    setTimeout(() => fetchFavorites(), 1000);
     // Close the users panel
     setShowUserList(false);
   };
