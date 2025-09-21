@@ -1359,6 +1359,332 @@ class BackendTester:
         except Exception as e:
             return self.log_test("Unfavorite/Friend Removal Functionality", False, f"Exception: {str(e)}")
     
+    def test_world_chat_authentication(self):
+        """Test World Chat Authentication Requirements"""
+        print("\n=== Testing World Chat Authentication ===")
+        
+        try:
+            # Test accessing World Chat endpoints without authentication
+            test_post = {
+                "content": "Test post without auth"
+            }
+            
+            # Should fail without authentication
+            response = self.session.post(f"{API_BASE}/world-chat/posts", json=test_post)
+            if not self.log_test("World Chat Auth Protection", response.status_code == 403,
+                               f"Status: {response.status_code} - Should be 403 without auth"):
+                return False
+            
+            # Test link preview without auth
+            link_data = {"url": "https://example.com"}
+            response = self.session.post(f"{API_BASE}/world-chat/link-preview", json=link_data)
+            if not self.log_test("Link Preview Auth Protection", response.status_code == 403,
+                               f"Status: {response.status_code} - Should be 403 without auth"):
+                return False
+            
+            # Test getting posts without auth
+            response = self.session.get(f"{API_BASE}/world-chat/posts")
+            if not self.log_test("Get Posts Auth Protection", response.status_code == 403,
+                               f"Status: {response.status_code} - Should be 403 without auth"):
+                return False
+            
+            self.log_test("World Chat Authentication", True, "All authentication protection tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("World Chat Authentication", False, f"Exception: {str(e)}")
+    
+    def test_world_chat_posting(self):
+        """Test World Chat Posting Functionality - MAIN TARGET"""
+        print("\n=== Testing World Chat Posting Functionality ===")
+        
+        try:
+            # Use test credentials from review request
+            test_credentials = {
+                "email": "test@example.com",
+                "password": "password123"
+            }
+            
+            # First register the test user if not exists
+            test_user_data = {
+                "email": "test@example.com",
+                "password": "password123",
+                "first_name": "Test",
+                "last_name": "User",
+                "nickname": "testuser"
+            }
+            
+            # Try to register (might fail if user exists, that's OK)
+            register_response = self.session.post(f"{API_BASE}/auth/register", json=test_user_data)
+            if register_response.status_code == 200:
+                self.log_test("Test User Registration", True, "Test user registered successfully")
+            elif register_response.status_code == 400:
+                self.log_test("Test User Already Exists", True, "Test user already exists, proceeding with login")
+            else:
+                return self.log_test("Test User Setup", False, f"Unexpected registration status: {register_response.status_code}")
+            
+            # Login with test credentials
+            login_response = self.session.post(f"{API_BASE}/auth/login", json=test_credentials)
+            if not self.log_test("Test User Login", login_response.status_code == 200,
+                               f"Status: {login_response.status_code}, Response: {login_response.text[:200]}"):
+                return False
+            
+            token_data = login_response.json()
+            test_token = token_data['access_token']
+            headers_test = {"Authorization": f"Bearer {test_token}"}
+            
+            # Test 1: POST /api/world-chat/posts with simple text
+            simple_post = {
+                "content": "Hello World! This is a test post from the World Chat system. 🌍✨"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=simple_post, headers=headers_test)
+            if not self.log_test("Simple Text Post", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            post_response = response.json()
+            
+            # Validate post response structure
+            required_fields = ['id', 'content', 'user_id', 'user_name', 'user_nickname', 'created_at', 'reactions', 'comments_count']
+            for field in required_fields:
+                if field not in post_response:
+                    return self.log_test("Post Response Structure", False,
+                                       f"Missing field: {field}")
+            
+            # Validate post content
+            if post_response['content'] != simple_post['content']:
+                return self.log_test("Post Content Validation", False, "Content mismatch")
+            
+            # Store post ID for later tests
+            test_post_id = post_response['id']
+            
+            # Test 2: GET /api/world-chat/posts to see if posts appear
+            response = self.session.get(f"{API_BASE}/world-chat/posts", headers=headers_test)
+            if not self.log_test("Get World Chat Posts", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            posts_list = response.json()
+            
+            if not isinstance(posts_list, list):
+                return self.log_test("Posts List Structure", False, "Response is not a list")
+            
+            # Find our test post
+            test_post_found = False
+            for post in posts_list:
+                if post.get('id') == test_post_id:
+                    test_post_found = True
+                    # Validate the post structure in the list
+                    for field in required_fields:
+                        if field not in post:
+                            return self.log_test("Post in List Structure", False,
+                                               f"Missing field in list: {field}")
+                    break
+            
+            if not test_post_found:
+                return self.log_test("Post Retrieval", False, "Test post not found in posts list")
+            
+            # Test 3: POST with link URL for preview
+            post_with_link = {
+                "content": "Check out this interesting website!",
+                "link_url": "https://github.com"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=post_with_link, headers=headers_test)
+            if not self.log_test("Post with Link", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            link_post_response = response.json()
+            
+            # Check if link preview was generated
+            if 'link_preview' in link_post_response and link_post_response['link_preview']:
+                self.log_test("Link Preview Generation", True, "Link preview generated successfully")
+                
+                # Validate link preview structure
+                link_preview = link_post_response['link_preview']
+                preview_fields = ['url', 'title', 'description', 'domain']
+                for field in preview_fields:
+                    if field not in link_preview:
+                        return self.log_test("Link Preview Structure", False,
+                                           f"Missing preview field: {field}")
+            else:
+                self.log_test("Link Preview Generation", False, "Link preview not generated")
+            
+            # Test 4: Test POST /api/world-chat/link-preview directly
+            link_preview_request = {
+                "url": "https://www.python.org"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/link-preview", 
+                                       json=link_preview_request, headers=headers_test)
+            if not self.log_test("Direct Link Preview", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:200]}"):
+                return False
+            
+            preview_response = response.json()
+            
+            # Validate direct link preview
+            preview_fields = ['url', 'title', 'description', 'domain']
+            for field in preview_fields:
+                if field not in preview_response:
+                    return self.log_test("Direct Preview Structure", False,
+                                       f"Missing field: {field}")
+            
+            if preview_response['url'] != link_preview_request['url']:
+                return self.log_test("Preview URL Validation", False, "URL mismatch in preview")
+            
+            # Test 5: Test empty content validation
+            empty_post = {
+                "content": ""
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=empty_post, headers=headers_test)
+            if not self.log_test("Empty Content Validation", response.status_code == 400,
+                               f"Status: {response.status_code} - Should reject empty content"):
+                return False
+            
+            # Test 6: Test very long content
+            long_content = "A" * 6000  # Exceeds 5000 character limit
+            long_post = {
+                "content": long_content
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=long_post, headers=headers_test)
+            if not self.log_test("Long Content Validation", response.status_code == 400,
+                               f"Status: {response.status_code} - Should reject content over 5000 chars"):
+                return False
+            
+            # Test 7: Test invalid URL for link preview
+            invalid_link_request = {
+                "url": "not-a-valid-url"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/link-preview", 
+                                       json=invalid_link_request, headers=headers_test)
+            if not self.log_test("Invalid URL Handling", response.status_code == 400,
+                               f"Status: {response.status_code} - Should reject invalid URL"):
+                return False
+            
+            # Test 8: Test pagination parameters
+            response = self.session.get(f"{API_BASE}/world-chat/posts?limit=5&skip=0", headers=headers_test)
+            if not self.log_test("Posts Pagination", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            paginated_posts = response.json()
+            if len(paginated_posts) > 5:
+                return self.log_test("Pagination Limit", False, f"Expected max 5 posts, got {len(paginated_posts)}")
+            
+            self.log_test("World Chat Posting Functionality", True, "🎉 ALL WORLD CHAT TESTS PASSED!")
+            return True
+            
+        except Exception as e:
+            return self.log_test("World Chat Posting Functionality", False, f"Exception: {str(e)}")
+    
+    def test_world_chat_comprehensive(self):
+        """Comprehensive World Chat System Test"""
+        print("\n=== Comprehensive World Chat System Test ===")
+        
+        try:
+            # Test with multiple users to simulate real usage
+            headers_alice = {"Authorization": f"Bearer {self.auth_tokens['alice']}"}
+            headers_bob = {"Authorization": f"Bearer {self.auth_tokens['bob']}"}
+            
+            # Test 1: Multiple users posting
+            alice_post = {
+                "content": "Alice's World Chat post! 🚀 Testing multi-user functionality."
+            }
+            
+            bob_post = {
+                "content": "Bob here! 👋 This is my contribution to the World Chat.",
+                "link_url": "https://fastapi.tiangolo.com"
+            }
+            
+            # Alice posts
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=alice_post, headers=headers_alice)
+            if not self.log_test("Alice World Chat Post", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_post_response = response.json()
+            
+            # Bob posts with link
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=bob_post, headers=headers_bob)
+            if not self.log_test("Bob World Chat Post with Link", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_post_response = response.json()
+            
+            # Test 2: Verify both users can see all posts
+            response = self.session.get(f"{API_BASE}/world-chat/posts", headers=headers_alice)
+            if not self.log_test("Alice Views All Posts", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            alice_view_posts = response.json()
+            
+            response = self.session.get(f"{API_BASE}/world-chat/posts", headers=headers_bob)
+            if not self.log_test("Bob Views All Posts", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            bob_view_posts = response.json()
+            
+            # Both users should see the same posts
+            if len(alice_view_posts) != len(bob_view_posts):
+                return self.log_test("Consistent Post Visibility", False, 
+                                   f"Alice sees {len(alice_view_posts)} posts, Bob sees {len(bob_view_posts)}")
+            
+            # Test 3: Verify user information in posts
+            alice_post_found = False
+            bob_post_found = False
+            
+            for post in alice_view_posts:
+                if post['id'] == alice_post_response['id']:
+                    alice_post_found = True
+                    if not post.get('user_name') or not post.get('user_nickname'):
+                        return self.log_test("Alice Post User Info", False, "Missing user information")
+                elif post['id'] == bob_post_response['id']:
+                    bob_post_found = True
+                    if not post.get('user_name') or not post.get('user_nickname'):
+                        return self.log_test("Bob Post User Info", False, "Missing user information")
+                    # Check if link preview was generated
+                    if not post.get('link_preview'):
+                        return self.log_test("Bob Post Link Preview", False, "Link preview not generated")
+            
+            if not alice_post_found:
+                return self.log_test("Alice Post in Feed", False, "Alice's post not found in feed")
+            
+            if not bob_post_found:
+                return self.log_test("Bob Post in Feed", False, "Bob's post not found in feed")
+            
+            # Test 4: Test chronological ordering (newest first)
+            if len(alice_view_posts) >= 2:
+                first_post = alice_view_posts[0]
+                second_post = alice_view_posts[1]
+                
+                from datetime import datetime
+                first_time = datetime.fromisoformat(first_post['created_at'].replace('Z', '+00:00'))
+                second_time = datetime.fromisoformat(second_post['created_at'].replace('Z', '+00:00'))
+                
+                if first_time < second_time:
+                    return self.log_test("Chronological Ordering", False, "Posts not ordered newest first")
+            
+            self.log_test("Comprehensive World Chat System", True, "All comprehensive tests passed")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Comprehensive World Chat System", False, f"Exception: {str(e)}")
+
     async def run_all_tests(self):
         """Run all backend tests including NEW Private Chat and Friends System"""
         print("🚀 Starting Comprehensive Backend Testing - INCLUDING NEW PRIVATE CHAT & FRIENDS SYSTEM")
