@@ -1734,6 +1734,18 @@ class BackendTester:
         # Test 12: Unfavorite/Friend Removal Functionality (NEW FEATURE)
         test_results['unfavorite_friend_removal'] = self.test_unfavorite_friend_removal()
         
+        # WORLD CHAT FUNCTIONALITY TESTS - TARGET OF THIS REVIEW
+        print("\n" + "🌍" * 20 + " WORLD CHAT FUNCTIONALITY TESTS " + "🌍" * 20)
+        
+        # Test 13: World Chat Authentication
+        test_results['world_chat_auth'] = self.test_world_chat_authentication()
+        
+        # Test 14: World Chat Posting Functionality (MAIN TARGET)
+        test_results['world_chat_posting'] = self.test_world_chat_posting()
+        
+        # Test 15: World Chat Comprehensive Testing
+        test_results['world_chat_comprehensive'] = self.test_world_chat_comprehensive()
+        
         # Summary
         print("\n" + "=" * 80)
         print("📊 COMPREHENSIVE TEST SUMMARY - PRIVATE CHAT & FRIENDS SYSTEM")
