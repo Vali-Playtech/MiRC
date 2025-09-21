@@ -393,6 +393,191 @@ async def scrape_link_preview(url: str) -> Optional[LinkPreview]:
         logging.error(f"Error scraping link preview for {url}: {e}")
         return None
 
+# World Chat endpoints
+@api_router.post("/world-chat/upload-image")
+async def upload_image(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    """Upload and compress image for World Chat posts"""
+    # Validate file type
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Check file size (10MB limit like Facebook)
+    content = await file.read()
+    if len(content) > 10 * 1024 * 1024:  # 10MB
+        raise HTTPException(status_code=400, detail="File too large. Maximum size is 10MB")
+    
+    # Generate unique filename
+    file_id = str(uuid.uuid4())
+    file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"{file_id}.{file_extension}"
+    thumbnail_filename = f"{file_id}_thumb.jpg"
+    
+    try:
+        # Get image dimensions
+        img = Image.open(io.BytesIO(content))
+        original_width, original_height = img.size
+        
+        # Compress full image
+        compressed_image = compress_image(content, max_width=1200, quality=85)
+        
+        # Create thumbnail for feed
+        thumbnail_image = create_thumbnail(content, max_height=400)
+        
+        # Save both files
+        full_path = UPLOAD_DIR / filename
+        thumb_path = UPLOAD_DIR / thumbnail_filename
+        
+        async with aiofiles.open(full_path, 'wb') as f:
+            await f.write(compressed_image)
+        
+        async with aiofiles.open(thumb_path, 'wb') as f:
+            await f.write(thumbnail_image)
+        
+        # Create image attachment object
+        image_attachment = ImageAttachment(
+            id=file_id,
+            filename=filename,
+            original_filename=file.filename,
+            url=f"/api/world-chat/images/{filename}",
+            thumbnail_url=f"/api/world-chat/images/{thumbnail_filename}",
+            width=original_width,
+            height=original_height,
+            file_size=len(compressed_image)
+        )
+        
+        return image_attachment
+        
+    except Exception as e:
+        logging.error(f"Error processing uploaded image: {e}")
+        raise HTTPException(status_code=500, detail="Error processing image")
+
+@api_router.get("/world-chat/images/{filename}")
+async def get_image(filename: str):
+    """Serve uploaded images"""
+    file_path = UPLOAD_DIR / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    return FileResponse(file_path)
+
+@api_router.post("/world-chat/link-preview")
+async def generate_link_preview(request: LinkPreviewRequest, current_user: User = Depends(get_current_user)):
+    """Generate link preview for URLs"""
+    preview = await scrape_link_preview(request.url)
+    if not preview:
+        raise HTTPException(status_code=400, detail="Could not generate preview for this URL")
+    return preview
+
+@api_router.post("/world-chat/posts", response_model=WorldChatPost)
+async def create_world_chat_post(
+    post_data: WorldChatPostCreate,
+    images: List[str] = [],  # List of image IDs from upload
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new World Chat post with text, images, and/or link preview"""
+    
+    # Validate content (Facebook allows up to ~63,000 characters, but we'll be reasonable)
+    if not post_data.content.strip() and not images and not post_data.link_url:
+        raise HTTPException(status_code=400, detail="Post must contain text, images, or a link")
+    
+    if len(post_data.content) > 5000:  # Reasonable limit
+        raise HTTPException(status_code=400, detail="Post content too long (max 5000 characters)")
+    
+    # Create post ID
+    post_id = str(uuid.uuid4())
+    
+    # Process images if provided
+    image_attachments = []
+    for image_id in images:
+        # Check if image exists (simplified - in production you'd verify ownership)
+        image_file = UPLOAD_DIR / f"{image_id}.jpg"
+        thumb_file = UPLOAD_DIR / f"{image_id}_thumb.jpg"
+        
+        if image_file.exists() and thumb_file.exists():
+            # Get image info (in production, store this in DB during upload)
+            try:
+                img = Image.open(image_file)
+                width, height = img.size
+                file_size = image_file.stat().st_size
+                
+                image_attachment = ImageAttachment(
+                    id=image_id,
+                    filename=f"{image_id}.jpg",
+                    original_filename=f"image_{image_id}.jpg",
+                    url=f"/api/world-chat/images/{image_id}.jpg",
+                    thumbnail_url=f"/api/world-chat/images/{image_id}_thumb.jpg",
+                    width=width,
+                    height=height,
+                    file_size=file_size
+                )
+                image_attachments.append(image_attachment)
+            except Exception as e:
+                logging.error(f"Error processing image {image_id}: {e}")
+    
+    # Generate link preview if URL provided
+    link_preview = None
+    if post_data.link_url:
+        link_preview = await scrape_link_preview(post_data.link_url)
+    
+    # Create post document
+    post_doc = {
+        "id": post_id,
+        "content": post_data.content.strip(),
+        "user_id": current_user.id,
+        "user_name": f"{current_user.first_name} {current_user.last_name}".strip() or current_user.nickname or "Unknown User",
+        "user_nickname": current_user.nickname or "Unknown",
+        "user_avatar": current_user.avatar_url,
+        "images": [img.dict() for img in image_attachments],
+        "link_preview": link_preview.dict() if link_preview else None,
+        "reactions": {},
+        "comments_count": 0,
+        "created_at": datetime.utcnow()
+    }
+    
+    # Save to database
+    await db.world_chat_posts.insert_one(post_doc)
+    
+    # Return post
+    return WorldChatPost(**post_doc)
+
+@api_router.get("/world-chat/posts", response_model=List[WorldChatPost])
+async def get_world_chat_posts(
+    limit: int = 20,
+    skip: int = 0,
+    current_user: User = Depends(get_current_user)
+):
+    """Get World Chat posts feed (Facebook-style pagination)"""
+    
+    # Get posts from database
+    posts = await db.world_chat_posts.find().sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    post_list = []
+    for post in posts:
+        # Convert images back to objects
+        images = [ImageAttachment(**img) for img in post.get("images", [])]
+        
+        # Convert link preview back to object
+        link_preview = None
+        if post.get("link_preview"):
+            link_preview = LinkPreview(**post["link_preview"])
+        
+        post_obj = WorldChatPost(
+            id=post["id"],
+            content=post["content"],
+            user_id=post["user_id"],
+            user_name=post["user_name"],
+            user_nickname=post["user_nickname"],
+            user_avatar=post.get("user_avatar"),
+            images=images,
+            link_preview=link_preview,
+            reactions=post.get("reactions", {}),
+            comments_count=post.get("comments_count", 0),
+            created_at=post["created_at"]
+        )
+        post_list.append(post_obj)
+    
+    return post_list
+
 # Authentication routes
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
