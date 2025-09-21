@@ -2186,6 +2186,15 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [newPostLink, setNewPostLink] = useState('');
+  
+  // New state for Facebook-style post creation
+  const [linkPreview, setLinkPreview] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [selectedImageModal, setSelectedImageModal] = useState(null);
+  const [characterCount, setCharacterCount] = useState(0);
+  const MAX_CHARACTERS = 5000;
 
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
