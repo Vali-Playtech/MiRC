@@ -2914,7 +2914,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 relative ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white border-2 border-cyan-400/50 shadow-lg shadow-cyan-400/20 scale-105'
                     : 'text-gray-400 hover:text-white hover:bg-gray-700/30 border-2 border-transparent hover:border-gray-600/30 hover:scale-102'
@@ -2925,6 +2925,15 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                 } : {}}
               >
                 <span className="text-sm font-semibold">{tab.name}</span>
+                {/* Badge for unread messages on favorites tab */}
+                {tab.id === 'favorites' && favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 9 
+                      ? '9+' 
+                      : favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0)
+                    }
+                  </span>
+                )}
               </button>
             ))}
           </div>
