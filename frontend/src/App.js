@@ -2747,6 +2747,143 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     );
   };
 
+  // Favorites functions
+  useEffect(() => {
+    if (activeTab === 'favorites') {
+      loadFavoriteUsers();
+    }
+  }, [activeTab]);
+
+  const loadFavoriteUsers = async () => {
+    // Mock data for favorites - in real implementation, fetch from API
+    setFavoriteUsers([
+      {
+        id: '1',
+        name: 'Ana Popescu',
+        nickname: 'ana_pop',
+        avatar: null,
+        isOnline: true,
+        lastSeen: new Date(),
+        unreadMessages: 3,
+        lastMessage: 'Ai văzut știrea de astăzi?',
+        lastMessageTime: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        isMuted: false,
+        commonRooms: ['Presa Liberă', 'Tech Talks România']
+      },
+      {
+        id: '2',
+        name: 'Mihai Ionescu',
+        nickname: 'mihai_dev',
+        avatar: null,
+        isOnline: true,
+        lastSeen: new Date(),
+        unreadMessages: 0,
+        lastMessage: 'Perfect! Mulțumesc pentru ajutor.',
+        lastMessageTime: new Date(Date.now() - 30 * 60 * 1000), // 30 min ago
+        isMuted: false,
+        commonRooms: ['Tech Talks România']
+      },
+      {
+        id: '3',
+        name: 'Elena Marin',
+        nickname: 'elena_m',
+        avatar: null,
+        isOnline: false,
+        lastSeen: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+        unreadMessages: 1,
+        lastMessage: 'Ne vedem mâine!',
+        lastMessageTime: new Date(Date.now() - 4 * 60 * 60 * 1000),
+        isMuted: false,
+        commonRooms: ['Presa Liberă']
+      },
+      {
+        id: '4',
+        name: 'Alexandru Popa',
+        nickname: 'alex_crypto',
+        avatar: null,
+        isOnline: false,
+        lastSeen: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+        unreadMessages: 5,
+        lastMessage: 'Bitcoin a crescut din nou! 🚀',
+        lastMessageTime: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+        isMuted: true, // Muted user
+        commonRooms: []
+      },
+      {
+        id: '5',
+        name: 'Ioana Georgescu',
+        nickname: 'ioana_travel',
+        avatar: null,
+        isOnline: true,
+        lastSeen: new Date(),
+        unreadMessages: 0,
+        lastMessage: 'Brasovul este superb toamna!',
+        lastMessageTime: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+        isMuted: false,
+        commonRooms: []
+      },
+      {
+        id: '6',
+        name: 'Dan Radu',
+        nickname: 'dan_business',
+        avatar: null,
+        isOnline: false,
+        lastSeen: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        unreadMessages: 0,
+        lastMessage: 'Să discutăm despre proiect.',
+        lastMessageTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        isMuted: false,
+        commonRooms: []
+      }
+    ]);
+  };
+
+  const handleFavoriteAction = (action, user) => {
+    switch (action) {
+      case 'dm':
+        // Open direct message
+        alert(`Opening DM with ${user.name}`);
+        break;
+      case 'jump':
+        // Jump to last message
+        alert(`Jumping to last message with ${user.name}`);
+        break;
+      case 'mute':
+        // Toggle mute
+        setFavoriteUsers(prev => prev.map(u => 
+          u.id === user.id ? { ...u, isMuted: !u.isMuted } : u
+        ));
+        break;
+      case 'unfollow':
+        // Remove from favorites
+        if (window.confirm(`Ești sigur că vrei să elimini pe ${user.name} din favoriți?`)) {
+          setFavoriteUsers(prev => prev.filter(u => u.id !== user.id));
+        }
+        break;
+      default:
+        break;
+    }
+    setShowFavoriteActions(null);
+  };
+
+  const formatLastSeen = (lastSeen) => {
+    const now = new Date();
+    const diffMs = now - lastSeen;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffHours < 1) {
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      return diffMins < 1 ? 'acum' : `${diffMins}min`;
+    } else if (diffHours < 24) {
+      return `${diffHours}h`;
+    } else if (diffDays < 7) {
+      return `${diffDays}d`;
+    } else {
+      return lastSeen.toLocaleDateString('ro-RO');
+    }
+  };
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header nou cu logo și taburi */}
