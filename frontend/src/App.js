@@ -3437,6 +3437,137 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
           </div>
         </div>
       )}
+
+      {/* Create Camera Modal */}
+      {showCreateCamera && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setShowCreateCamera(false)}>
+          <div className="bg-gray-800 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <h3 className="text-xl font-semibold text-white">Creează cameră nouă</h3>
+              <button
+                onClick={() => setShowCreateCamera(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <span className="text-xl">×</span>
+              </button>
+            </div>
+
+            {/* Create Form */}
+            <div className="p-6 space-y-4">
+              {/* Camera Name */}
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">
+                  Numele camerei *
+                </label>
+                <input
+                  type="text"
+                  value={newCamera.name}
+                  onChange={(e) => setNewCamera(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="ex: Tech Talks România"
+                  className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                  maxLength="50"
+                />
+              </div>
+
+              {/* Theme */}
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">
+                  Tema *
+                </label>
+                <input
+                  type="text"
+                  value={newCamera.theme}
+                  onChange={(e) => setNewCamera(prev => ({ ...prev, theme: e.target.value }))}
+                  placeholder="ex: Tehnologie, Politică, Gaming"
+                  className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                  maxLength="30"
+                />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">
+                  Descriere
+                </label>
+                <textarea
+                  value={newCamera.description}
+                  onChange={(e) => setNewCamera(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Descrie pe scurt despre ce este camera ta..."
+                  className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                  rows="3"
+                  maxLength="200"
+                />
+              </div>
+
+              {/* Visibility */}
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">
+                  Vizibilitate
+                </label>
+                <select
+                  value={newCamera.visibility}
+                  onChange={(e) => setNewCamera(prev => ({ ...prev, visibility: e.target.value }))}
+                  className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                >
+                  <option value="public">🌍 Publică - Oricine poate să se alăture</option>
+                  <option value="private">🔒 Privată - Doar tu și persoanele invitate</option>
+                  <option value="invite-only">📧 Doar cu invitație - Membri acceptați manual</option>
+                </select>
+              </div>
+
+              {/* Rules */}
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">
+                  Reguli (opțional)
+                </label>
+                <textarea
+                  value={newCamera.rules}
+                  onChange={(e) => setNewCamera(prev => ({ ...prev, rules: e.target.value }))}
+                  placeholder="1. Respectă ceilalți membri&#10;2. Postează doar conținut relevant&#10;3. Fără spam sau reclame"
+                  className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                  rows="4"
+                />
+              </div>
+
+              {/* Max Members */}
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">
+                  Numărul maxim de membri
+                </label>
+                <select
+                  value={newCamera.maxMembers}
+                  onChange={(e) => setNewCamera(prev => ({ ...prev, maxMembers: parseInt(e.target.value) }))}
+                  className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+                >
+                  <option value="50">50 membri</option>
+                  <option value="100">100 membri</option>
+                  <option value="200">200 membri</option>
+                  <option value="500">500 membri</option>
+                  <option value="1000">1000 membri</option>
+                </select>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3 pt-4">
+                <button
+                  onClick={() => setShowCreateCamera(false)}
+                  className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                >
+                  Anulează
+                </button>
+                <button
+                  onClick={handleCreateCamera}
+                  disabled={!newCamera.name.trim() || !newCamera.theme.trim()}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+                >
+                  Creează camera
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
