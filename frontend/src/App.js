@@ -2222,6 +2222,13 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      createPost();
+    }
+  };
+
   const generateLinkPreview = async (url) => {
     setIsLoadingPreview(true);
     try {
