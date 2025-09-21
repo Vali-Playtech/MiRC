@@ -876,19 +876,19 @@ const LoginForm = ({ isLogin, onToggle }) => {
       
       <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
         <div className="text-center mb-8">
-          {/* Logo retro VONEX cu glitch și font gros pentru login */}
+          {/* Logo VONEX personalizat cu culorile din imaginea ta pentru login */}
           <div className="w-auto h-20 mx-auto mb-6 flex items-center justify-center">
             <img 
-              src="/vonex-glitch-logo.svg" 
+              src="/vonex-custom-logo.svg" 
               alt="VONEX" 
-              className="h-20 w-auto"
+              className="h-24 w-auto"
               style={{
-                filter: 'drop-shadow(0 0 20px rgba(255, 51, 51, 0.5)) drop-shadow(0 0 30px rgba(51, 136, 255, 0.4)) drop-shadow(0 0 40px rgba(136, 255, 51, 0.3)) drop-shadow(0 0 50px rgba(255, 255, 255, 0.1))'
+                filter: 'drop-shadow(0 0 15px rgba(0, 255, 255, 0.5)) drop-shadow(0 0 25px rgba(68, 255, 68, 0.4)) drop-shadow(0 0 35px rgba(255, 255, 68, 0.3)) drop-shadow(0 0 45px rgba(255, 136, 68, 0.2))'
               }}
             />
           </div>
           <h1 className="text-4xl font-bold mb-3" style={{
-            background: 'linear-gradient(90deg, #ff3333 0%, #ff6633 20%, #ffaa33 40%, #88ff33 60%, #33ff88 80%, #3388ff 100%)',
+            background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
