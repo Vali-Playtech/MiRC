@@ -2193,8 +2193,14 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [selectedImageModal, setSelectedImageModal] = useState(null);
-  const [characterCount, setCharacterCount] = useState(0);
-  const MAX_CHARACTERS = 5000;
+  // New state for sharing functionality
+  const [shareModalPost, setShareModalPost] = useState(null);
+  const [shareOption, setShareOption] = useState(''); // 'room' or 'friend'
+  const [shareComment, setShareComment] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState('');
+  const [selectedFriend, setSelectedFriend] = useState('');
+  const [userRooms, setUserRooms] = useState([]);
+  const [userFavorites, setUserFavorites] = useState([]);
 
   // World Chat functions
   const handleTextChange = (e) => {
