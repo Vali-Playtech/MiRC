@@ -1684,6 +1684,95 @@ class BackendTester:
             
         except Exception as e:
             return self.log_test("Comprehensive World Chat System", False, f"Exception: {str(e)}")
+    
+    def test_quick_authentication_verification(self):
+        """Quick Authentication Test for Frontend Testing - Specific User Credentials"""
+        print("\n=== Quick Authentication Verification for Frontend Testing ===")
+        
+        try:
+            # Test with the exact credentials requested by user
+            test_user = {
+                "email": "test@vonex.com",
+                "password": "password123",
+                "first_name": "Test",
+                "last_name": "User",
+                "nickname": "testuser"
+            }
+            
+            # Test 1: User Registration
+            response = self.session.post(f"{API_BASE}/auth/register", json=test_user)
+            if response.status_code == 400 and "already registered" in response.text.lower():
+                # User already exists, try to login directly
+                self.log_test("User Registration", True, "User already exists - proceeding to login")
+            elif response.status_code == 200:
+                token_data = response.json()
+                if 'access_token' not in token_data:
+                    return self.log_test("Registration Token", False, "No access token in response")
+                self.log_test("User Registration", True, "New user registered successfully")
+            else:
+                return self.log_test("User Registration", False, 
+                                   f"Status: {response.status_code}, Response: {response.text[:200]}")
+            
+            # Test 2: User Login with exact credentials
+            login_data = {"email": test_user["email"], "password": test_user["password"]}
+            response = self.session.post(f"{API_BASE}/auth/login", json=login_data)
+            if not self.log_test("User Login", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:200]}"):
+                return False
+            
+            token_data = response.json()
+            if 'access_token' not in token_data:
+                return self.log_test("Login Token", False, "No access token in response")
+            
+            auth_token = token_data['access_token']
+            self.log_test("JWT Token Generation", True, f"Token received: {auth_token[:20]}...")
+            
+            # Test 3: Protected endpoint access with JWT token (GET /api/auth/me)
+            headers = {"Authorization": f"Bearer {auth_token}"}
+            response = self.session.get(f"{API_BASE}/auth/me", headers=headers)
+            if not self.log_test("GET /api/auth/profile", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:200]}"):
+                return False
+            
+            # Test 4: Verify profile data
+            user_data = response.json()
+            if user_data.get('email') != test_user['email']:
+                return self.log_test("Profile Email Validation", False, "Email mismatch in profile")
+            
+            if user_data.get('nickname') != test_user['nickname']:
+                return self.log_test("Profile Nickname Validation", False, "Nickname mismatch in profile")
+            
+            # Validate all required fields are present
+            required_fields = ['id', 'email', 'first_name', 'last_name', 'nickname', 'is_active', 'created_at']
+            for field in required_fields:
+                if field not in user_data:
+                    return self.log_test(f"Profile Field ({field})", False, f"Missing field: {field}")
+            
+            self.log_test("Profile Data Validation", True, "All profile fields present and correct")
+            
+            # Test 5: Test a few basic protected endpoints to ensure authentication is working
+            response = self.session.get(f"{API_BASE}/rooms", headers=headers)
+            if not self.log_test("Rooms Endpoint Access", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            response = self.session.get(f"{API_BASE}/friends", headers=headers)
+            if not self.log_test("Friends Endpoint Access", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 6: Test unauthorized access (should fail)
+            response = self.session.get(f"{API_BASE}/auth/me")
+            if not self.log_test("Unauthorized Access Prevention", response.status_code == 403,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            self.log_test("Quick Authentication Verification", True, 
+                         "✅ Backend authentication ready for frontend testing!")
+            return True
+            
+        except Exception as e:
+            return self.log_test("Quick Authentication Verification", False, f"Exception: {str(e)}")
 
     async def run_all_tests(self):
         """Run all backend tests including NEW Private Chat and Friends System"""
