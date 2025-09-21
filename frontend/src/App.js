@@ -888,11 +888,12 @@ const LoginForm = ({ isLogin, onToggle }) => {
             />
           </div>
           
-          {/* Slogan VONEX - redus pentru a se încadra în casetă */}
-          <div className="mb-4">
-            <p className="text-lg font-bold mb-3 whitespace-nowrap text-white" style={{
+          {/* Slogan VONEX - încadrat perfect stânga-dreapta */}
+          <div className="mb-4 px-4">
+            <p className="text-base font-bold mb-3 text-white text-center" style={{
               fontFamily: 'monospace',
-              letterSpacing: '0.02em'
+              letterSpacing: '0.01em',
+              lineHeight: '1.2'
             }}>
               Voice • Opinions • Network • Experiences
             </p>
