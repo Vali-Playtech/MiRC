@@ -2222,18 +2222,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     }
   };
 
-  const handleLinkChange = async (e) => {
-    const url = e.target.value;
-    setNewPostLink(url);
-    
-    // Generate preview when user types a valid URL
-    if (url.trim() && (url.startsWith('http://') || url.startsWith('https://'))) {
-      await generateLinkPreview(url);
-    } else {
-      setLinkPreview(null);
-    }
-  };
-
   const generateLinkPreview = async (url) => {
     setIsLoadingPreview(true);
     try {
