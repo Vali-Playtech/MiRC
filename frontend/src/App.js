@@ -3490,64 +3490,68 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   <div className="max-w-2xl mx-auto">
                     <h2 className="text-lg font-semibold text-white mb-6 text-center">Cercul vizual</h2>
                     <div className="relative w-80 h-80 mx-auto">
-                      {favoriteUsers.slice(0, 8).map((user, index) => {
-                        const angle = (index * 360) / Math.min(favoriteUsers.length, 8);
-                        const radius = 120;
-                        const x = Math.cos((angle - 90) * Math.PI / 180) * radius;
-                        const y = Math.sin((angle - 90) * Math.PI / 180) * radius;
-                        
-                        return (
-                          <div
-                            key={user.id}
-                            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                            style={{
-                              left: `calc(50% + ${x}px)`,
-                              top: `calc(50% + ${y}px)`
-                            }}
-                            onClick={() => setSelectedFavorite(user)}
-                          >
-                            <div className="relative">
-                              {/* User Avatar */}
-                              <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 transition-all duration-200 hover:scale-110 ${
-                                user.isOnline 
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-green-400' 
-                                  : 'bg-gradient-to-r from-gray-500 to-gray-600 border-gray-400'
-                              } ${user.isMuted ? 'opacity-60' : ''}`}>
-                                {user.avatar ? (
-                                  <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full object-cover" />
-                                ) : (
-                                  user.nickname?.charAt(0)?.toUpperCase() || user.name?.charAt(0)?.toUpperCase() || 'U'
+                      {favoriteUsers
+                        .slice()
+                        .sort((a, b) => b.unreadMessages - a.unreadMessages) // Sort by unread messages count (descending)
+                        .slice(0, 8)
+                        .map((user, index) => {
+                          const angle = (index * 360) / Math.min(favoriteUsers.length, 8);
+                          const radius = 120;
+                          const x = Math.cos((angle - 90) * Math.PI / 180) * radius;
+                          const y = Math.sin((angle - 90) * Math.PI / 180) * radius;
+                          
+                          return (
+                            <div
+                              key={user.id}
+                              className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                              style={{
+                                left: `calc(50% + ${x}px)`,
+                                top: `calc(50% + ${y}px)`
+                              }}
+                              onClick={() => setSelectedFavorite(user)}
+                            >
+                              <div className="relative">
+                                {/* User Avatar */}
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 transition-all duration-200 hover:scale-110 ${
+                                  user.isOnline 
+                                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-green-400' 
+                                    : 'bg-gradient-to-r from-gray-500 to-gray-600 border-gray-400'
+                                } ${user.isMuted ? 'opacity-60' : ''}`}>
+                                  {user.avatar ? (
+                                    <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full object-cover" />
+                                  ) : (
+                                    user.nickname?.charAt(0)?.toUpperCase() || user.name?.charAt(0)?.toUpperCase() || 'U'
+                                  )}
+                                </div>
+
+                                {/* Online Status Dot */}
+                                {user.isOnline && (
+                                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-gray-800 rounded-full"></div>
+                                )}
+
+                                {/* Unread Messages Badge */}
+                                {user.unreadMessages > 0 && (
+                                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                    {user.unreadMessages > 9 ? '9+' : user.unreadMessages}
+                                  </div>
+                                )}
+
+                                {/* Muted Icon */}
+                                {user.isMuted && (
+                                  <div className="absolute top-0 left-0 bg-gray-700 text-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                    🔇
+                                  </div>
                                 )}
                               </div>
 
-                              {/* Online Status Dot */}
-                              {user.isOnline && (
-                                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-gray-800 rounded-full"></div>
-                              )}
-
-                              {/* Unread Messages Badge */}
-                              {user.unreadMessages > 0 && (
-                                <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-                                  {user.unreadMessages > 9 ? '9+' : user.unreadMessages}
-                                </div>
-                              )}
-
-                              {/* Muted Icon */}
-                              {user.isMuted && (
-                                <div className="absolute top-0 left-0 bg-gray-700 text-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-xs">
-                                  🔇
-                                </div>
-                              )}
+                              {/* User Name */}
+                              <div className="mt-2 text-center">
+                                <div className="text-white text-sm font-medium line-clamp-1">{user.name}</div>
+                                <div className="text-gray-400 text-xs">@{user.nickname}</div>
+                              </div>
                             </div>
-
-                            {/* User Name */}
-                            <div className="mt-2 text-center">
-                              <div className="text-white text-sm font-medium line-clamp-1">{user.name}</div>
-                              <div className="text-gray-400 text-xs">@{user.nickname}</div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
 
                       {/* Center Logo */}
                       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
