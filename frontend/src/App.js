@@ -2879,6 +2879,26 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
           </div>
         </div>
       )}
+
+      {/* Image Modal for Full View */}
+      {selectedImageModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={() => setSelectedImageModal(null)}>
+          <div className="relative max-w-4xl max-h-full">
+            <img 
+              src={`${process.env.REACT_APP_BACKEND_URL}${selectedImageModal.url}`}
+              alt="Full size"
+              className="max-w-full max-h-full object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setSelectedImageModal(null)}
+              className="absolute top-4 right-4 bg-gray-900/70 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-900 transition-colors"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
