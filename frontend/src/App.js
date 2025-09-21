@@ -2826,7 +2826,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         id: '6',
         name: 'Dan Radu',
         nickname: 'dan_business',
-        avatar: null,
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
         isOnline: false,
         lastSeen: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
         unreadMessages: 0,
