@@ -894,7 +894,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
               fontFamily: 'monospace',
               letterSpacing: '0.05em'
             }}>
-              Voice • Opinions • Network • EXperiences
+              Voice • Opinions • Network • Experiences
             </p>
           </div>
           
