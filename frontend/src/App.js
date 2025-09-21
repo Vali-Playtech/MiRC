@@ -2500,42 +2500,138 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             </div>
 
             {/* Post Creation Area */}
+            {/* Post Creation Area - Facebook style */}
             <div className="bg-gray-800/50 p-6 border-t border-white/10">
               <div className="space-y-4">
-                {/* Text Input */}
-                <div>
+                {/* Main Text Input */}
+                <div className="space-y-2">
                   <textarea
                     value={newPost}
-                    onChange={(e) => setNewPost(e.target.value)}
-                    placeholder="Ce vrei să împarți cu lumea? Scrie un mesaj, o părere, o întrebare..."
-                    className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent"
+                    onChange={handleTextChange}
+                    placeholder="Ce vrei să împarți cu lumea?"
+                    className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all duration-200"
                     rows="3"
+                    style={{ minHeight: '80px' }}
                   />
+                  
+                  {/* Character Counter */}
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-gray-500">
+                      {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
+                    </span>
+                    {characterCount > MAX_CHARACTERS * 0.8 && (
+                      <span className={`${characterCount >= MAX_CHARACTERS ? 'text-red-400' : 'text-yellow-400'}`}>
+                        {MAX_CHARACTERS - characterCount} rămase
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {/* Link Input */}
-                <div>
+                {/* Uploaded Images Preview */}
+                {uploadedImages.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="text-sm text-gray-400">
+                      {uploadedImages.length} imagine{uploadedImages.length > 1 ? 'i' : ''} atașat{uploadedImages.length > 1 ? 'e' : 'ă'}
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {uploadedImages.map((image) => (
+                        <div key={image.id} className="relative group">
+                          <img 
+                            src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
+                            alt="Preview"
+                            className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => setSelectedImageModal(image)}
+                          />
+                          <button
+                            onClick={() => removeImage(image.id)}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Link Input and Preview */}
+                <div className="space-y-3">
                   <input
                     type="url"
                     value={newPostLink}
-                    onChange={(e) => setNewPostLink(e.target.value)}
-                    placeholder="Adaugă un link (opțional) - va genera automat preview"
+                    onChange={handleLinkChange}
+                    placeholder="Adaugă un link (opțional)"
                     className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent"
                   />
+                  
+                  {/* Link Preview Loading */}
+                  {isLoadingPreview && (
+                    <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+                      <span>Se generează preview...</span>
+                    </div>
+                  )}
+                  
+                  {/* Link Preview */}
+                  {linkPreview && (
+                    <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
+                      {linkPreview.image_url && (
+                        <img 
+                          src={linkPreview.image_url} 
+                          alt="Link preview"
+                          className="w-full h-40 object-cover"
+                        />
+                      )}
+                      <div className="p-4 space-y-2">
+                        <div className="text-xs text-gray-400 uppercase">{linkPreview.domain}</div>
+                        {linkPreview.title && (
+                          <div className="text-white font-medium text-sm line-clamp-2">{linkPreview.title}</div>
+                        )}
+                        {linkPreview.description && (
+                          <div className="text-gray-300 text-sm line-clamp-3">{linkPreview.description}</div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4 text-sm text-gray-400">
-                    <span>💡 Poți invita oameni în camera ta din orice postare</span>
+                  <div className="flex items-center space-x-4">
+                    {/* Image Upload Button */}
+                    <label className="cursor-pointer flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleImageUpload(Array.from(e.target.files))}
+                      />
+                      <span className="text-lg">📷</span>
+                      <span className="text-sm">Imagine</span>
+                    </label>
+                    
+                    <div className="text-xs text-gray-500">
+                      💡 Poți invita oameni în camera ta din orice postare
+                    </div>
                   </div>
+                  
                   <button
-                    onClick={() => {/* createPost */}}
-                    disabled={!newPost.trim()}
+                    onClick={createPost}
+                    disabled={(!newPost.trim() && uploadedImages.length === 0 && !newPostLink.trim()) || isCreatingPost || characterCount > MAX_CHARACTERS}
                     className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2"
                   >
-                    <span>🚀</span>
-                    <span>Postează</span>
+                    {isCreatingPost ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Se postează...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🚀</span>
+                        <span>Postează</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
