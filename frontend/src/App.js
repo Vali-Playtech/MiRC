@@ -2495,142 +2495,163 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               </div>
             </div>
 
-            {/* Feed Posts */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {posts.length === 0 ? (
-                <div className="text-center py-12">
-                  <h3 className="text-xl font-semibold text-white mb-2">Welcome to World Chat!</h3>
-                  <p className="text-gray-400 mb-6">Primul feed global VONEX. Împarte știri, link-uri și idei cu toată comunitatea.</p>
-                  <p className="text-sm text-gray-500">Fii primul care postează ceva!</p>
-                </div>
-              ) : (
-                posts.map((post) => (
-                  <div key={post.id} className="bg-gray-800/50 rounded-xl border border-white/10 overflow-hidden">
-                    {/* Post Header */}
-                    <div className="p-4 flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
-                        {post.user_avatar ? (
-                          <img src={post.user_avatar} alt={post.user_name} className="w-10 h-10 rounded-full object-cover" />
-                        ) : (
-                          post.user_nickname?.charAt(0)?.toUpperCase() || 'U'
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white font-medium text-sm">{post.user_name || post.user_nickname}</div>
-                        <div className="text-gray-400 text-xs">{formatPostDate(post.created_at)}</div>
-                      </div>
-                    </div>
-
-                    {/* Post Content */}
-                    {post.content && (
-                      <div className="px-4 pb-3">
-                        <div className="text-white whitespace-pre-wrap break-words">
-                          {post.content.length > 500 ? (
-                            <>
-                              {post.content.substring(0, 500)}...
-                              <button className="text-cyan-400 hover:text-cyan-300 ml-1 text-sm">
-                                Vezi mai mult
-                              </button>
-                            </>
-                          ) : (
-                            post.content
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Post Images */}
-                    {post.images && post.images.length > 0 && (
-                      <div className="pb-3">
-                        {post.images.length === 1 ? (
-                          <div className="px-4">
-                            <img 
-                              src={`${process.env.REACT_APP_BACKEND_URL}${post.images[0].thumbnail_url}`}
-                              alt="Post image"
-                              className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={() => setSelectedImageModal(post.images[0])}
-                            />
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-2 gap-1 px-4">
-                            {post.images.slice(0, 4).map((image, index) => (
-                              <div key={image.id} className="relative">
-                                <img 
-                                  src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
-                                  alt={`Post image ${index + 1}`}
-                                  className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
-                                  onClick={() => setSelectedImageModal(image)}
-                                />
-                                {index === 3 && post.images.length > 4 && (
-                                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg rounded cursor-pointer">
-                                    +{post.images.length - 4}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Link Preview */}
-                    {post.link_preview && (
-                      <div className="px-4 pb-3">
-                        <div className="bg-gray-700/30 border border-white/10 rounded-lg overflow-hidden">
-                          {post.link_preview.image_url && (
-                            <img 
-                              src={post.link_preview.image_url} 
-                              alt="Link preview"
-                              className="w-full h-48 object-cover"
-                            />
-                          )}
-                          <div className="p-4 space-y-2">
-                            <div className="text-xs text-gray-400 uppercase">{post.link_preview.domain}</div>
-                            {post.link_preview.title && (
-                              <div className="text-white font-medium text-sm">{post.link_preview.title}</div>
-                            )}
-                            {post.link_preview.description && (
-                              <div className="text-gray-300 text-sm line-clamp-2">{post.link_preview.description}</div>
-                            )}
-                            <a 
-                              href={post.link_preview.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-cyan-400 hover:text-cyan-300 text-sm inline-flex items-center space-x-1"
-                            >
-                              <span>Vizitează</span>
-                              <span>↗</span>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Post Actions */}
-                    <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between">
-                      <div className="flex items-center space-x-6">
-                        <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                          <span>👍</span>
-                          <span className="text-sm">Like</span>
-                        </button>
-                        <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                          <span>💬</span>
-                          <span className="text-sm">Comentează</span>
-                        </button>
-                        <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                          <span>📤</span>
-                          <span className="text-sm">Partajează</span>
-                        </button>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {post.reactions && Object.values(post.reactions).reduce((a, b) => a + b, 0) > 0 && 
-                          `${Object.values(post.reactions).reduce((a, b) => a + b, 0)} reacții`
-                        }
-                      </div>
-                    </div>
+            {/* Feed Posts - Facebook-style centered layout */}
+            <div className="flex-1 overflow-y-auto py-6">
+              <div className="max-w-2xl mx-auto px-4">
+                {posts.length === 0 ? (
+                  <div className="text-center py-12">
+                    <h3 className="text-xl font-semibold text-white mb-2">Welcome to World Chat!</h3>
+                    <p className="text-gray-400 mb-6">Primul feed global VONEX. Împarte știri, link-uri și idei cu toată comunitatea.</p>
+                    <p className="text-sm text-gray-500">Fii primul care postează ceva!</p>
                   </div>
-                ))
-              )}
+                ) : (
+                  <div className="space-y-4">
+                    {posts.map((post) => (
+                      <div key={post.id} className="bg-gray-800/50 rounded-xl border border-white/10 overflow-hidden shadow-lg">
+                        {/* Post Header */}
+                        <div className="p-4 flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
+                            {post.user_avatar ? (
+                              <img src={post.user_avatar} alt={post.user_name} className="w-10 h-10 rounded-full object-cover" />
+                            ) : (
+                              post.user_nickname?.charAt(0)?.toUpperCase() || 'U'
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-white font-medium text-sm">{post.user_name || post.user_nickname}</div>
+                            <div className="text-gray-400 text-xs">{formatPostDate(post.created_at)}</div>
+                          </div>
+                          <div className="relative">
+                            <button className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700/50 transition-colors">
+                              <span className="text-lg">⋯</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Post Content */}
+                        {post.content && (
+                          <div className="px-4 pb-3">
+                            <div className="text-white whitespace-pre-wrap break-words text-sm leading-relaxed">
+                              {post.content.length > 500 ? (
+                                <>
+                                  {post.content.substring(0, 500)}...
+                                  <button className="text-cyan-400 hover:text-cyan-300 ml-1 text-sm font-medium">
+                                    Vezi mai mult
+                                  </button>
+                                </>
+                              ) : (
+                                post.content
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Post Images */}
+                        {post.images && post.images.length > 0 && (
+                          <div className="pb-3">
+                            {post.images.length === 1 ? (
+                              <div className="px-4">
+                                <img 
+                                  src={`${process.env.REACT_APP_BACKEND_URL}${post.images[0].thumbnail_url}`}
+                                  alt="Post image"
+                                  className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                  onClick={() => setSelectedImageModal(post.images[0])}
+                                />
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-2 gap-1 px-4">
+                                {post.images.slice(0, 4).map((image, index) => (
+                                  <div key={image.id} className="relative">
+                                    <img 
+                                      src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
+                                      alt={`Post image ${index + 1}`}
+                                      className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
+                                      onClick={() => setSelectedImageModal(image)}
+                                    />
+                                    {index === 3 && post.images.length > 4 && (
+                                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg rounded cursor-pointer">
+                                        +{post.images.length - 4}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Link Preview */}
+                        {post.link_preview && (
+                          <div className="px-4 pb-3">
+                            <div className="bg-gray-700/30 border border-white/10 rounded-lg overflow-hidden hover:bg-gray-700/40 transition-colors cursor-pointer">
+                              {post.link_preview.image_url && (
+                                <img 
+                                  src={post.link_preview.image_url} 
+                                  alt="Link preview"
+                                  className="w-full h-48 object-cover"
+                                />
+                              )}
+                              <div className="p-4 space-y-2">
+                                <div className="text-xs text-gray-400 uppercase font-medium">{post.link_preview.domain}</div>
+                                {post.link_preview.title && (
+                                  <div className="text-white font-medium text-sm line-clamp-2">{post.link_preview.title}</div>
+                                )}
+                                {post.link_preview.description && (
+                                  <div className="text-gray-300 text-sm line-clamp-2">{post.link_preview.description}</div>
+                                )}
+                                <a 
+                                  href={post.link_preview.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-cyan-400 hover:text-cyan-300 text-sm inline-flex items-center space-x-1 font-medium"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <span>Vizitează</span>
+                                  <span>↗</span>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Reactions Bar */}
+                        {(post.reactions && Object.values(post.reactions).reduce((a, b) => a + b, 0) > 0) && (
+                          <div className="px-4 py-2 border-t border-white/5">
+                            <div className="flex items-center justify-between text-xs text-gray-400">
+                              <div className="flex items-center space-x-1">
+                                <span>👍</span>
+                                <span>{Object.values(post.reactions).reduce((a, b) => a + b, 0)}</span>
+                              </div>
+                              <div className="flex items-center space-x-4">
+                                <span>{post.comments_count || 0} comentarii</span>
+                                <span>2 partajări</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Post Actions */}
+                        <div className="px-4 py-3 border-t border-white/10">
+                          <div className="flex items-center justify-around">
+                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                              <span className="text-lg">👍</span>
+                              <span className="text-sm font-medium">Like</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                              <span className="text-lg">💬</span>
+                              <span className="text-sm font-medium">Comentează</span>
+                            </button>
+                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                              <span className="text-lg">📤</span>
+                              <span className="text-sm font-medium">Partajează</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Post Creation Area */}
