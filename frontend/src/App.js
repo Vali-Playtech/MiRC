@@ -2637,25 +2637,32 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             </div>
 
             {/* Post Creation Area */}
-            {/* Post Creation Area - Facebook style */}
+            {/* Post Creation Area - Facebook style cu un singur câmp */}
             <div className="bg-gray-800/50 p-6 border-t border-white/10">
               <div className="space-y-4">
-                {/* Main Text Input */}
+                {/* Single Text Input pentru mesaj și link */}
                 <div className="space-y-2">
                   <textarea
                     value={newPost}
                     onChange={handleTextChange}
-                    placeholder="Ce vrei să împarți cu lumea?"
+                    placeholder="Ce vrei să împarți cu lumea? Poți scrie text, pune link-uri..."
                     className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all duration-200"
-                    rows="3"
-                    style={{ minHeight: '80px' }}
+                    rows="4"
+                    style={{ minHeight: '100px' }}
                   />
                   
                   {/* Character Counter */}
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-500">
-                      {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
-                    </span>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-gray-500">
+                        {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
+                      </span>
+                      {newPostLink && (
+                        <span className="text-cyan-400 text-xs">
+                          🔗 Link detectat automat
+                        </span>
+                      )}
+                    </div>
                     {characterCount > MAX_CHARACTERS * 0.8 && (
                       <span className={`${characterCount >= MAX_CHARACTERS ? 'text-red-400' : 'text-yellow-400'}`}>
                         {MAX_CHARACTERS - characterCount} rămase
@@ -2691,46 +2698,35 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   </div>
                 )}
 
-                {/* Link Input and Preview */}
-                <div className="space-y-3">
-                  <input
-                    type="url"
-                    value={newPostLink}
-                    onChange={handleLinkChange}
-                    placeholder="Adaugă un link (opțional)"
-                    className="w-full p-3 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent"
-                  />
-                  
-                  {/* Link Preview Loading */}
-                  {isLoadingPreview && (
-                    <div className="flex items-center space-x-2 text-gray-400 text-sm">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
-                      <span>Se generează preview...</span>
-                    </div>
-                  )}
-                  
-                  {/* Link Preview */}
-                  {linkPreview && (
-                    <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
-                      {linkPreview.image_url && (
-                        <img 
-                          src={linkPreview.image_url} 
-                          alt="Link preview"
-                          className="w-full h-40 object-cover"
-                        />
+                {/* Link Preview Loading */}
+                {isLoadingPreview && (
+                  <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+                    <span>Se generează preview pentru link...</span>
+                  </div>
+                )}
+
+                {/* Link Preview */}
+                {linkPreview && (
+                  <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
+                    {linkPreview.image_url && (
+                      <img 
+                        src={linkPreview.image_url} 
+                        alt="Link preview"
+                        className="w-full h-40 object-cover"
+                      />
+                    )}
+                    <div className="p-4 space-y-2">
+                      <div className="text-xs text-gray-400 uppercase">{linkPreview.domain}</div>
+                      {linkPreview.title && (
+                        <div className="text-white font-medium text-sm line-clamp-2">{linkPreview.title}</div>
                       )}
-                      <div className="p-4 space-y-2">
-                        <div className="text-xs text-gray-400 uppercase">{linkPreview.domain}</div>
-                        {linkPreview.title && (
-                          <div className="text-white font-medium text-sm line-clamp-2">{linkPreview.title}</div>
-                        )}
-                        {linkPreview.description && (
-                          <div className="text-gray-300 text-sm line-clamp-3">{linkPreview.description}</div>
-                        )}
-                      </div>
+                      {linkPreview.description && (
+                        <div className="text-gray-300 text-sm line-clamp-3">{linkPreview.description}</div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex items-center justify-between">
@@ -2755,7 +2751,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   
                   <button
                     onClick={createPost}
-                    disabled={(!newPost.trim() && uploadedImages.length === 0 && !newPostLink.trim()) || isCreatingPost || characterCount > MAX_CHARACTERS}
+                    disabled={(!newPost.trim() && uploadedImages.length === 0) || isCreatingPost || characterCount > MAX_CHARACTERS}
                     className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2"
                   >
                     {isCreatingPost ? (
