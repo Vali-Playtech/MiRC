@@ -3516,15 +3516,25 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                           <div className="flex items-center space-x-3">
                             {/* Avatar */}
                             <div className="relative flex-shrink-0">
-                              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
+                              <div className={`w-12 h-12 rounded-full border-2 overflow-hidden ${
                                 user.isOnline 
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
-                                  : 'bg-gradient-to-r from-gray-500 to-gray-600'
+                                  ? 'border-green-500' 
+                                  : 'border-gray-500'
                               } ${user.isMuted ? 'opacity-60' : ''}`}>
                                 {user.avatar ? (
-                                  <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
+                                  <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                                 ) : (
-                                  <div className="w-2 h-2 bg-white rounded-full opacity-20"></div>
+                                  <div className={`w-full h-full flex items-center justify-center ${
+                                    user.isOnline 
+                                      ? 'bg-green-100' 
+                                      : 'bg-gray-100'
+                                  }`}>
+                                    <div className={`w-2 h-2 rounded-full ${
+                                      user.isOnline 
+                                        ? 'bg-green-500' 
+                                        : 'bg-gray-500'
+                                    } opacity-60`}></div>
+                                  </div>
                                 )}
                               </div>
 
