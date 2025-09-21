@@ -1,92 +1,115 @@
 <analysis>
-The trajectory details the evolution of the VONEX PWA. Initially, the AI engineer resolved two critical bugs: an Unknown user display in the friends panel due to a / database schema inconsistency, fixed by adding backward compatibility in . The second bug involved the chat input field not clearing after message submission, particularly when using the send button, which was a React state management race condition. This was resolved by immediately clearing the  state at the beginning of the  function in .
-
-Following bug fixes, a significant focus shifted to branding and UI/UX. The user iterated through several design requests for the VONEX logo, moving from a retro-digital SVG to a more pronounced glitch style, and finally to using an original PNG logo. The logo was then resized and repositioned within the header and login page, culminating in the integration of a new slogan, Voice • Opinions • Network • Experiences. This slogan underwent multiple refinements for positioning, styling, and textual accuracy.
-
-The most recent phase involved a major architectural redesign, transitioning the application from a simple chat to a complex social platform with a tabbed interface. The user provided detailed requirements for World Chat, Camera ta, Favoriți, Camere urmărite/recente, and Search tabs. The AI engineer, after confirming the plan, began implementing the new tabbed header and the World Chat interface, including a post creation area and placeholders for other sections. The last user request was to refine the tab appearance, making them uniform bubbles and removing emojis.
+The trajectory details the iterative development of the VONEX PWA. Initially, the AI engineer addressed two critical bugs: a nickname/name inconsistency in the friends panel and a chat input clearing issue. Following this, significant effort was invested in branding, including multiple logo and slogan iterations. The core of the recent work revolved around a major UI/UX overhaul, transitioning to a tabbed interface. The AI engineer successfully implemented the World Chat tab with Facebook-style posting, link previews, and image uploads, refined with a single input field and a responsive layout. The Camerele mele tab was also fully implemented with room creation and management. The Favoriți tab underwent a complete redesign from a circular layout to a WhatsApp/Messenger-style vertical sidebar. The current work focuses on refining the avatars in the Favoriți sidebar to display actual profile pictures with status borders instead of initials.
 </analysis>
 
 <product_requirements>
-The VONEX PWA was initially conceived as a mIRC-inspired mobile chat and community platform. Key features requested and implemented or planned include:
--   **Core Chat Functionality**: Real-time chat, private messaging, authentication (email/password).
--   **Friend System**: Add friends, view avatars in a dedicated bar, private conversations via overlay.
--   **Avatar Interaction**: On-click/hover bubbles for Chat and Favorite actions, subtle indicators.
--   **UI/UX Enhancements**: Input field clearing after message send, auto-scroll fix with scroll to bottom button, WhatsApp-style message layout.
--   **Prieteni activi Panel**: Display only favorited users, show unread message counts, with Chat and Unfavorite buttons.
--   **Responsive Design**: Optimal display across devices.
--   **Branding & Visuals**: Modern UI, representative icons, gradient backgrounds, animations, customizable avatar system, multilingual support.
--   **Logo Design**: Multiple iterations for the VONEX logo, from retro-digital SVG to glitch style, and finally using an original PNG, with specific requests for size, position (right side of header, larger on login), and effects.
--   **Slogan Integration**: Adding Voice • Opinions • Network • Experiences to the login page, with specific requirements for placement (above login form), single-line display, white color, centering, and correct capitalization.
--   **Major Interface Redesign**: Implement a tab-based interface after login with:
-    -   **World Chat**: Global public chat, post text/links (with preview), invite to Camera mea, basic moderation.
-    -   **Camera ta**: User-created themed chat rooms (title, theme, description, rules, visibility, pinned messages, invitations, member list with roles).
-    -   **Cercul vizual cu favoriți**: Graphical circle of favorited users with new message badges, quick actions (DM, jump to last message, mute/unfollow).
-    -   **Camere urmărite / deschise recent**: List of recent/followed rooms for quick access, with pinning and sorting options.
-    -   **Search camere**: Search by topics/niches (e.g., tech, politics) with natural language queries, filtering options (location, room type, members, activity), and visibility rules for private/invite-only rooms.
--   **Moderation & Safety**: Report posts, block users, 18+ gating for Erotic niche.
--   **Notifications & UX**: Badges on new messages, Dark/Light mode, fast UI response.
+The VONEX PWA aims to be a mIRC-inspired mobile chat and community platform.
+**Initial Core Requirements & Implementations:**
+-   **Core Chat:** Real-time chat, private messaging, authentication.
+-   **Friend System:** Add friends, view avatars, private conversations, Prieteni activi panel.
+-   **UI/UX:** Input field clearing, auto-scroll, WhatsApp-style message layout, responsive design.
+-   **Branding:** Modern UI, icons, gradient backgrounds, customizable avatars, multilingual support.
+-   **Logo & Slogan:** Multiple logo iterations (retro-digital, glitch, original PNG), specific sizing/positioning, integration of Voice • Opinions • Network • Experiences slogan with styling.
+
+**Major Interface Redesign (Tab-based after login):**
+-   **World Chat:** Global public chat, Facebook-style post creation (text, links with auto-preview, image upload, comments, character limits), basic moderation.
+-   **Camerele mele (formerly Camera ta):** User-created themed chat rooms (title, theme, description, rules, visibility, pinned messages, invitations, member list, roles). Must display *only* user-created rooms, with Presa Liberă as a key example.
+-   **Favoriți:** A list of favorited users, initially envisioned as a visual circle, then refined to a WhatsApp/Messenger-style right-hand vertical sidebar. Features include unread message badges on the tab, sorting by unread messages, displaying profile pictures with colored online/offline borders, and quick actions (DM, last message, mute/unmute, unfavorite).
+-   **Camere urmărite / deschise recent:** List of recent/followed rooms.
+-   **Search camere:** Search rooms by topics, natural language queries.
+-   **Moderation & Safety:** Reporting, blocking, 18+ gating.
+-   **Notifications & UX:** Badges, Dark/Light mode, fast UI.
 </product_requirements>
 
 <key_technical_concepts>
--   **PWA (Progressive Web App):** Web app for native-like mobile experience.
+-   **PWA:** Progressive Web App for native-like mobile experience.
 -   **React.js:** Frontend library for dynamic UIs.
 -   **FastAPI:** Python framework for backend APIs.
 -   **MongoDB:** NoSQL database for data storage.
--   **Tailwind CSS:** Utility-first CSS for styling.
+-   **Tailwind CSS:** Utility-first CSS framework for styling.
 -   **React State Management:** Handling UI state, including race conditions.
--   **SVG & PNG Handling:** Integrating scalable vector graphics and raster images.
+-   **Image Processing (Pillow):** Backend image compression and thumbnail generation.
+-   **Web Scraping (BeautifulSoup):** Backend link preview generation.
+-   **:** Asynchronous file operations for non-blocking I/O.
+-   **Regex:** For dynamic URL detection in text input.
 </key_technical_concepts>
 
 <code_architecture>
-The application utilizes a full-stack architecture consisting of a React frontend, a FastAPI backend, and a MongoDB database.
+The application uses a React frontend, FastAPI backend, and MongoDB.
 
 
 
 -   
-    -   **Importance:** Acts as the central API server, managing user authentication, rooms, messages, and friend relationships, interacting with MongoDB.
+    -   **Importance:** Central API for user management, rooms, messages, friends, and now World Chat posts.
     -   **Changes:**
-        -   Modified  and  endpoints (around lines 420, 465, 483, 501, 517) to handle database schema inconsistency (checking for both  and  fields for user data, e.g., ) to correctly display favorited users.
+        -   Bug fix for friend display (nickname/name schema).
+        -   Added imports: , ,  for file uploads, scraping.
+        -   Static files configuration to serve uploaded images (e.g., from ).
+        -   New Pydantic models: , , , .
+        -   Utility functions:  (for images),  (for URLs).
+        -   New World Chat API endpoints:  (create/fetch posts), , .
+        -   Fixed a critical FastAPI parameter issue related to 422 errors, identified and resolved by the testing agent.
 -   
-    -   **Importance:** The main React component, orchestrating UI rendering, state management, and interaction logic.
+    -   **Importance:** Main React component, handles UI, state, and interaction.
     -   **Changes:**
-        -   **Input Field Clearing:** Resolved a React state race condition in the  function by moving  to the beginning of the function (around line 1450) after capturing , restoring it on error.
-        -   **Logo & Branding:**
-            -   Updated to use , then , and finally  for both the login page and application header (around lines 875, 2180).
-            -   Adjusted logo dimensions (, , , ) and positioning (right side of header) based on user feedback.
-            -   Removed/repositioned welcome messages and integrated a new slogan.
-        -   **Slogan Integration & Refinement:** Added the slogan Voice • Opinions • Network • Experiences to the login page (around line 880), with extensive styling adjustments for font size ( down to ), letter spacing, padding (, ), , , and color (white, then back to gradient). Corrected EXperiences to Experiences.
-        -   **Tabbed Interface:** Introduced a new header structure with 5 functional tabs: World Chat, Camera ta, Favoriți, Recente, and Search (around line 2200). Implemented the initial layout for World Chat including a descriptive header, welcome screen, and a post creation area, with placeholders for other tabs.
--    (SVG and PNG files)
-    -   **Importance:** Stores static assets, particularly the various iterations of the VONEX logo.
-    -   **Created:** , , , , , , , , .
+        -   Bug fix for chat input clearing.
+        -   Branding updates: logo () and slogan integration.
+        -   Tabbed interface implementation:  state,  management, new header structure with World Chat, Camerele mele, Favoriți, Recente, Search.
+        -   Emoji removal from all tab content areas (e.g., 🌍, 🏠, ⭐, 🕒, 🔍).
+        -   **World Chat Tab:**
+            -   Comprehensive Facebook-style post creation UI: single textarea for text/links, image upload button, character counter, Postează button.
+            -   State management for , , , .
+            -   Functions for  (with regex for URL detection), , , .
+            -   Facebook-style feed display with post cards, link previews, image thumbnails, avatar, username, timestamp.
+            -   Image modal () for full-size viewing.
+            -   Responsive layout for content and post creation (centered on desktop, full-width on mobile).
+            -   Removed Like and Comment buttons, kept Partajează.
+            -   Added  with two sharing options (În camera ta, Către un prieten).
+            -   Added  handler for  posting.
+        -   **Camerele mele Tab:**
+            -   Renamed tab from Camera ta to Camerele mele.
+            -   New state for .
+            -   Cameră nouă button and  for room creation (name, theme, description, visibility, rules, max members).
+            -   Display of *only* user-created rooms (e.g., Presa Liberă, Tech Talks România, Gamers Private), with full management controls (Enter, Settings, Pause/Activate, Delete).
+            -    component for reusable room display.
+        -   **Favoriți Tab:**
+            -   Initial implementation as a Cercul vizual cu favoriți (circular layout).
+            -   Redesigned to a WhatsApp/Messenger-style vertical sidebar on the right ().
+            -   State for .
+            -   Displays list of favorited users with profile pictures (mocked), online/offline status, unread message badges, last message preview, common rooms.
+            -   Badge in the Favoriți tab header showing total unread messages.
+            -   Users in the sidebar sorted by unread message count (descending).
+            -   Corrected avatar display to remove internal initial letters, replacing them with real profile pictures and colored status borders/dots.
 -   
-    -   **Importance:** PWA manifest file, defining app metadata and icons.
-    -   **Changes:** Updated with new retro-style PWA icons and theme colors to match the evolving logo design.
+    -   **Importance:** Stores static assets.
+    -   **Changes:** Added various logo iterations ( being the latest).
+-   
+    -   **Importance:** PWA manifest.
+    -   **Changes:** Updated with new retro-style PWA icons and theme colors.
 </code_architecture>
 
 <pending_tasks>
--   **Backend for World Chat**: Implement post creation, link previews, invitation system, basic moderation.
--   **Camera ta Tab Full Implementation**: Logic for creating, managing, and interacting with personal themed rooms.
--   **Cercul vizual cu favoriți Tab Full Implementation**: Logic for displaying favorited users as a literal circle with avatars, notifications, and quick actions.
--   **Camere urmărite / deschise recent Tab Full Implementation**: Logic for listing recent/followed rooms, pinning, and sorting.
--   **Search camere Tab Full Implementation**: Logic for searching rooms by topic and natural language queries, including filtering.
--   **Moderation & Safety Features**: Implement reporting, blocking, and 18+ gating.
--   **Notifications & UX General**: Implement badges and Dark/Light mode.
+-   **Full implementation of Camere urmărite / deschise recent tab.**
+-   **Full implementation of Search camere tab.**
+-   **Backend implementation for Camerele mele**: Room creation/management logic and persistence.
+-   **Backend implementation for Favoriți**: User favorites management and direct messaging.
+-   **Integration of actual chat functionality** within World Chat, Camerele mele (individual rooms), and Favoriți (direct messages).
+-   **Moderation & Safety Features**: Reporting, blocking, 18+ gating.
+-   **Notifications & UX General**: Badges beyond unread message count, Dark/Light mode.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was in the process of implementing a major UI/UX overhaul for the VONEX application. The user requested a new tabbed interface after login, replacing the previous simple room list.
+Immediately before this summary request, the AI engineer was working on refining the avatar display within the Favoriți tab's WhatsApp/Messenger-style sidebar. The user explicitly requested that the avatars should display user profile pictures instead of initials, with a subtle colored border (green for online, grey for offline) and a small colored dot to indicate status.
 
-The AI engineer successfully implemented the initial structure of this new interface:
--   A new header was created in  (around line 2200) that now features five distinct tabs: World Chat, Camera ta, Favoriți, Recente, and Search.
--   The World Chat tab was partially implemented, displaying a descriptive header (Cameră globală publică • Oricine poate posta), a motivational welcome screen (with a globe emoji and text), and a functional post creation area. This area includes a textarea for messages, an input for URLs (intended for link previews), and a Postează button with a gradient design.
--   Placeholder screens with appropriate emojis and messages were added for the other four tabs (Camera ta, Cercul Favoriților, Camere Recente, Search) to show the structure.
--   The navigation between these tabs is functional, with visual active states and responsive design for different screen sizes.
+The AI engineer has already made the following changes in :
+1.  Modified the rendering logic for avatars in the  to expect and use a  URL for each user.
+2.  Implemented conditional styling to display a green border and dot for online users () and a grey border and dot for offline users ().
+3.  Updated the mock  data to include placeholder  URLs for each user, allowing the new rendering logic to be tested with visual content.
 
-The last explicit request from the user was: Scoate faviconurile si fa taburile ca niste bule, cum este cea de la World Chat (Chat Message 293). This means the current task is to modify the appearance of the tabs: remove the current emoji icons and ensure all tabs are visually consistent, styled as rounded bubbles similar to the active World Chat tab.
+The goal is to eliminate the letters previously seen inside the avatars and replace them with a more polished and informative display using actual profile pictures and visual online/offline indicators.
 </current_work>
 
 <optional_next_step>
-Adjust the frontend  to remove emojis from tabs and style all tabs as rounded bubbles.
+Test the new Favoriți interface with the implemented profile pictures and colored status borders.
 </optional_next_step>
 
