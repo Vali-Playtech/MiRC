@@ -888,9 +888,9 @@ const LoginForm = ({ isLogin, onToggle }) => {
             />
           </div>
           
-          {/* Slogan VONEX */}
+          {/* Slogan VONEX - acronim */}
           <div className="mb-6">
-            <p className="text-2xl font-bold mb-2" style={{
+            <p className="text-2xl font-bold mb-4" style={{
               background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -899,26 +899,10 @@ const LoginForm = ({ isLogin, onToggle }) => {
               fontFamily: 'monospace',
               letterSpacing: '0.1em'
             }}>
-              Connect • Communicate • Create
-            </p>
-            <p className="text-gray-400 text-lg font-medium">
-              The Future of Digital Communication
+              Voice • Opinions • Network • EXperiences
             </p>
           </div>
           
-          <h1 className="text-4xl font-bold mb-3" style={{
-            background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            textShadow: '0 0 30px rgba(255, 255, 255, 0.25)',
-            fontFamily: 'monospace',
-            letterSpacing: '0.15em',
-            textTransform: 'uppercase',
-            fontWeight: '900'
-          }}>
-            {isLogin ? t('welcomeBack') : t('joinVonex')}
-          </h1>
           <p className="text-gray-300 text-lg">
             {isLogin ? t('signInSubtitle') : t('createAccountSubtitle')}
           </p>
