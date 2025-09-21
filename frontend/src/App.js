@@ -2688,22 +2688,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                           </div>
                         )}
 
-                        {/* Reactions Bar */}
-                        {(post.reactions && Object.values(post.reactions).reduce((a, b) => a + b, 0) > 0) && (
-                          <div className="px-4 py-2 border-t border-white/5">
-                            <div className="flex items-center justify-between text-xs text-gray-400">
-                              <div className="flex items-center space-x-1">
-                                <span>👍</span>
-                                <span>{Object.values(post.reactions).reduce((a, b) => a + b, 0)}</span>
-                              </div>
-                              <div className="flex items-center space-x-4">
-                                <span>{post.comments_count || 0} comentarii</span>
-                                <span>2 partajări</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
                         {/* Post Actions - Only Share button */}
                         <div className="px-4 py-3 border-t border-white/10">
                           <div className="flex items-center justify-center">
