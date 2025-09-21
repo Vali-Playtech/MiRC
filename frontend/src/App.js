@@ -2655,136 +2655,138 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             </div>
 
             {/* Post Creation Area */}
-            {/* Post Creation Area - Facebook style cu un singur câmp */}
-            <div className="bg-gray-800/50 p-6 border-t border-white/10">
-              <div className="space-y-4">
-                {/* Single Text Input pentru mesaj și link */}
-                <div className="space-y-2">
-                  <textarea
-                    value={newPost}
-                    onChange={handleTextChange}
-                    onKeyDown={handleKeyPress}
-                    placeholder="Ce vrei să împarți cu lumea? Poți scrie text, pune link-uri..."
-                    className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all duration-200"
-                    rows="4"
-                    style={{ minHeight: '100px' }}
-                  />
-                  
-                  {/* Character Counter */}
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex items-center space-x-4">
-                      <span className="text-gray-500">
-                        {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
-                      </span>
-                      {newPostLink && (
-                        <span className="text-cyan-400 text-xs">
-                          🔗 Link detectat automat
+            {/* Post Creation Area - Facebook-style centered cu un singur câmp */}
+            <div className="bg-gray-800/50 border-t border-white/10">
+              <div className="max-w-2xl mx-auto p-6">
+                <div className="space-y-4">
+                  {/* Single Text Input pentru mesaj și link */}
+                  <div className="space-y-2">
+                    <textarea
+                      value={newPost}
+                      onChange={handleTextChange}
+                      onKeyDown={handleKeyPress}
+                      placeholder="Ce vrei să împarți cu lumea? Poți scrie text, pune link-uri..."
+                      className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all duration-200"
+                      rows="4"
+                      style={{ minHeight: '100px' }}
+                    />
+                    
+                    {/* Character Counter */}
+                    <div className="flex justify-between items-center text-xs">
+                      <div className="flex items-center space-x-4">
+                        <span className="text-gray-500">
+                          {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
+                        </span>
+                        {newPostLink && (
+                          <span className="text-cyan-400 text-xs">
+                            🔗 Link detectat automat
+                          </span>
+                        )}
+                      </div>
+                      {characterCount > MAX_CHARACTERS * 0.8 && (
+                        <span className={`${characterCount >= MAX_CHARACTERS ? 'text-red-400' : 'text-yellow-400'}`}>
+                          {MAX_CHARACTERS - characterCount} rămase
                         </span>
                       )}
                     </div>
-                    {characterCount > MAX_CHARACTERS * 0.8 && (
-                      <span className={`${characterCount >= MAX_CHARACTERS ? 'text-red-400' : 'text-yellow-400'}`}>
-                        {MAX_CHARACTERS - characterCount} rămase
-                      </span>
-                    )}
                   </div>
-                </div>
 
-                {/* Uploaded Images Preview */}
-                {uploadedImages.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="text-sm text-gray-400">
-                      {uploadedImages.length} imagine{uploadedImages.length > 1 ? 'i' : ''} atașat{uploadedImages.length > 1 ? 'e' : 'ă'}
+                  {/* Uploaded Images Preview */}
+                  {uploadedImages.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="text-sm text-gray-400">
+                        {uploadedImages.length} imagine{uploadedImages.length > 1 ? 'i' : ''} atașat{uploadedImages.length > 1 ? 'e' : 'ă'}
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {uploadedImages.map((image) => (
+                          <div key={image.id} className="relative group">
+                            <img 
+                              src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
+                              alt="Preview"
+                              className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => setSelectedImageModal(image)}
+                            />
+                            <button
+                              onClick={() => removeImage(image.id)}
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {uploadedImages.map((image) => (
-                        <div key={image.id} className="relative group">
-                          <img 
-                            src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
-                            alt="Preview"
-                            className="w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => setSelectedImageModal(image)}
-                          />
-                          <button
-                            onClick={() => removeImage(image.id)}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                  )}
+
+                  {/* Link Preview Loading */}
+                  {isLoadingPreview && (
+                    <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+                      <span>Se generează preview pentru link...</span>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Link Preview Loading */}
-                {isLoadingPreview && (
-                  <div className="flex items-center space-x-2 text-gray-400 text-sm">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
-                    <span>Se generează preview pentru link...</span>
-                  </div>
-                )}
-
-                {/* Link Preview */}
-                {linkPreview && (
-                  <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
-                    {linkPreview.image_url && (
-                      <img 
-                        src={linkPreview.image_url} 
-                        alt="Link preview"
-                        className="w-full h-40 object-cover"
-                      />
-                    )}
-                    <div className="p-4 space-y-2">
-                      <div className="text-xs text-gray-400 uppercase">{linkPreview.domain}</div>
-                      {linkPreview.title && (
-                        <div className="text-white font-medium text-sm line-clamp-2">{linkPreview.title}</div>
+                  {/* Link Preview */}
+                  {linkPreview && (
+                    <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
+                      {linkPreview.image_url && (
+                        <img 
+                          src={linkPreview.image_url} 
+                          alt="Link preview"
+                          className="w-full h-40 object-cover"
+                        />
                       )}
-                      {linkPreview.description && (
-                        <div className="text-gray-300 text-sm line-clamp-3">{linkPreview.description}</div>
-                      )}
+                      <div className="p-4 space-y-2">
+                        <div className="text-xs text-gray-400 uppercase">{linkPreview.domain}</div>
+                        {linkPreview.title && (
+                          <div className="text-white font-medium text-sm line-clamp-2">{linkPreview.title}</div>
+                        )}
+                        {linkPreview.description && (
+                          <div className="text-gray-300 text-sm line-clamp-3">{linkPreview.description}</div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    {/* Image Upload Button */}
-                    <label className="cursor-pointer flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleImageUpload(Array.from(e.target.files))}
-                      />
-                      <span className="text-lg">📷</span>
-                      <span className="text-sm">Imagine</span>
-                    </label>
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      {/* Image Upload Button */}
+                      <label className="cursor-pointer flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleImageUpload(Array.from(e.target.files))}
+                        />
+                        <span className="text-lg">📷</span>
+                        <span className="text-sm">Imagine</span>
+                      </label>
+                      
+                      <div className="text-xs text-gray-500">
+                        💡 Poți invita oameni în camera ta din orice postare • Ctrl+Enter pentru a posta rapid
+                      </div>
+                    </div>
                     
-                    <div className="text-xs text-gray-500">
-                      💡 Poți invita oameni în camera ta din orice postare • Ctrl+Enter pentru a posta rapid
-                    </div>
+                    <button
+                      onClick={createPost}
+                      disabled={(!newPost.trim() && uploadedImages.length === 0) || isCreatingPost || characterCount > MAX_CHARACTERS}
+                      className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2"
+                    >
+                      {isCreatingPost ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Se postează...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>🚀</span>
+                          <span>Postează</span>
+                        </>
+                      )}
+                    </button>
                   </div>
-                  
-                  <button
-                    onClick={createPost}
-                    disabled={(!newPost.trim() && uploadedImages.length === 0) || isCreatingPost || characterCount > MAX_CHARACTERS}
-                    className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2"
-                  >
-                    {isCreatingPost ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Se postează...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>🚀</span>
-                        <span>Postează</span>
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
             </div>
