@@ -2196,14 +2196,21 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [characterCount, setCharacterCount] = useState(0);
   const MAX_CHARACTERS = 5000;
   
-  // New state for sharing functionality
-  const [shareModalPost, setShareModalPost] = useState(null);
-  const [shareOption, setShareOption] = useState(''); // 'room' or 'friend'
-  const [shareComment, setShareComment] = useState('');
-  const [selectedRoom, setSelectedRoom] = useState('');
-  const [selectedFriend, setSelectedFriend] = useState('');
-  const [userRooms, setUserRooms] = useState([]);
-  const [userFavorites, setUserFavorites] = useState([]);
+  // New state for Camera ta functionality
+  const [userCameras, setUserCameras] = useState([]);
+  const [showCreateCamera, setShowCreateCamera] = useState(false);
+  const [newCamera, setNewCamera] = useState({
+    name: '',
+    theme: '',
+    description: '',
+    rules: '',
+    visibility: 'public', // public, private, invite-only
+    allowInvites: true,
+    maxMembers: 100
+  });
+  const [selectedCamera, setSelectedCamera] = useState(null);
+  const [cameraMembers, setCameraMembers] = useState([]);
+  const [showCameraSettings, setShowCameraSettings] = useState(false);
 
   // World Chat functions
   const handleTextChange = (e) => {
