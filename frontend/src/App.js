@@ -2237,7 +2237,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             {user?.nickname ? user.nickname.charAt(0).toUpperCase() : 'U'}
           </button>
         </div>
-      </div>
         
         <div className="flex items-center space-x-4">
           <button
