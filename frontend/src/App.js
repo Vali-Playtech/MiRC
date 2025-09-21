@@ -2202,6 +2202,23 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     if (text.length <= MAX_CHARACTERS) {
       setNewPost(text);
       setCharacterCount(text.length);
+      
+      // Auto-detect links in text (like Facebook)
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const urls = text.match(urlRegex);
+      
+      if (urls && urls.length > 0) {
+        // Take the first URL found
+        const firstUrl = urls[0];
+        if (firstUrl !== newPostLink) {
+          setNewPostLink(firstUrl);
+          generateLinkPreview(firstUrl);
+        }
+      } else {
+        // No URL found, clear preview
+        setNewPostLink('');
+        setLinkPreview(null);
+      }
     }
   };
 
