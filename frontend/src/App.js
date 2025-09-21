@@ -2231,7 +2231,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
 
           {/* Butonul de profil în dreapta */}
           <button
-            onClick={() => setShowSettings(true)}
+            onClick={() => onAccountSettings()}
             className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all duration-200 hover:scale-105"
           >
             {user?.nickname ? user.nickname.charAt(0).toUpperCase() : 'U'}
