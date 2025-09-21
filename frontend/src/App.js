@@ -876,17 +876,36 @@ const LoginForm = ({ isLogin, onToggle }) => {
       
       <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
         <div className="text-center mb-8">
-          {/* Logo VONEX original din imaginea ta pentru login */}
-          <div className="w-auto h-20 mx-auto mb-6 flex items-center justify-center">
+          {/* Logo VONEX original cu 100% mai mare pentru login */}
+          <div className="w-auto h-40 mx-auto mb-6 flex items-center justify-center">
             <img 
               src="/vonex-original-logo.png" 
               alt="VONEX" 
-              className="h-16 w-auto object-contain"
+              className="h-32 w-auto object-contain"
               style={{
-                filter: 'drop-shadow(0 0 15px rgba(0, 255, 255, 0.4)) drop-shadow(0 0 25px rgba(68, 255, 68, 0.3)) drop-shadow(0 0 35px rgba(255, 255, 68, 0.2)) drop-shadow(0 0 45px rgba(255, 136, 68, 0.1))'
+                filter: 'drop-shadow(0 0 20px rgba(0, 255, 255, 0.6)) drop-shadow(0 0 30px rgba(68, 255, 68, 0.5)) drop-shadow(0 0 40px rgba(255, 255, 68, 0.4)) drop-shadow(0 0 50px rgba(255, 136, 68, 0.3))'
               }}
             />
           </div>
+          
+          {/* Slogan VONEX */}
+          <div className="mb-6">
+            <p className="text-2xl font-bold mb-2" style={{
+              background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textShadow: '0 0 20px rgba(255, 255, 255, 0.2)',
+              fontFamily: 'monospace',
+              letterSpacing: '0.1em'
+            }}>
+              Connect • Communicate • Create
+            </p>
+            <p className="text-gray-400 text-lg font-medium">
+              The Future of Digital Communication
+            </p>
+          </div>
+          
           <h1 className="text-4xl font-bold mb-3" style={{
             background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
             WebkitBackgroundClip: 'text',
