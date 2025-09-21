@@ -877,7 +877,7 @@ const LoginForm = ({ isLogin, onToggle }) => {
       <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md border border-white/20 shadow-2xl">
         <div className="text-center mb-8">
           {/* Logo VONEX original cu 100% mai mare pentru login */}
-          <div className="w-auto h-40 mx-auto mb-6 flex items-center justify-center">
+          <div className="w-auto h-40 mx-auto mb-3 flex items-center justify-center">
             <img 
               src="/vonex-original-logo.png" 
               alt="VONEX" 
@@ -888,14 +888,9 @@ const LoginForm = ({ isLogin, onToggle }) => {
             />
           </div>
           
-          {/* Slogan VONEX - acronim pe un singur rând, mai grupat */}
+          {/* Slogan VONEX - mutat mai sus și făcut alb simplu */}
           <div className="mb-6">
-            <p className="text-xl font-bold mb-4 whitespace-nowrap" style={{
-              background: 'linear-gradient(90deg, #00ffff 0%, #44ff44 25%, #ffff44 50%, #ff8844 75%, #aa4422 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              textShadow: '0 0 20px rgba(255, 255, 255, 0.2)',
+            <p className="text-xl font-bold mb-4 whitespace-nowrap text-white" style={{
               fontFamily: 'monospace',
               letterSpacing: '0.05em'
             }}>
