@@ -3459,118 +3459,63 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         )}
 
         {activeTab === 'favorites' && (
-          <div className="h-full flex flex-col">
-            {/* Header */}
-            <div className="bg-gray-800/50 p-6 border-b border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xl font-bold text-white">Cercul tău de favoriți</h1>
-                  <p className="text-gray-400 text-sm">Utilizatorii tăi favoriți cu acces rapid la conversații</p>
-                </div>
-                <div className="text-sm text-gray-400">
-                  {favoriteUsers.length} {favoriteUsers.length === 1 ? 'favorit' : 'favoriți'}
-                </div>
+          <div className="h-full flex">
+            {/* Main Content Area - Left Side */}
+            <div className="flex-1 flex items-center justify-center bg-gray-900/20">
+              <div className="text-center py-12">
+                <span className="text-6xl mb-4 block">💬</span>
+                <h3 className="text-xl font-semibold text-white mb-2">Selectează un favorit</h3>
+                <p className="text-gray-400 mb-6">Alege un utilizator favorit din lista de pe dreapta pentru a începe o conversație.</p>
+                <p className="text-sm text-gray-500">Mesajele tale private vor apărea aici.</p>
               </div>
             </div>
 
-            {/* Favorites Circle & List */}
-            <div className="flex-1 overflow-y-auto">
-              {favoriteUsers.length === 0 ? (
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center py-12">
-                    <span className="text-6xl mb-4 block">⭐</span>
-                    <h3 className="text-xl font-semibold text-white mb-2">Niciun favorit încă</h3>
-                    <p className="text-gray-400 mb-6">Adaugă utilizatori la favoriți pentru acces rapid la conversațiile voastre.</p>
-                    <p className="text-sm text-gray-500">Poți adăuga favoriți din camerele tale sau din World Chat.</p>
+            {/* Favorites Sidebar - Right Side (WhatsApp + Messenger style) */}
+            <div className="w-80 bg-gray-800/50 border-l border-white/10 flex flex-col">
+              {/* Header */}
+              <div className="p-4 border-b border-white/10">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-white">Favoriți</h2>
+                  <div className="text-sm text-gray-400">
+                    {favoriteUsers.length} persoane
                   </div>
                 </div>
-              ) : (
-                <div className="p-6 space-y-8">
-                  {/* Visual Circle of Favorites */}
-                  <div className="max-w-2xl mx-auto">
-                    <h2 className="text-lg font-semibold text-white mb-6 text-center">Cercul vizual</h2>
-                    <div className="relative w-80 h-80 mx-auto">
-                      {favoriteUsers
-                        .slice()
-                        .sort((a, b) => b.unreadMessages - a.unreadMessages) // Sort by unread messages count (descending)
-                        .slice(0, 8)
-                        .map((user, index) => {
-                          const angle = (index * 360) / Math.min(favoriteUsers.length, 8);
-                          const radius = 120;
-                          const x = Math.cos((angle - 90) * Math.PI / 180) * radius;
-                          const y = Math.sin((angle - 90) * Math.PI / 180) * radius;
-                          
-                          return (
-                            <div
-                              key={user.id}
-                              className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
-                              style={{
-                                left: `calc(50% + ${x}px)`,
-                                top: `calc(50% + ${y}px)`
-                              }}
-                              onClick={() => setSelectedFavorite(user)}
-                            >
-                              <div className="relative">
-                                {/* User Avatar */}
-                                <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 transition-all duration-200 hover:scale-110 ${
-                                  user.isOnline 
-                                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-green-400' 
-                                    : 'bg-gradient-to-r from-gray-500 to-gray-600 border-gray-400'
-                                } ${user.isMuted ? 'opacity-60' : ''}`}>
-                                  {user.avatar ? (
-                                    <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full object-cover" />
-                                  ) : (
-                                    user.nickname?.charAt(0)?.toUpperCase() || user.name?.charAt(0)?.toUpperCase() || 'U'
-                                  )}
-                                </div>
+                <p className="text-gray-400 text-sm mt-1">Contactele tale favorite</p>
+              </div>
 
-                                {/* Online Status Dot */}
-                                {user.isOnline && (
-                                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-gray-800 rounded-full"></div>
-                                )}
-
-                                {/* Unread Messages Badge */}
-                                {user.unreadMessages > 0 && (
-                                  <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-                                    {user.unreadMessages > 9 ? '9+' : user.unreadMessages}
-                                  </div>
-                                )}
-
-                                {/* Muted Icon */}
-                                {user.isMuted && (
-                                  <div className="absolute top-0 left-0 bg-gray-700 text-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-xs">
-                                    🔇
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* User Name */}
-                              <div className="mt-2 text-center">
-                                <div className="text-white text-sm font-medium line-clamp-1">{user.name}</div>
-                                <div className="text-gray-400 text-xs">@{user.nickname}</div>
-                              </div>
-                            </div>
-                          );
-                        })}
-
-                      {/* Center Logo */}
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-2xl font-bold">V</span>
-                        </div>
-                      </div>
-                    </div>
+              {/* Favorites List */}
+              <div className="flex-1 overflow-y-auto">
+                {favoriteUsers.length === 0 ? (
+                  <div className="p-4 text-center">
+                    <span className="text-4xl mb-3 block">⭐</span>
+                    <p className="text-gray-400 text-sm">Niciun favorit încă</p>
+                    <p className="text-gray-500 text-xs mt-2">Adaugă utilizatori la favoriți din camerele tale.</p>
                   </div>
-
-                  {/* Favorites List */}
-                  <div className="max-w-4xl mx-auto">
-                    <h2 className="text-lg font-semibold text-white mb-4">Lista favoriților</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {favoriteUsers.map((user) => (
-                        <div key={user.id} className="bg-gray-800/50 rounded-xl border border-white/10 p-4 hover:border-cyan-400/30 transition-all duration-200">
-                          {/* User Header */}
-                          <div className="flex items-center space-x-3 mb-3">
-                            <div className="relative">
+                ) : (
+                  <div className="p-2">
+                    {favoriteUsers
+                      .slice()
+                      .sort((a, b) => {
+                        // Sort by: unread messages first, then online status, then name
+                        if (b.unreadMessages !== a.unreadMessages) {
+                          return b.unreadMessages - a.unreadMessages;
+                        }
+                        if (b.isOnline !== a.isOnline) {
+                          return b.isOnline ? 1 : -1;
+                        }
+                        return a.name.localeCompare(b.name);
+                      })
+                      .map((user) => (
+                        <div
+                          key={user.id}
+                          className={`p-3 rounded-lg mb-1 cursor-pointer transition-all duration-200 hover:bg-gray-700/50 relative ${
+                            selectedFavorite?.id === user.id ? 'bg-cyan-500/20 border border-cyan-400/30' : ''
+                          }`}
+                          onClick={() => setSelectedFavorite(user)}
+                        >
+                          <div className="flex items-center space-x-3">
+                            {/* Avatar */}
+                            <div className="relative flex-shrink-0">
                               <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
                                 user.isOnline 
                                   ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
@@ -3582,115 +3527,151 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                                   user.nickname?.charAt(0)?.toUpperCase() || 'U'
                                 )}
                               </div>
+
+                              {/* Online Status Dot */}
                               {user.isOnline && (
                                 <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-gray-800 rounded-full"></div>
                               )}
                             </div>
 
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2">
-                                <h3 className="text-white font-medium">{user.name}</h3>
-                                {user.isMuted && <span className="text-gray-400 text-sm">🔇</span>}
-                                {user.unreadMessages > 0 && (
-                                  <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
-                                    {user.unreadMessages}
-                                  </span>
-                                )}
+                            {/* User Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2 min-w-0">
+                                  <h3 className="text-white font-medium text-sm truncate">{user.name}</h3>
+                                  {user.isMuted && (
+                                    <span className="text-gray-400 text-xs">🔇</span>
+                                  )}
+                                </div>
+                                <div className="flex items-center space-x-2 flex-shrink-0">
+                                  {user.lastMessageTime && (
+                                    <span className="text-gray-500 text-xs">
+                                      {formatLastSeen(user.lastMessageTime)}
+                                    </span>
+                                  )}
+                                  {user.unreadMessages > 0 && (
+                                    <div className="bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                                      {user.unreadMessages > 9 ? '9+' : user.unreadMessages}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              <div className="text-gray-400 text-sm">@{user.nickname}</div>
-                              <div className="text-gray-500 text-xs">
-                                {user.isOnline ? 'Online acum' : `Văzut ${formatLastSeen(user.lastSeen)}`}
+
+                              {/* Last Message Preview */}
+                              <div className="flex items-center space-x-1 mt-1">
+                                <span className="text-gray-400 text-xs">@{user.nickname}</span>
+                                <span className="text-gray-500 text-xs">•</span>
+                                <span className={`text-xs truncate flex-1 ${
+                                  user.isOnline ? 'text-green-400' : 'text-gray-500'
+                                }`}>
+                                  {user.isOnline ? 'Online' : `Văzut ${formatLastSeen(user.lastSeen)}`}
+                                </span>
                               </div>
+
+                              {/* Last Message */}
+                              {user.lastMessage && (
+                                <div className="mt-1">
+                                  <p className={`text-xs truncate ${
+                                    user.unreadMessages > 0 ? 'text-white font-medium' : 'text-gray-400'
+                                  }`}>
+                                    {user.lastMessage}
+                                  </p>
+                                </div>
+                              )}
                             </div>
 
-                            <div className="relative">
+                            {/* Action Menu */}
+                            <div className="relative flex-shrink-0">
                               <button
-                                onClick={() => setShowFavoriteActions(showFavoriteActions === user.id ? null : user.id)}
-                                className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowFavoriteActions(showFavoriteActions === user.id ? null : user.id);
+                                }}
+                                className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700/50 transition-colors opacity-0 group-hover:opacity-100"
                               >
                                 ⋯
                               </button>
 
-                              {/* Action Menu */}
+                              {/* Action Dropdown */}
                               {showFavoriteActions === user.id && (
-                                <div className="absolute right-0 top-full mt-2 bg-gray-700 rounded-lg shadow-lg border border-white/10 min-w-[160px] z-10">
+                                <div className="absolute right-0 top-full mt-1 bg-gray-700 rounded-lg shadow-lg border border-white/10 min-w-[140px] z-20">
                                   <button
-                                    onClick={() => handleFavoriteAction('dm', user)}
-                                    className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 rounded-t-lg transition-colors flex items-center space-x-2"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleFavoriteAction('dm', user);
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-white hover:bg-gray-600 rounded-t-lg transition-colors flex items-center space-x-2 text-sm"
                                   >
                                     <span>💬</span>
-                                    <span>Mesaj direct</span>
+                                    <span>Mesaj</span>
                                   </button>
                                   {user.unreadMessages > 0 && (
                                     <button
-                                      onClick={() => handleFavoriteAction('jump', user)}
-                                      className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 transition-colors flex items-center space-x-2"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleFavoriteAction('jump', user);
+                                      }}
+                                      className="w-full text-left px-3 py-2 text-white hover:bg-gray-600 transition-colors flex items-center space-x-2 text-sm"
                                     >
                                       <span>↗️</span>
                                       <span>Ultimul mesaj</span>
                                     </button>
                                   )}
                                   <button
-                                    onClick={() => handleFavoriteAction('mute', user)}
-                                    className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 transition-colors flex items-center space-x-2"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleFavoriteAction('mute', user);
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-white hover:bg-gray-600 transition-colors flex items-center space-x-2 text-sm"
                                   >
                                     <span>{user.isMuted ? '🔊' : '🔇'}</span>
-                                    <span>{user.isMuted ? 'Activează sunet' : 'Dezactivează sunet'}</span>
+                                    <span>{user.isMuted ? 'Unmute' : 'Mute'}</span>
                                   </button>
                                   <button
-                                    onClick={() => handleFavoriteAction('unfollow', user)}
-                                    className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-600 rounded-b-lg transition-colors flex items-center space-x-2"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleFavoriteAction('unfollow', user);
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-red-400 hover:bg-gray-600 rounded-b-lg transition-colors flex items-center space-x-2 text-sm"
                                   >
                                     <span>❌</span>
-                                    <span>Elimină din favoriți</span>
+                                    <span>Elimină</span>
                                   </button>
                                 </div>
                               )}
                             </div>
                           </div>
 
-                          {/* Last Message */}
-                          {user.lastMessage && (
-                            <div className="bg-gray-700/30 rounded-lg p-3 mb-3">
-                              <div className="text-gray-300 text-sm line-clamp-2">{user.lastMessage}</div>
-                              <div className="text-gray-500 text-xs mt-1">{formatLastSeen(user.lastMessageTime)}</div>
-                            </div>
-                          )}
-
-                          {/* Common Rooms */}
+                          {/* Common Rooms (if any) */}
                           {user.commonRooms.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {user.commonRooms.map((room, index) => (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {user.commonRooms.slice(0, 2).map((room, index) => (
                                 <span key={index} className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full">
                                   {room}
                                 </span>
                               ))}
+                              {user.commonRooms.length > 2 && (
+                                <span className="text-gray-500 text-xs">+{user.commonRooms.length - 2}</span>
+                              )}
                             </div>
                           )}
-
-                          {/* Quick Actions */}
-                          <div className="flex space-x-2 mt-4">
-                            <button
-                              onClick={() => handleFavoriteAction('dm', user)}
-                              className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-200 text-sm"
-                            >
-                              💬 Mesaj
-                            </button>
-                            {user.unreadMessages > 0 && (
-                              <button
-                                onClick={() => handleFavoriteAction('jump', user)}
-                                className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
-                              >
-                                ↗️
-                              </button>
-                            )}
-                          </div>
                         </div>
                       ))}
-                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
+              {/* Footer with quick actions */}
+              <div className="p-3 border-t border-white/10 text-center">
+                <p className="text-gray-500 text-xs">
+                  {favoriteUsers.filter(u => u.unreadMessages > 0).length > 0 && 
+                    `${favoriteUsers.filter(u => u.unreadMessages > 0).length} cu mesaje noi`
+                  }
+                  {favoriteUsers.filter(u => u.isOnline).length > 0 && 
+                    ` • ${favoriteUsers.filter(u => u.isOnline).length} online`
+                  }
+                </p>
+              </div>
             </div>
           </div>
         )}
