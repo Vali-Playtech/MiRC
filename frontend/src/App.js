@@ -2129,6 +2129,10 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomDescription, setNewRoomDescription] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
+  const [activeTab, setActiveTab] = useState('world-chat');
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState('');
+  const [newPostLink, setNewPostLink] = useState('');
   const { token, user, logout } = useAuth();
   const { t } = useLanguage();
 
