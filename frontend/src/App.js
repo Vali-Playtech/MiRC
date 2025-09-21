@@ -888,17 +888,17 @@ const LoginForm = ({ isLogin, onToggle }) => {
             />
           </div>
           
-          {/* Slogan VONEX - mutat mai sus și făcut alb simplu */}
-          <div className="mb-6">
-            <p className="text-xl font-bold mb-4 whitespace-nowrap text-white" style={{
+          {/* Slogan VONEX - redus pentru a se încadra în casetă */}
+          <div className="mb-4">
+            <p className="text-lg font-bold mb-3 whitespace-nowrap text-white" style={{
               fontFamily: 'monospace',
-              letterSpacing: '0.05em'
+              letterSpacing: '0.02em'
             }}>
               Voice • Opinions • Network • Experiences
             </p>
           </div>
           
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-base mb-6">
             {isLogin ? t('signInSubtitle') : t('createAccountSubtitle')}
           </p>
         </div>
