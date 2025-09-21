@@ -2205,21 +2205,10 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [userRooms, setUserRooms] = useState([]);
   const [userFavorites, setUserFavorites] = useState([]);
 
-  // New state for Camera ta functionality
-  const [userCameras, setUserCameras] = useState([]);
-  const [showCreateCamera, setShowCreateCamera] = useState(false);
-  const [newCamera, setNewCamera] = useState({
-    name: '',
-    theme: '',
-    description: '',
-    rules: '',
-    visibility: 'public', // public, private, invite-only
-    allowInvites: true,
-    maxMembers: 100
-  });
-  const [selectedCamera, setSelectedCamera] = useState(null);
-  const [cameraMembers, setCameraMembers] = useState([]);
-  const [showCameraSettings, setShowCameraSettings] = useState(false);
+  // New state for Favorites functionality
+  const [favoriteUsers, setFavoriteUsers] = useState([]);
+  const [selectedFavorite, setSelectedFavorite] = useState(null);
+  const [showFavoriteActions, setShowFavoriteActions] = useState(null);
 
   // World Chat functions
   const handleTextChange = (e) => {
