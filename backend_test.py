@@ -1905,12 +1905,34 @@ class BackendTester:
                 print("🚨 WORLD CHAT SYSTEM has issues that need attention!")
         
         return test_results
+    
+    def run_quick_auth_test(self):
+        """Run only the quick authentication test"""
+        print("🎯 Running Quick Authentication Test for Frontend Testing...")
+        print(f"Backend URL: {API_BASE}")
+        print("=" * 60)
+        
+        result = self.test_quick_authentication_verification()
+        
+        print("\n" + "=" * 60)
+        if result:
+            print("🎉 AUTHENTICATION TEST PASSED! Backend is ready for frontend testing.")
+        else:
+            print("❌ AUTHENTICATION TEST FAILED! Check the details above.")
+        
+        return result
 
 async def main():
     """Main test execution"""
     tester = BackendTester()
-    results = await tester.run_all_tests()
-    return results
+    
+    # Check if we should run quick auth test or full tests
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "quick":
+        return tester.run_quick_auth_test()
+    else:
+        results = await tester.run_all_tests()
+        return results
 
 if __name__ == "__main__":
     asyncio.run(main())
