@@ -2704,18 +2704,13 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                           </div>
                         )}
 
-                        {/* Post Actions */}
+                        {/* Post Actions - Only Share button */}
                         <div className="px-4 py-3 border-t border-white/10">
-                          <div className="flex items-center justify-around">
-                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 md:px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
-                              <span className="text-lg">👍</span>
-                              <span className="text-sm font-medium hidden sm:inline">Like</span>
-                            </button>
-                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 md:px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
-                              <span className="text-lg">💬</span>
-                              <span className="text-sm font-medium hidden sm:inline">Comentează</span>
-                            </button>
-                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 md:px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                          <div className="flex items-center justify-center">
+                            <button 
+                              onClick={() => openShareModal(post)}
+                              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 justify-center"
+                            >
                               <span className="text-lg">📤</span>
                               <span className="text-sm font-medium hidden sm:inline">Partajează</span>
                             </button>
