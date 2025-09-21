@@ -472,7 +472,7 @@ async def generate_link_preview(request: LinkPreviewRequest, current_user: User 
 async def create_world_chat_post(
     post_data: WorldChatPostCreate,
     current_user: User = Depends(get_current_user),
-    images: List[str] = []  # List of image IDs from upload
+    images: List[str] = Query(default=[])  # List of image IDs from upload
 ):
     """Create a new World Chat post with text, images, and/or link preview"""
     
