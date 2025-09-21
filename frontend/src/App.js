@@ -2188,14 +2188,14 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
       {/* Header */}
       <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-5 flex items-center justify-between border-b border-white/10 shadow-lg">
         <div className="flex items-center justify-end">
-          {/* Logo retro VONEX cu glitch și font gros în dreapta */}
+          {/* Logo VONEX personalizat cu culorile din imaginea ta */}        
           <div className="w-auto h-12 flex items-center">
             <img 
-              src="/vonex-glitch-compact.svg" 
+              src="/vonex-custom-compact.svg" 
               alt="VONEX" 
-              className="h-10 w-auto"
+              className="h-12 w-auto"
               style={{
-                filter: 'drop-shadow(0 0 12px rgba(255, 51, 51, 0.4)) drop-shadow(0 0 20px rgba(51, 136, 255, 0.3)) drop-shadow(0 0 8px rgba(136, 255, 51, 0.2))'
+                filter: 'drop-shadow(0 0 8px rgba(0, 255, 255, 0.4)) drop-shadow(0 0 12px rgba(68, 255, 68, 0.3)) drop-shadow(0 0 16px rgba(255, 136, 68, 0.2))'
               }}
             />
           </div>
