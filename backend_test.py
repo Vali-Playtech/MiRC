@@ -1780,6 +1780,18 @@ class BackendTester:
         
         print(f"\nPrivate Chat System: {private_chat_passed}/{len(private_chat_tests)} tests passed")
         
+        print("\nWORLD CHAT FUNCTIONALITY TESTS:")
+        world_chat_passed = 0
+        for test_name in world_chat_tests:
+            if test_name in test_results:
+                result = test_results[test_name]
+                status = "✅ PASS" if result else "❌ FAIL"
+                print(f"  {status} {test_name.replace('_', ' ').title()}")
+                if result:
+                    world_chat_passed += 1
+        
+        print(f"\nWorld Chat System: {world_chat_passed}/{len(world_chat_tests)} tests passed")
+        
         passed = sum(test_results.values())
         total = len(test_results)
         
