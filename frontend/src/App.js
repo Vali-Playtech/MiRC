@@ -3524,7 +3524,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                                 {user.avatar ? (
                                   <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
                                 ) : (
-                                  user.nickname?.charAt(0)?.toUpperCase() || 'U'
+                                  <div className="w-2 h-2 bg-white rounded-full opacity-20"></div>
                                 )}
                               </div>
 
