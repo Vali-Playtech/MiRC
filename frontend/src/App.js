@@ -2312,7 +2312,6 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {posts.length === 0 ? (
                 <div className="text-center py-12">
-                  <span className="text-6xl mb-4 block">🌍</span>
                   <h3 className="text-xl font-semibold text-white mb-2">Welcome to World Chat!</h3>
                   <p className="text-gray-400 mb-6">Primul feed global VONEX. Împarte știri, link-uri și idei cu toată comunitatea.</p>
                   <p className="text-sm text-gray-500">Fii primul care postează ceva!</p>
