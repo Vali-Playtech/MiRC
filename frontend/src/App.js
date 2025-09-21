@@ -2196,6 +2196,15 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
   const [characterCount, setCharacterCount] = useState(0);
   const MAX_CHARACTERS = 5000;
   
+  // New state for sharing functionality
+  const [shareModalPost, setShareModalPost] = useState(null);
+  const [shareOption, setShareOption] = useState(''); // 'room' or 'friend'
+  const [shareComment, setShareComment] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState('');
+  const [selectedFriend, setSelectedFriend] = useState('');
+  const [userRooms, setUserRooms] = useState([]);
+  const [userFavorites, setUserFavorites] = useState([]);
+
   // New state for Camera ta functionality
   const [userCameras, setUserCameras] = useState([]);
   const [showCreateCamera, setShowCreateCamera] = useState(false);
