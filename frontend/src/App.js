@@ -2743,7 +2743,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                     </label>
                     
                     <div className="text-xs text-gray-500">
-                      💡 Poți invita oameni în camera ta din orice postare
+                      💡 Poți invita oameni în camera ta din orice postare • Ctrl+Enter pentru a posta rapid
                     </div>
                   </div>
                   
