@@ -2464,6 +2464,139 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     }
   };
 
+  // Camera ta functions
+  useEffect(() => {
+    if (activeTab === 'my-room') {
+      loadUserCameras();
+    }
+  }, [activeTab]);
+
+  const loadUserCameras = async () => {
+    // Mock data for now - in real implementation, fetch from API
+    setUserCameras([
+      {
+        id: '1',
+        name: 'Tech Talks România',
+        theme: 'Tehnologie',
+        description: 'Discuții despre ultimele tehnologii, programming, AI și inovații.',
+        rules: '1. Respectă ceilalți membri\n2. Postează doar conținut relevant\n3. Nu spam sau reclame',
+        visibility: 'public',
+        membersCount: 45,
+        messagesCount: 234,
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        pinnedMessage: 'Bun venit în camera Tech Talks! Să discutăm despre tehnologie.'
+      },
+      {
+        id: '2',
+        name: 'Presa Liberă',
+        theme: 'Știri & Media',
+        description: 'Discuții libere despre știri, politică și evenimente curente din România și lume.',
+        rules: '1. Discuții civilizate\n2. Respect față de opinii diferite\n3. Fără fake news sau dezinformare',
+        visibility: 'public',
+        membersCount: 89,
+        messagesCount: 567,
+        createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+        isActive: true,
+        pinnedMessage: null
+      },
+      {
+        id: '3',
+        name: 'Gamers Private',
+        theme: 'Gaming',
+        description: 'Camera privată pentru pasionații de gaming. Discuții despre jocuri, strategi și turnee.',
+        rules: '1. Doar membri invitați\n2. Respectă regulile comunității\n3. Share your gaming moments',
+        visibility: 'private',
+        membersCount: 12,
+        messagesCount: 89,
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        isActive: false,
+        pinnedMessage: 'Camera temporar închisă pentru mentenanță.'
+      }
+    ]);
+  };
+
+  const handleCreateCamera = async () => {
+    if (!newCamera.name.trim() || !newCamera.theme.trim()) {
+      alert('Numele și tema sunt obligatorii');
+      return;
+    }
+
+    try {
+      const cameraData = {
+        ...newCamera,
+        id: Date.now().toString(),
+        membersCount: 1,
+        messagesCount: 0,
+        createdAt: new Date(),
+        isActive: true,
+        pinnedMessage: null
+      };
+
+      setUserCameras(prev => [cameraData, ...prev]);
+      
+      // Reset form
+      setNewCamera({
+        name: '',
+        theme: '',
+        description: '',
+        rules: '',
+        visibility: 'public',
+        allowInvites: true,
+        maxMembers: 100
+      });
+      
+      setShowCreateCamera(false);
+      alert(`Camera "${cameraData.name}" a fost creată cu succes!`);
+    } catch (error) {
+      console.error('Error creating camera:', error);
+      alert('Eroare la crearea camerei');
+    }
+  };
+
+  const handleCameraAction = (action, camera) => {
+    switch (action) {
+      case 'enter':
+        setSelectedCamera(camera);
+        break;
+      case 'settings':
+        setSelectedCamera(camera);
+        setShowCameraSettings(true);
+        break;
+      case 'delete':
+        if (window.confirm(`Ești sigur că vrei să ștergi camera "${camera.name}"?`)) {
+          setUserCameras(prev => prev.filter(c => c.id !== camera.id));
+          alert('Camera a fost ștearsă cu succes');
+        }
+        break;
+      case 'toggle':
+        setUserCameras(prev => prev.map(c => 
+          c.id === camera.id ? { ...c, isActive: !c.isActive } : c
+        ));
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getCameraVisibilityIcon = (visibility) => {
+    switch (visibility) {
+      case 'public': return '🌍';
+      case 'private': return '🔒';
+      case 'invite-only': return '📧';
+      default: return '🌍';
+    }
+  };
+
+  const getCameraVisibilityText = (visibility) => {
+    switch (visibility) {
+      case 'public': return 'Publică';
+      case 'private': return 'Privată';
+      case 'invite-only': return 'Doar cu invitație';
+      default: return 'Publică';
+    }
+  };
+
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
       {/* Header nou cu logo și taburi */}
