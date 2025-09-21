@@ -3450,10 +3450,234 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
         )}
 
         {activeTab === 'favorites' && (
-          <div className="h-full flex items-center justify-center">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-white mb-2">Cercul Favoriților</h3>
-              <p className="text-gray-400">În curând...</p>
+          <div className="h-full flex flex-col">
+            {/* Header */}
+            <div className="bg-gray-800/50 p-6 border-b border-white/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-xl font-bold text-white">Cercul tău de favoriți</h1>
+                  <p className="text-gray-400 text-sm">Utilizatorii tăi favoriți cu acces rapid la conversații</p>
+                </div>
+                <div className="text-sm text-gray-400">
+                  {favoriteUsers.length} {favoriteUsers.length === 1 ? 'favorit' : 'favoriți'}
+                </div>
+              </div>
+            </div>
+
+            {/* Favorites Circle & List */}
+            <div className="flex-1 overflow-y-auto">
+              {favoriteUsers.length === 0 ? (
+                <div className="h-full flex items-center justify-center">
+                  <div className="text-center py-12">
+                    <span className="text-6xl mb-4 block">⭐</span>
+                    <h3 className="text-xl font-semibold text-white mb-2">Niciun favorit încă</h3>
+                    <p className="text-gray-400 mb-6">Adaugă utilizatori la favoriți pentru acces rapid la conversațiile voastre.</p>
+                    <p className="text-sm text-gray-500">Poți adăuga favoriți din camerele tale sau din World Chat.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 space-y-8">
+                  {/* Visual Circle of Favorites */}
+                  <div className="max-w-2xl mx-auto">
+                    <h2 className="text-lg font-semibold text-white mb-6 text-center">Cercul vizual</h2>
+                    <div className="relative w-80 h-80 mx-auto">
+                      {favoriteUsers.slice(0, 8).map((user, index) => {
+                        const angle = (index * 360) / Math.min(favoriteUsers.length, 8);
+                        const radius = 120;
+                        const x = Math.cos((angle - 90) * Math.PI / 180) * radius;
+                        const y = Math.sin((angle - 90) * Math.PI / 180) * radius;
+                        
+                        return (
+                          <div
+                            key={user.id}
+                            className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+                            style={{
+                              left: `calc(50% + ${x}px)`,
+                              top: `calc(50% + ${y}px)`
+                            }}
+                            onClick={() => setSelectedFavorite(user)}
+                          >
+                            <div className="relative">
+                              {/* User Avatar */}
+                              <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 transition-all duration-200 hover:scale-110 ${
+                                user.isOnline 
+                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-green-400' 
+                                  : 'bg-gradient-to-r from-gray-500 to-gray-600 border-gray-400'
+                              } ${user.isMuted ? 'opacity-60' : ''}`}>
+                                {user.avatar ? (
+                                  <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full object-cover" />
+                                ) : (
+                                  user.nickname?.charAt(0)?.toUpperCase() || user.name?.charAt(0)?.toUpperCase() || 'U'
+                                )}
+                              </div>
+
+                              {/* Online Status Dot */}
+                              {user.isOnline && (
+                                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-gray-800 rounded-full"></div>
+                              )}
+
+                              {/* Unread Messages Badge */}
+                              {user.unreadMessages > 0 && (
+                                <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                                  {user.unreadMessages > 9 ? '9+' : user.unreadMessages}
+                                </div>
+                              )}
+
+                              {/* Muted Icon */}
+                              {user.isMuted && (
+                                <div className="absolute top-0 left-0 bg-gray-700 text-gray-300 rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                  🔇
+                                </div>
+                              )}
+                            </div>
+
+                            {/* User Name */}
+                            <div className="mt-2 text-center">
+                              <div className="text-white text-sm font-medium line-clamp-1">{user.name}</div>
+                              <div className="text-gray-400 text-xs">@{user.nickname}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Center Logo */}
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div className="w-20 h-20 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-2xl font-bold">V</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Favorites List */}
+                  <div className="max-w-4xl mx-auto">
+                    <h2 className="text-lg font-semibold text-white mb-4">Lista favoriților</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {favoriteUsers.map((user) => (
+                        <div key={user.id} className="bg-gray-800/50 rounded-xl border border-white/10 p-4 hover:border-cyan-400/30 transition-all duration-200">
+                          {/* User Header */}
+                          <div className="flex items-center space-x-3 mb-3">
+                            <div className="relative">
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ${
+                                user.isOnline 
+                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500' 
+                                  : 'bg-gradient-to-r from-gray-500 to-gray-600'
+                              } ${user.isMuted ? 'opacity-60' : ''}`}>
+                                {user.avatar ? (
+                                  <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
+                                ) : (
+                                  user.nickname?.charAt(0)?.toUpperCase() || 'U'
+                                )}
+                              </div>
+                              {user.isOnline && (
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-gray-800 rounded-full"></div>
+                              )}
+                            </div>
+
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <h3 className="text-white font-medium">{user.name}</h3>
+                                {user.isMuted && <span className="text-gray-400 text-sm">🔇</span>}
+                                {user.unreadMessages > 0 && (
+                                  <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
+                                    {user.unreadMessages}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-gray-400 text-sm">@{user.nickname}</div>
+                              <div className="text-gray-500 text-xs">
+                                {user.isOnline ? 'Online acum' : `Văzut ${formatLastSeen(user.lastSeen)}`}
+                              </div>
+                            </div>
+
+                            <div className="relative">
+                              <button
+                                onClick={() => setShowFavoriteActions(showFavoriteActions === user.id ? null : user.id)}
+                                className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 transition-colors"
+                              >
+                                ⋯
+                              </button>
+
+                              {/* Action Menu */}
+                              {showFavoriteActions === user.id && (
+                                <div className="absolute right-0 top-full mt-2 bg-gray-700 rounded-lg shadow-lg border border-white/10 min-w-[160px] z-10">
+                                  <button
+                                    onClick={() => handleFavoriteAction('dm', user)}
+                                    className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 rounded-t-lg transition-colors flex items-center space-x-2"
+                                  >
+                                    <span>💬</span>
+                                    <span>Mesaj direct</span>
+                                  </button>
+                                  {user.unreadMessages > 0 && (
+                                    <button
+                                      onClick={() => handleFavoriteAction('jump', user)}
+                                      className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 transition-colors flex items-center space-x-2"
+                                    >
+                                      <span>↗️</span>
+                                      <span>Ultimul mesaj</span>
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleFavoriteAction('mute', user)}
+                                    className="w-full text-left px-4 py-2 text-white hover:bg-gray-600 transition-colors flex items-center space-x-2"
+                                  >
+                                    <span>{user.isMuted ? '🔊' : '🔇'}</span>
+                                    <span>{user.isMuted ? 'Activează sunet' : 'Dezactivează sunet'}</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handleFavoriteAction('unfollow', user)}
+                                    className="w-full text-left px-4 py-2 text-red-400 hover:bg-gray-600 rounded-b-lg transition-colors flex items-center space-x-2"
+                                  >
+                                    <span>❌</span>
+                                    <span>Elimină din favoriți</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Last Message */}
+                          {user.lastMessage && (
+                            <div className="bg-gray-700/30 rounded-lg p-3 mb-3">
+                              <div className="text-gray-300 text-sm line-clamp-2">{user.lastMessage}</div>
+                              <div className="text-gray-500 text-xs mt-1">{formatLastSeen(user.lastMessageTime)}</div>
+                            </div>
+                          )}
+
+                          {/* Common Rooms */}
+                          {user.commonRooms.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {user.commonRooms.map((room, index) => (
+                                <span key={index} className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full">
+                                  {room}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Quick Actions */}
+                          <div className="flex space-x-2 mt-4">
+                            <button
+                              onClick={() => handleFavoriteAction('dm', user)}
+                              className="flex-1 px-3 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium rounded-lg transition-all duration-200 text-sm"
+                            >
+                              💬 Mesaj
+                            </button>
+                            {user.unreadMessages > 0 && (
+                              <button
+                                onClick={() => handleFavoriteAction('jump', user)}
+                                className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
+                              >
+                                ↗️
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
