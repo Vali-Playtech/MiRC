@@ -2495,11 +2495,11 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               </div>
             </div>
 
-            {/* Feed Posts - Facebook-style centered layout */}
+            {/* Feed Posts - Responsive Facebook-style layout */}
             <div className="flex-1 overflow-y-auto py-6">
-              <div className="max-w-2xl mx-auto px-4">
+              <div className="max-w-full md:max-w-2xl md:mx-auto px-0 md:px-4">
                 {posts.length === 0 ? (
-                  <div className="text-center py-12">
+                  <div className="text-center py-12 px-4">
                     <h3 className="text-xl font-semibold text-white mb-2">Welcome to World Chat!</h3>
                     <p className="text-gray-400 mb-6">Primul feed global VONEX. Împarte știri, link-uri și idei cu toată comunitatea.</p>
                     <p className="text-sm text-gray-500">Fii primul care postează ceva!</p>
@@ -2507,7 +2507,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                 ) : (
                   <div className="space-y-4">
                     {posts.map((post) => (
-                      <div key={post.id} className="bg-gray-800/50 rounded-xl border border-white/10 overflow-hidden shadow-lg">
+                      <div key={post.id} className="bg-gray-800/50 md:rounded-xl border-0 md:border md:border-white/10 overflow-hidden md:shadow-lg">
                         {/* Post Header */}
                         <div className="p-4 flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
@@ -2550,26 +2550,26 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                         {post.images && post.images.length > 0 && (
                           <div className="pb-3">
                             {post.images.length === 1 ? (
-                              <div className="px-4">
+                              <div className="px-0 md:px-4">
                                 <img 
                                   src={`${process.env.REACT_APP_BACKEND_URL}${post.images[0].thumbnail_url}`}
                                   alt="Post image"
-                                  className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                                  className="w-full max-h-96 object-cover md:rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
                                   onClick={() => setSelectedImageModal(post.images[0])}
                                 />
                               </div>
                             ) : (
-                              <div className="grid grid-cols-2 gap-1 px-4">
+                              <div className="grid grid-cols-2 gap-1 px-0 md:px-4">
                                 {post.images.slice(0, 4).map((image, index) => (
                                   <div key={image.id} className="relative">
                                     <img 
                                       src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
                                       alt={`Post image ${index + 1}`}
-                                      className="w-full h-48 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
+                                      className="w-full h-48 object-cover md:rounded cursor-pointer hover:opacity-90 transition-opacity"
                                       onClick={() => setSelectedImageModal(image)}
                                     />
                                     {index === 3 && post.images.length > 4 && (
-                                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg rounded cursor-pointer">
+                                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg md:rounded cursor-pointer">
                                         +{post.images.length - 4}
                                       </div>
                                     )}
@@ -2633,17 +2633,17 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                         {/* Post Actions */}
                         <div className="px-4 py-3 border-t border-white/10">
                           <div className="flex items-center justify-around">
-                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 md:px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
                               <span className="text-lg">👍</span>
-                              <span className="text-sm font-medium">Like</span>
+                              <span className="text-sm font-medium hidden sm:inline">Like</span>
                             </button>
-                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 md:px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
                               <span className="text-lg">💬</span>
-                              <span className="text-sm font-medium">Comentează</span>
+                              <span className="text-sm font-medium hidden sm:inline">Comentează</span>
                             </button>
-                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
+                            <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 md:px-4 py-2 rounded-lg hover:bg-gray-700/30 flex-1 justify-center">
                               <span className="text-lg">📤</span>
-                              <span className="text-sm font-medium">Partajează</span>
+                              <span className="text-sm font-medium hidden sm:inline">Partajează</span>
                             </button>
                           </div>
                         </div>
