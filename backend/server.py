@@ -264,6 +264,134 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     return User(**user)
 
+# World Chat Utility Functions
+UPLOAD_DIR = Path("/app/backend/uploads/world-chat")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+def compress_image(image_bytes: bytes, max_width: int = 1200, quality: int = 85) -> bytes:
+    """Compress and resize image following Facebook-style rules"""
+    try:
+        img = Image.open(io.BytesIO(image_bytes))
+        
+        # Convert to RGB if necessary
+        if img.mode in ('RGBA', 'P'):
+            img = img.convert('RGB')
+        
+        # Calculate new size maintaining aspect ratio
+        width, height = img.size
+        if width > max_width:
+            ratio = max_width / width
+            new_width = max_width
+            new_height = int(height * ratio)
+            img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        
+        # Save to bytes
+        output = io.BytesIO()
+        img.save(output, format='JPEG', quality=quality, optimize=True)
+        return output.getvalue()
+    except Exception as e:
+        logging.error(f"Error compressing image: {e}")
+        raise HTTPException(status_code=400, detail="Invalid image format")
+
+def create_thumbnail(image_bytes: bytes, max_height: int = 400) -> bytes:
+    """Create thumbnail for feed display (limited height like Facebook)"""
+    try:
+        img = Image.open(io.BytesIO(image_bytes))
+        
+        # Convert to RGB if necessary
+        if img.mode in ('RGBA', 'P'):
+            img = img.convert('RGB')
+        
+        # Calculate new size maintaining aspect ratio, limiting height
+        width, height = img.size
+        if height > max_height:
+            ratio = max_height / height
+            new_height = max_height
+            new_width = int(width * ratio)
+            img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        
+        # Save to bytes
+        output = io.BytesIO()
+        img.save(output, format='JPEG', quality=80, optimize=True)
+        return output.getvalue()
+    except Exception as e:
+        logging.error(f"Error creating thumbnail: {e}")
+        raise HTTPException(status_code=400, detail="Invalid image format")
+
+async def scrape_link_preview(url: str) -> Optional[LinkPreview]:
+    """Scrape link preview like Facebook (title, description, image)"""
+    try:
+        # Validate URL
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            return None
+        
+        # Set headers to mimic a browser
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate',
+            'Connection': 'keep-alive',
+        }
+
+        # Make request with timeout
+        response = requests.get(url, headers=headers, timeout=10, allow_redirects=True)
+        response.raise_for_status()
+        
+        # Parse HTML
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Extract title (priority: og:title > title tag)
+        title = None
+        og_title = soup.find('meta', property='og:title')
+        if og_title:
+            title = og_title.get('content')
+        else:
+            title_tag = soup.find('title')
+            if title_tag:
+                title = title_tag.get_text().strip()
+        
+        # Extract description (priority: og:description > meta description)
+        description = None
+        og_desc = soup.find('meta', property='og:description')
+        if og_desc:
+            description = og_desc.get('content')
+        else:
+            meta_desc = soup.find('meta', attrs={'name': 'description'})
+            if meta_desc:
+                description = meta_desc.get('content')
+        
+        # Extract image (og:image)
+        image_url = None
+        og_image = soup.find('meta', property='og:image')
+        if og_image:
+            image_url = og_image.get('content')
+            # Make relative URLs absolute
+            if image_url and not image_url.startswith(('http://', 'https://')):
+                image_url = urljoin(url, image_url)
+        
+        # Get domain
+        domain = parsed.netloc
+        
+        # Limit text lengths (Facebook style)
+        if title and len(title) > 100:
+            title = title[:97] + "..."
+        if description and len(description) > 300:
+            description = description[:297] + "..."
+        
+        return LinkPreview(
+            url=url,
+            title=title,
+            description=description,
+            image_url=image_url,
+            domain=domain
+        )
+        
+    except Exception as e:
+        logging.error(f"Error scraping link preview for {url}: {e}")
+        return None
+
 # Authentication routes
 @api_router.post("/auth/register", response_model=Token)
 async def register(user_data: UserCreate):
