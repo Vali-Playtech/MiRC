@@ -2655,9 +2655,9 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             </div>
 
             {/* Post Creation Area */}
-            {/* Post Creation Area - Facebook-style centered cu un singur câmp */}
-            <div className="bg-gray-800/50 border-t border-white/10">
-              <div className="max-w-2xl mx-auto p-6">
+            {/* Post Creation Area - Responsive Facebook-style */}
+            <div className="bg-gray-800/50 md:border-t border-white/10">
+              <div className="max-w-full md:max-w-2xl md:mx-auto p-4 md:p-6">
                 <div className="space-y-4">
                   {/* Single Text Input pentru mesaj și link */}
                   <div className="space-y-2">
@@ -2673,7 +2673,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                     
                     {/* Character Counter */}
                     <div className="flex justify-between items-center text-xs">
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2 md:space-x-4">
                         <span className="text-gray-500">
                           {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
                         </span>
@@ -2749,7 +2749,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   )}
 
                   {/* Action Buttons */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div className="flex items-center space-x-4">
                       {/* Image Upload Button */}
                       <label className="cursor-pointer flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
@@ -2764,7 +2764,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                         <span className="text-sm">Imagine</span>
                       </label>
                       
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 hidden md:block">
                         💡 Poți invita oameni în camera ta din orice postare • Ctrl+Enter pentru a posta rapid
                       </div>
                     </div>
@@ -2772,7 +2772,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                     <button
                       onClick={createPost}
                       disabled={(!newPost.trim() && uploadedImages.length === 0) || isCreatingPost || characterCount > MAX_CHARACTERS}
-                      className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2"
+                      className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 w-full sm:w-auto"
                     >
                       {isCreatingPost ? (
                         <>
