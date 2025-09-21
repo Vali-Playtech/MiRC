@@ -3001,17 +3001,8 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                   <div className="space-y-4">
                     {posts.map((post) => (
                       <div key={post.id} className="bg-gray-800/50 md:rounded-xl border-0 md:border md:border-white/10 overflow-hidden md:shadow-lg">
-                        {/* Post Header */}
+                        {/* Post Header - fără avatar rotund */}
                         <div className="p-4 flex items-center space-x-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
-                            {post.user_avatar ? (
-                              <img src={post.user_avatar} alt={post.user_name} className="w-10 h-10 rounded-full object-cover" />
-                            ) : (
-                              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-                            )}
-                          </div>
                           <div className="flex-1">
                             <div className="text-white font-medium text-sm">{post.user_name || post.user_nickname}</div>
                             <div className="text-gray-400 text-xs">{formatPostDate(post.created_at)}</div>
