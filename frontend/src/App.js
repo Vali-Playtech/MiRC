@@ -14,8 +14,17 @@ const useMessengerInput = () => {
   // Camera/Photo capture
   const capturePhoto = async () => {
     try {
+      // Check if camera is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera nu este disponibilă în acest browser');
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'user' }, 
+        video: { 
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }, 
         audio: false 
       });
       
@@ -23,7 +32,7 @@ const useMessengerInput = () => {
       video.srcObject = stream;
       video.play();
       
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         video.addEventListener('loadedmetadata', () => {
           const canvas = document.createElement('canvas');
           canvas.width = video.videoWidth;
@@ -36,15 +45,39 @@ const useMessengerInput = () => {
           stream.getTracks().forEach(track => track.stop());
           
           canvas.toBlob((blob) => {
-            const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-            resolve(file);
+            if (blob) {
+              const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+              resolve(file);
+            } else {
+              reject(new Error('Nu s-a putut procesa imaginea'));
+            }
           }, 'image/jpeg', 0.8);
         });
+
+        video.addEventListener('error', (err) => {
+          stream.getTracks().forEach(track => track.stop());
+          reject(new Error('Eroare la accesarea camerei'));
+        });
+
+        // Timeout după 10 secunde
+        setTimeout(() => {
+          stream.getTracks().forEach(track => track.stop());
+          reject(new Error('Timeout la accesarea camerei'));
+        }, 10000);
       });
     } catch (error) {
       console.error('Error accessing camera:', error);
-      alert('Nu se poate accesa camera. Verifică permisiunile.');
-      return null;
+      
+      // Fallback - show user-friendly message based on error type
+      if (error.name === 'NotFoundError') {
+        throw new Error('Nu s-a găsit nicio cameră disponibilă');
+      } else if (error.name === 'NotAllowedError') {
+        throw new Error('Accesul la cameră a fost refuzat. Verifică permisiunile browserului.');
+      } else if (error.name === 'NotSupportedError') {
+        throw new Error('Camera nu este suportată în acest browser');
+      } else {
+        throw new Error(error.message || 'Nu se poate accesa camera');
+      }
     }
   };
 
