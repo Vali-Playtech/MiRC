@@ -2852,6 +2852,10 @@ class BackendTester:
         
         test_results = {}
         
+        # PRIORITY TEST: FOCUSED IMAGE UPLOAD REVIEW REQUEST (as requested)
+        print("\n" + "🎯" * 20 + " PRIORITY: FOCUSED IMAGE UPLOAD REVIEW REQUEST " + "🎯" * 20)
+        test_results['focused_image_upload_review'] = self.test_focused_image_upload_review_request()
+        
         # EXISTING CORE TESTS
         # Test 1: Email Authentication System
         test_results['auth'] = self.test_email_authentication_system()
