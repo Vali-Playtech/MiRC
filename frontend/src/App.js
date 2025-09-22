@@ -3438,7 +3438,7 @@ const RoomList = ({
           </div>
 
           {/* Avatar Button cu Dropdown - Emergent/X Style */}
-          <div className="flex-shrink-0 relative">
+          <div className="flex-shrink-0 relative avatar-dropdown-container">
             <button
               onClick={() => setShowAvatarDropdown(!showAvatarDropdown)}
               className="touch-target p-1 rounded-full hover:bg-gray-700/30 mobile-transition mobile-focus android-ripple relative"
