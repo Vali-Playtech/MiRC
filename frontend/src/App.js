@@ -3228,26 +3228,25 @@ const RoomList = ({
   };
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col">
-      {/* Header nou cu logo și taburi - Mobile Optimized */}
+    <div className="h-screen bg-gray-900 flex flex-col android-viewport-fix">
+      {/* Header optimizat pentru Android și iOS */}
       <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl mobile-header border-b border-white/10 shadow-lg ios-safe-area-top">
-        {/* Logo și taburi */}
-        <div className="flex items-center justify-between">
-          {/* Logo VONEX în stânga - Mobile Responsive */}
-          <div className="w-auto h-10 md:h-16 flex items-center flex-shrink-0">
+        <div className="flex items-center justify-between w-full">
+          {/* Logo VONEX - Responsive */}
+          <div className="flex-shrink-0">
             <img 
               src="/vonex-original-logo.png" 
               alt="VONEX" 
-              className="h-8 md:h-16 w-auto object-contain retina-optimized"
+              className="h-6 sm:h-8 w-auto object-contain retina-optimized mobile-logo-small"
               style={{
-                filter: 'drop-shadow(0 0 8px rgba(0, 255, 255, 0.3)) drop-shadow(0 0 12px rgba(68, 255, 68, 0.2)) drop-shadow(0 0 16px rgba(255, 136, 68, 0.1))'
+                filter: 'drop-shadow(0 0 6px rgba(0, 255, 255, 0.3)) drop-shadow(0 0 10px rgba(68, 255, 68, 0.2))'
               }}
             />
           </div>
 
-          {/* Taburi în centru - Mobile Responsive Tabs */}
-          <div className="flex-1 mx-2 md:mx-4 overflow-x-auto scrollbar-hide">
-            <div className="flex space-x-1 md:space-x-2 mobile-tabs">
+          {/* Taburi responsive - horizontal scroll pe mobile */}
+          <div className="flex-1 mx-2 overflow-x-auto scrollbar-hide">
+            <div className="flex mobile-tabs">
               {[
                 { id: 'world-chat', name: 'World Chat' },
                 { id: 'my-room', name: 'Camerele mele' },
@@ -3258,21 +3257,17 @@ const RoomList = ({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`mobile-tab px-2 md:px-6 py-2 md:py-3 rounded-full font-medium mobile-transition whitespace-nowrap relative touch-target mobile-focus flex-shrink-0 ${
+                  className={`mobile-tab mobile-transition touch-target mobile-focus android-ripple ios-button relative ${
                     activeTab === tab.id
-                      ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white border-2 border-cyan-400/50 shadow-lg shadow-cyan-400/20 scale-105'
-                      : 'text-gray-400 hover:text-white hover:bg-gray-700/30 border-2 border-transparent hover:border-gray-600/30 hover:scale-102'
+                      ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white border border-cyan-400/50 shadow-lg scale-105'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700/30 border border-transparent hover:border-gray-600/30'
                   }`}
-                  style={activeTab === tab.id ? {
-                    textShadow: '0 0 10px rgba(6, 182, 212, 0.5)',
-                    boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)'
-                  } : {}}
                   aria-label={`${tab.name} tab`}
                 >
-                  <span className="text-xs md:text-sm font-semibold">{tab.name}</span>
-                  {/* Badge for unread messages on favorites tab - Mobile Positioned */}
+                  <span className="font-medium">{tab.name}</span>
+                  {/* Badge pentru unread messages - optimizat mobile */}
                   {tab.id === 'favorites' && favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 0 && (
-                    <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                       {favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 9 
                         ? '9+' 
                         : favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0)
@@ -3284,75 +3279,25 @@ const RoomList = ({
             </div>
           </div>
 
-          {/* Butonul de profil în dreapta - cu iconița rotitza - Mobile Optimized */}
-          <button
-            onClick={() => onAccountSettings()}
-            className="touch-target text-gray-400 hover:text-purple-400 mobile-transition p-2 rounded-lg hover:bg-purple-500/10 mobile-focus flex-shrink-0"
-            title="Account Settings"
-            aria-label="Deschide setările contului"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </button>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setShowCreateRoom(true)}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl transition-all duration-300 text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>{t('newRoom')}</span>
-          </button>
-          
-          <div className="flex items-center space-x-3">
+          {/* Settings button - single gear icon */}
+          <div className="flex-shrink-0">
             <button
-              onClick={onAccountSettings}
-              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-500 hover:border-purple-400 transition-all duration-200 group"
-              title={t('accountSettings')}
-            >
-              {user?.avatar_url ? (
-                user.avatar_url.startsWith('data:') ? (
-                  <img 
-                    src={user.avatar_url} 
-                    alt="Avatar" 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" 
-                  />
-                ) : (
-                  <div 
-                    className="w-full h-full group-hover:scale-110 transition-transform duration-200"
-                    dangerouslySetInnerHTML={{ 
-                      __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
-                    }}
-                  />
-                )
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center group-hover:from-gray-500 group-hover:to-gray-600 transition-all duration-200">
-                  <span className="text-white text-sm font-semibold">
-                    {user?.nickname?.charAt(0)?.toUpperCase()}
-                  </span>
-                </div>
-              )}
-            </button>
-            <button
-              onClick={logout}
-              className="text-gray-400 hover:text-red-400 transition-colors p-2 rounded-lg hover:bg-red-500/10"
-              title={t('logout')}
+              onClick={() => onAccountSettings()}
+              className="touch-target text-gray-400 hover:text-purple-400 mobile-transition p-2 rounded-lg hover:bg-purple-500/10 mobile-focus android-ripple"
+              title="Account Settings"
+              aria-label="Deschide setările contului"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Content tabs */}
-      <div className="flex-1 overflow-hidden">
+      {/* Content Area - Clean */}
+      <div className="flex-1 overflow-hidden mobile-scroll ios-no-bounce">
         {activeTab === 'world-chat' && (
           <div className="h-full flex flex-col">
             {/* World Chat Header */}
