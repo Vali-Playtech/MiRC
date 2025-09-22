@@ -2458,8 +2458,8 @@ class BackendTester:
             print("Step 3: Creating post with URL only...")
             
             post2_data = {
-                "content": "Test doar cu link https://www.facebook.com",
-                "link_url": "https://www.facebook.com"
+                "content": "Test doar cu link https://www.github.com",
+                "link_url": "https://www.github.com"
             }
             
             # No images parameter
