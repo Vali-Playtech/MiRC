@@ -3294,28 +3294,15 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               </div>
             </div>
 
-            {/* Feed Posts - Responsive Facebook-style layout */}
-            <div className="flex-1 overflow-y-auto py-6">
-              <div className="max-w-full md:max-w-2xl md:mx-auto px-0 md:px-4">
-                {posts.length === 0 ? (
-                  <div className="text-center py-12 px-4">
-                    <h3 className="text-xl font-semibold text-white mb-2">Welcome to World Chat!</h3>
-                    <p className="text-gray-400 mb-6">Primul feed global VONEX. Împarte știri, link-uri și idei cu toată comunitatea.</p>
-                    <p className="text-sm text-gray-500">Fii primul care postează ceva!</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
+            {/* Post Feed */}
+            <div className="flex-1 overflow-y-auto" id="world-chat-feed">
+              <div className="max-w-full md:max-w-2xl md:mx-auto p-4 md:p-6">
+                {posts.length > 0 ? (
+                  <div className="space-y-6">
                     {posts.map((post) => (
-                      <div key={post.id} className="bg-gray-800/50 md:rounded-xl border-0 md:border md:border-white/10 overflow-hidden md:shadow-lg">
-                        {/* Post Header */}
+                      <div key={post.id} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/10 shadow-lg">
+                        {/* Post Header - fără avatar rotund */}
                         <div className="p-4 flex items-center space-x-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold">
-                            {post.user_avatar ? (
-                              <img src={post.user_avatar} alt={post.user_name} className="w-10 h-10 rounded-full object-cover" />
-                            ) : (
-                              post.user_nickname?.charAt(0)?.toUpperCase() || 'U'
-                            )}
-                          </div>
                           <div className="flex-1">
                             <div className="text-white font-medium text-sm">{post.user_name || post.user_nickname}</div>
                             <div className="text-gray-400 text-xs">{formatPostDate(post.created_at)}</div>
