@@ -4870,6 +4870,13 @@ const AppContent = () => {
     const detectAndPreviewLinks = async () => {
       if (!newPost.trim() || !token) return;
 
+      // Dacă există deja imagini atașate, nu genera link preview
+      if (uploadedImages.length > 0) {
+        setLinkPreview(null);
+        setIsLoadingPreview(false);
+        return;
+      }
+
       // Regex pentru detectarea URL-urilor
       const urlRegex = /(https?:\/\/[^\s]+)/g;
       const urls = newPost.match(urlRegex);
@@ -4915,7 +4922,7 @@ const AppContent = () => {
     // Debounce pentru a nu face prea multe cereri
     const timeoutId = setTimeout(detectAndPreviewLinks, 1000);
     return () => clearTimeout(timeoutId);
-  }, [newPost, token, linkPreview]);
+  }, [newPost, token, linkPreview, uploadedImages.length]); // Adăugat uploadedImages.length în dependencies
 
   // Functions for private chat
   const openPrivateChat = (chatUser) => {
