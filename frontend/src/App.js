@@ -2735,7 +2735,7 @@ const RoomList = ({
     fetchRooms();
   }, []);
 
-  // Scroll detection pentru floating button - Corectată logica
+  // Scroll detection pentru floating button - Transparență în loc de ascundere
   useEffect(() => {
     const handleScroll = () => {
       const feedElement = document.getElementById('world-chat-feed');
@@ -2745,8 +2745,13 @@ const RoomList = ({
       const isScrollingUp = currentScrollY < lastScrollY;
       const isScrolledDown = currentScrollY > 100; // Doar după ce s-a scrollat în jos
 
-      // Show button when scrolling UP (pentru a scrie postare nouă) și când nu ești la top
-      setShowFloatingButton(isScrollingUp && isScrolledDown);
+      // Opac când scroll-ezi în sus, semi-transparent când scroll-ezi în jos
+      if (isScrolledDown) {
+        setFloatingButtonOpacity(isScrollingUp ? 1 : 0.5);
+      } else {
+        setFloatingButtonOpacity(1); // Mereu opac când ești la top
+      }
+      
       setLastScrollY(currentScrollY);
     };
 
