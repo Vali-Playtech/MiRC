@@ -265,17 +265,9 @@ const AvatarDropdown = ({ user, onAccountSettings, onLogout, isOpen, onClose }) 
 const FloatingPostButton = ({ onCreatePost, isVisible }) => {
   return (
     <div 
-      className={`transition-all duration-300 ${
+      className={`mobile-fab transition-all duration-300 ${
         isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
       }`}
-      style={{ 
-        position: 'fixed !important',
-        bottom: '80px !important',
-        right: '20px !important',
-        width: '56px !important',
-        height: '56px !important',
-        zIndex: '99999 !important'
-      }}
     >
       <button
         onClick={onCreatePost}
