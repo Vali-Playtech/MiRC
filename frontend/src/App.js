@@ -3641,7 +3641,7 @@ const RoomList = ({
 
             {/* Floating Post Button - doar pe mobile */}
             <FloatingPostButton
-              isVisible={showFloatingButton}
+              opacity={floatingButtonOpacity}
               onCreatePost={() => setShowPostModal(true)}
             />
           </div>
