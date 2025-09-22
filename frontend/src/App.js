@@ -2744,9 +2744,9 @@ const RoomList = ({
       const isScrollingUp = currentScrollY < lastScrollY;
       const isScrolledDown = currentScrollY > 100; // Doar după ce s-a scrollat în jos
 
-      // Opac când scroll-ezi în sus, semi-transparent când scroll-ezi în jos
+      // Opac când scroll-ezi în sus, mai transparent (40%) când scroll-ezi în jos
       if (isScrolledDown) {
-        setFloatingButtonOpacity(isScrollingUp ? 1 : 0.5);
+        setFloatingButtonOpacity(isScrollingUp ? 1 : 0.4);
       } else {
         setFloatingButtonOpacity(1); // Mereu opac când ești la top
       }
