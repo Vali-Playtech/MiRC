@@ -417,7 +417,242 @@ const PostCreationModal = ({
     </div>
   );
 };
-// Messenger-style Input Component - Mobile Optimized
+// Expandable Messenger Input Component pentru World Chat - Facebook-style
+const ExpandableMessengerInput = ({ 
+  value, 
+  onChange, 
+  onImageUpload, 
+  onSubmit, 
+  onVoiceMessage,
+  placeholder = "Scrie o postare...", 
+  maxWords = 100,
+  showCharCount = true
+}) => {
+  const {
+    capturePhoto,
+    selectFromGallery,
+    startVoiceRecording,
+    stopVoiceRecording,
+    isRecording
+  } = useMessengerInput();
+
+  const [localValue, setLocalValue] = useState(value || '');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
+  const textareaRef = useRef(null);
+
+  useEffect(() => {
+    setLocalValue(value || '');
+  }, [value]);
+
+  // Auto-resize textarea și count words
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const scrollHeight = textareaRef.current.scrollHeight;
+      const maxHeight = 24 * 6; // 6 rânduri (24px per rând aproximativ)
+      textareaRef.current.style.height = Math.min(scrollHeight, maxHeight) + 'px';
+      
+      // Expand dacă conținutul necesită mai mult de 1 rând
+      const shouldExpand = scrollHeight > 48; // ~2 rânduri
+      setIsExpanded(shouldExpand);
+    }
+
+    // Count words
+    const words = localValue.trim().split(/\s+/).filter(word => word.length > 0);
+    setWordCount(words.length);
+  }, [localValue]);
+
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    const words = newValue.trim().split(/\s+/).filter(word => word.length > 0);
+    
+    if (words.length <= maxWords || newValue.trim() === '') {
+      setLocalValue(newValue);
+      onChange(newValue);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
+  const handleCameraClick = async () => {
+    const photoFile = await capturePhoto();
+    if (photoFile && onImageUpload) {
+      const event = {
+        target: {
+          files: [photoFile]
+        }
+      };
+      onImageUpload(event);
+    }
+  };
+
+  const handleGalleryClick = async () => {
+    const files = await selectFromGallery();
+    if (files.length > 0 && onImageUpload) {
+      const event = {
+        target: {
+          files: files
+        }
+      };
+      onImageUpload(event);
+    }
+  };
+
+  const handleVoiceClick = async () => {
+    if (isRecording) {
+      stopVoiceRecording();
+      setTimeout(() => {
+        if (window.lastVoiceFile && onVoiceMessage) {
+          onVoiceMessage(window.lastVoiceFile);
+          window.lastVoiceFile = null;
+        }
+      }, 100);
+    } else {
+      await startVoiceRecording();
+    }
+  };
+
+  const handleCompressClick = () => {
+    setIsExpanded(false);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = '48px'; // Reset la înălțimea minimă
+    }
+  };
+
+  return (
+    <div className="relative">
+      {/* Main Input Container - Facebook Messenger Style */}
+      <div className={`flex bg-gray-700/50 border border-white/20 rounded-2xl px-4 py-3 focus-within:ring-2 focus-within:ring-cyan-400/50 focus-within:border-transparent mobile-transition ${
+        isExpanded ? 'items-start' : 'items-center'
+      }`}>
+        
+        {/* Left Side Icons - Doar când nu e expandat */}
+        {!isExpanded && (
+          <div className="flex items-center space-x-2 mr-3">
+            {/* Camera Icon */}
+            <button
+              type="button"
+              onClick={handleCameraClick}
+              className="touch-target p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full mobile-transition mobile-focus android-ripple"
+              title="Fă o poză"
+              aria-label="Fă o poză cu camera"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+
+            {/* Gallery Icon */}
+            <button
+              type="button"
+              onClick={handleGalleryClick}
+              className="touch-target p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full mobile-transition mobile-focus android-ripple"
+              title="Alege din galerie"
+              aria-label="Alege imagini din galerie"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </button>
+
+            {/* Voice Icon */}
+            <button
+              type="button"
+              onClick={handleVoiceClick}
+              className={`touch-target p-2 rounded-full mobile-transition mobile-focus android-ripple ${
+                isRecording 
+                  ? 'text-red-400 bg-red-500/20 animate-pulse' 
+                  : 'text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50'
+              }`}
+              title={isRecording ? "Oprește înregistrarea" : "Înregistrează mesaj vocal"}
+              aria-label={isRecording ? "Oprește înregistrarea vocală" : "Înregistrează mesaj vocal"}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isRecording ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                )}
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Compress Button - Doar când e expandat */}
+        {isExpanded && (
+          <div className="flex items-start mr-3 pt-1">
+            <button
+              type="button"
+              onClick={handleCompressClick}
+              className="touch-target p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full mobile-transition mobile-focus android-ripple"
+              title="Comprimă câmpul"
+              aria-label="Comprimă câmpul de scriere"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7-7m0 0l-7 7m7-7v18" />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* Text Input - Expandable Textarea */}
+        <textarea
+          ref={textareaRef}
+          value={localValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent text-white placeholder-gray-400 border-none outline-none resize-none mobile-input ios-input mobile-focus overflow-hidden"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          rows={1}
+          style={{ minHeight: '24px', maxHeight: '144px' }} // 1-6 rânduri
+        />
+
+        {/* Send Button - Touch Optimized */}
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!localValue.trim()}
+          className={`ml-3 touch-target p-2 rounded-full mobile-transition mobile-focus android-ripple ${
+            localValue.trim()
+              ? 'text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20'
+              : 'text-gray-500 cursor-not-allowed'
+          } ${isExpanded ? 'self-end' : ''}`}
+          title="Trimite postare"
+          aria-label="Trimite postare"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Word Count - Mobile Optimized */}
+      {showCharCount && (
+        <div className="flex justify-between items-center mt-2 px-3">
+          <div className={`text-xs ${wordCount > maxWords * 0.9 ? 'text-amber-400' : wordCount > maxWords * 0.8 ? 'text-yellow-400' : 'text-gray-500'}`}>
+            {wordCount}/{maxWords} cuvinte
+          </div>
+          {isRecording && (
+            <div className="text-xs text-red-400 animate-pulse flex items-center space-x-1">
+              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+              <span>Înregistrează...</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 const MessengerInput = ({ 
   value, 
   onChange, 
