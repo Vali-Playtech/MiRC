@@ -4515,6 +4515,76 @@ const AppContent = () => {
     }
   };
 
+  // Post creation functions
+  const handleImageUpload = async (files) => {
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/upload-image`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: formData
+          });
+          
+          if (response.ok) {
+            const imageData = await response.json();
+            setUploadedImages(prev => [...prev, imageData]);
+          } else {
+            alert('Eroare la încărcarea imaginii');
+          }
+        } catch (error) {
+          console.error('Error uploading image:', error);
+          alert('Eroare la încărcarea imaginii');
+        }
+      }
+    }
+  };
+
+  const removeImage = (imageId) => {
+    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
+  };
+
+  const createPost = async () => {
+    if (!newPost.trim() && uploadedImages.length === 0) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          content: newPost,
+          images: uploadedImages.map(img => img.id)
+        })
+      });
+
+      if (response.ok) {
+        // Clear form
+        setNewPost('');
+        setLinkPreview(null);
+        setUploadedImages([]);
+        setShowPostModal(false);
+        alert('Postarea a fost creată cu succes!');
+      } else {
+        const errorData = await response.json();
+        console.error('Error creating post:', errorData);
+        alert('Eroare la crearea postării: ' + (errorData.detail || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Eroare de conexiune la crearea postării');
+    }
+  };
+
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('en-US', { 
