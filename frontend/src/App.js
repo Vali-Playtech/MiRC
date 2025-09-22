@@ -3390,12 +3390,12 @@ const RoomList = ({
       {/* Header optimizat pentru Android și iOS */}
       <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl mobile-header border-b border-white/10 shadow-lg ios-safe-area-top">
         <div className="flex items-center justify-between w-full">
-          {/* Logo VONEX - Responsive */}
+          {/* Logo VONEX - Responsive - Mărit cu 20% */}
           <div className="flex-shrink-0">
             <img 
               src="/vonex-original-logo.png" 
               alt="VONEX" 
-              className="h-6 sm:h-8 w-auto object-contain retina-optimized mobile-logo-small"
+              className="h-7 sm:h-10 w-auto object-contain retina-optimized mobile-logo-small"
               style={{
                 filter: 'drop-shadow(0 0 6px rgba(0, 255, 255, 0.3)) drop-shadow(0 0 10px rgba(68, 255, 68, 0.2))'
               }}
