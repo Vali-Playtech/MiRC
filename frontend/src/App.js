@@ -264,9 +264,15 @@ const AvatarDropdown = ({ user, onAccountSettings, onLogout, isOpen, onClose }) 
 // Floating Action Button Component - Bulă albastră rotundă în dreapta jos ca pe X/Twitter
 const FloatingPostButton = ({ onCreatePost, isVisible }) => {
   return (
-    <div className={`mobile-fab transition-all duration-300 ${
-      isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
-    }`}>
+    <div 
+      className={`fixed bottom-20 right-5 w-14 h-14 z-50 transition-all duration-300 ${
+        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
+      }`}
+      style={{ 
+        bottom: 'calc(env(safe-area-inset-bottom) + 80px)',
+        right: 'calc(env(safe-area-inset-right) + 20px)'
+      }}
+    >
       <button
         onClick={onCreatePost}
         className="w-14 h-14 bg-gradient-to-r from-cyan-500/90 to-blue-500/90 hover:from-cyan-600/90 hover:to-blue-600/90 backdrop-blur-sm text-white rounded-full shadow-lg hover:shadow-xl mobile-transition hover:scale-105 flex items-center justify-center android-ripple touch-target"
