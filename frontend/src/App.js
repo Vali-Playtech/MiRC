@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, createContext, useRef } from 'react';
 import './App.css';
+import './mobile-optimizations.css';
 import { languages, translations, getTranslation, defaultAvatars, getAvatarUrl, svgToBase64 } from './i18n';
 
 // Messenger-style Input Hook pentru funcționalități multimedia
