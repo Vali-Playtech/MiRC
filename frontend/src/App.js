@@ -2654,13 +2654,9 @@ const RoomList = ({
   // State pentru noua interfață cu taburi
   const [activeTab, setActiveTab] = useState('world-chat');
   const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState('');
   const [newPostLink, setNewPostLink] = useState('');
   
   // New state for Facebook-style post creation
-  const [linkPreview, setLinkPreview] = useState(null);
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [selectedImageModal, setSelectedImageModal] = useState(null);
   const [characterCount, setCharacterCount] = useState(0);
