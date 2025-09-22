@@ -2360,6 +2360,219 @@ class BackendTester:
         except Exception as e:
             return self.log_test("World Chat Image Upload and Posting", False, f"Exception: {str(e)}")
 
+    def test_world_chat_image_link_preview_conflict_fix(self):
+        """Test 18: World Chat Image and Link Preview Conflict Bug Fix (CRITICAL)"""
+        print("\n=== Testing World Chat Image and Link Preview Conflict Bug Fix ===")
+        
+        try:
+            # Authenticate with the specific credentials requested
+            auth_data = {
+                "email": "test@example.com",
+                "password": "password123"
+            }
+            
+            # Try to login first, if fails then register
+            response = self.session.post(f"{API_BASE}/auth/login", json=auth_data)
+            if response.status_code != 200:
+                # Register the user
+                register_data = {
+                    "email": "test@example.com",
+                    "password": "password123",
+                    "first_name": "Test",
+                    "last_name": "User",
+                    "nickname": "testuser"
+                }
+                
+                response = self.session.post(f"{API_BASE}/auth/register", json=register_data)
+                if not self.log_test("Test User Registration", response.status_code == 200,
+                                   f"Status: {response.status_code}"):
+                    return False
+                
+                # Now login
+                response = self.session.post(f"{API_BASE}/auth/login", json=auth_data)
+                if not self.log_test("Test User Login", response.status_code == 200,
+                                   f"Status: {response.status_code}"):
+                    return False
+            
+            token_data = response.json()
+            test_token = token_data['access_token']
+            headers = {"Authorization": f"Bearer {test_token}"}
+            
+            # Step 1: Upload an image through POST /api/world-chat/upload-image
+            print("Step 1: Uploading image...")
+            
+            # Create a simple test image (800x600 pixel PNG)
+            import io
+            from PIL import Image
+            
+            # Create a test image
+            img = Image.new('RGB', (800, 600), color='red')
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format='PNG')
+            img_bytes.seek(0)
+            
+            files = {'file': ('test_image.png', img_bytes, 'image/png')}
+            
+            response = self.session.post(f"{API_BASE}/world-chat/upload-image", 
+                                       files=files, headers=headers)
+            if not self.log_test("Image Upload", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            image_data = response.json()
+            image_id = image_data['id']
+            
+            self.log_test("Image Upload Success", True, f"Image ID: {image_id}")
+            
+            # Step 2: Create Post 1 - Text with URL + uploaded image (should NOT have link_preview)
+            print("Step 2: Creating post with image and URL...")
+            
+            post1_data = {
+                "content": "Test cu imagine și link https://www.google.com",
+                "link_url": "https://www.google.com"  # This should be ignored due to image presence
+            }
+            
+            # Include the image ID as query parameter
+            response = self.session.post(f"{API_BASE}/world-chat/posts?images={image_id}", 
+                                       json=post1_data, headers=headers)
+            if not self.log_test("Post with Image and URL", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            post1_response = response.json()
+            post1_id = post1_response['id']
+            
+            # CRITICAL TEST: Verify post1 does NOT contain link_preview when it has images
+            if post1_response.get('link_preview') is not None:
+                return self.log_test("CRITICAL BUG FIX - Image Priority Over Link Preview", False,
+                                   f"BUG NOT FIXED: Post with image still contains link_preview: {post1_response.get('link_preview')}")
+            
+            if not post1_response.get('images') or len(post1_response['images']) == 0:
+                return self.log_test("Post with Image - Image Attachment", False,
+                                   "Post should contain image attachment")
+            
+            self.log_test("CRITICAL BUG FIX - Image Priority Over Link Preview", True,
+                         "SUCCESS: Post with image does NOT contain link_preview (images take priority)")
+            
+            # Step 3: Create Post 2 - Text with URL only (no images) (should HAVE link_preview)
+            print("Step 3: Creating post with URL only...")
+            
+            post2_data = {
+                "content": "Test doar cu link https://www.facebook.com",
+                "link_url": "https://www.facebook.com"
+            }
+            
+            # No images parameter
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=post2_data, headers=headers)
+            if not self.log_test("Post with URL Only", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            post2_response = response.json()
+            post2_id = post2_response['id']
+            
+            # CRITICAL TEST: Verify post2 DOES contain link_preview when no images
+            if post2_response.get('link_preview') is None:
+                return self.log_test("CRITICAL BUG FIX - Link Preview Without Images", False,
+                                   "BUG: Post with URL only should contain link_preview but doesn't")
+            
+            if post2_response.get('images') and len(post2_response['images']) > 0:
+                return self.log_test("Post with URL Only - No Images", False,
+                                   "Post should not contain image attachments")
+            
+            self.log_test("CRITICAL BUG FIX - Link Preview Without Images", True,
+                         "SUCCESS: Post with URL only DOES contain link_preview")
+            
+            # Step 4: Verify posts are correctly saved in backend by retrieving them
+            print("Step 4: Verifying posts persistence...")
+            
+            response = self.session.get(f"{API_BASE}/world-chat/posts", headers=headers)
+            if not self.log_test("Retrieve Posts", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            all_posts = response.json()
+            
+            # Find our test posts
+            post1_found = None
+            post2_found = None
+            
+            for post in all_posts:
+                if post['id'] == post1_id:
+                    post1_found = post
+                elif post['id'] == post2_id:
+                    post2_found = post
+            
+            if not post1_found:
+                return self.log_test("Post 1 Persistence", False, "Post with image not found in database")
+            
+            if not post2_found:
+                return self.log_test("Post 2 Persistence", False, "Post with URL only not found in database")
+            
+            # FINAL VERIFICATION: Check the persisted posts maintain the correct behavior
+            
+            # Post 1 (with image) should NOT have link_preview
+            if post1_found.get('link_preview') is not None:
+                return self.log_test("FINAL VERIFICATION - Post 1 Link Preview", False,
+                                   "CRITICAL BUG: Persisted post with image contains link_preview")
+            
+            if not post1_found.get('images') or len(post1_found['images']) == 0:
+                return self.log_test("FINAL VERIFICATION - Post 1 Images", False,
+                                   "Persisted post should contain images")
+            
+            # Post 2 (URL only) should HAVE link_preview
+            if post2_found.get('link_preview') is None:
+                return self.log_test("FINAL VERIFICATION - Post 2 Link Preview", False,
+                                   "CRITICAL BUG: Persisted post with URL only missing link_preview")
+            
+            if post2_found.get('images') and len(post2_found['images']) > 0:
+                return self.log_test("FINAL VERIFICATION - Post 2 No Images", False,
+                                   "Persisted post should not contain images")
+            
+            # Step 5: Verify the logic respects priority: images > link preview
+            print("Step 5: Testing priority logic...")
+            
+            # Test edge case: Post with both image and link_url should prioritize image
+            post3_data = {
+                "content": "Test prioritate: imagine vs link https://www.github.com",
+                "link_url": "https://www.github.com"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts?images={image_id}", 
+                                       json=post3_data, headers=headers)
+            if response.status_code == 200:
+                post3_response = response.json()
+                
+                # Should have image, should NOT have link_preview
+                has_images = post3_response.get('images') and len(post3_response['images']) > 0
+                has_link_preview = post3_response.get('link_preview') is not None
+                
+                if not has_images:
+                    return self.log_test("Priority Test - Images Present", False,
+                                       "Post should contain images")
+                
+                if has_link_preview:
+                    return self.log_test("Priority Test - Link Preview Suppressed", False,
+                                       "Post with images should NOT contain link_preview (priority violation)")
+                
+                self.log_test("Priority Logic Verification", True,
+                             "SUCCESS: Images take priority over link preview")
+            
+            # Summary of all tests
+            print("\n🎯 BUG FIX VERIFICATION SUMMARY:")
+            print("✅ Post with image + URL: NO link_preview (images take priority)")
+            print("✅ Post with URL only: HAS link_preview (normal behavior)")
+            print("✅ Posts correctly persisted in backend")
+            print("✅ Priority logic working: images > link preview")
+            
+            self.log_test("World Chat Image and Link Preview Conflict Bug Fix", True,
+                         "🎉 CRITICAL BUG FIX VERIFIED: Image and link preview conflict resolved!")
+            return True
+            
+        except Exception as e:
+            return self.log_test("World Chat Image and Link Preview Conflict Bug Fix", False, f"Exception: {str(e)}")
+
     async def run_all_tests(self):
         """Run all backend tests including NEW Private Chat and Friends System"""
         print("🚀 Starting Comprehensive Backend Testing - INCLUDING NEW PRIVATE CHAT & FRIENDS SYSTEM")
