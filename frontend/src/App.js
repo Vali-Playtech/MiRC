@@ -5145,9 +5145,6 @@ const AppContent = () => {
         setUploadedImages([]);
         setShowPostModal(false);
         alert('Postarea a fost creată cu succes!');
-        
-        // Refresh posts list
-        await loadPosts();
       } else {
         const errorData = await response.json();
         console.error('Error creating post:', errorData);
