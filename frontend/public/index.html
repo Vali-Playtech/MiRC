@@ -2,27 +2,74 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!-- Enhanced Mobile Viewport for iOS and Android -->
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+        
+        <!-- iOS Safe Area Support -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="VONEX" />
+        
+        <!-- Android Chrome -->
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#9C40FF" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1a" />
+        
+        <!-- Prevent zoom on input focus (iOS) -->
+        <meta name="format-detection" content="telephone=no" />
+        
+        <!-- Enhanced PWA Icons -->
         <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzlDNDBGRiIvPgo8cGF0aCBkPSJNNiAxMkwyNiAxMkwyMiAyMEgxMEw2IDEyWiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC45Ii8+CjxwYXRoIGQ9Ik0xMiAxNkwyMCAxNkwxOCAyMEgxNEwxMiAxNloiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuNyIvPgo8L3N2Zz4K" />
         <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iMjQiIGZpbGw9IiM5QzQwRkYiLz4KPHBhdGggZD0iTTM2IDcySDE0NEwxMjggMTA4SDUyTDM2IDcyWiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC45Ii8+CjxwYXRoIGQ9Ik02NiA5MEwxMTQgOTBMMTAyIDEwOEg3OEw2NiA5MFoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuNyIvPgo8L3N2Zz4K" />
+        
+        <!-- Preload critical resources -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        
         <meta name="description" content="A product of emergent.sh" />
-        <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-        <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+        
         <title>VONEX - Platformă Modernă de Chat</title>
         <meta name="description" content="VONEX - Platformă modernă de comunicare în timp real cu camere tematice, design avansat și funcții PWA" />
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+        
+        <!-- Mobile optimization styles -->
+        <style>
+            /* iOS Safari specific fixes */
+            body {
+                -webkit-touch-callout: none;
+                -webkit-text-size-adjust: 100%;
+                -webkit-tap-highlight-color: transparent;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                touch-action: manipulation;
+            }
+            
+            /* Safe area support for iOS */
+            :root {
+                --safe-area-inset-top: env(safe-area-inset-top);
+                --safe-area-inset-right: env(safe-area-inset-right);
+                --safe-area-inset-bottom: env(safe-area-inset-bottom);
+                --safe-area-inset-left: env(safe-area-inset-left);
+            }
+            
+            /* Prevent zoom on input focus */
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            textarea {
+                font-size: 16px !important;
+            }
+            
+            /* Smooth scrolling */
+            * {
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Loading state */
+            #root {
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+        </style>
     </head>
     <body>
         <noscript>You need to enable JavaScript to run this app.</noscript>
