@@ -2798,12 +2798,12 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
             ))}
           </div>
 
-          {/* Buton simplu pentru Account Settings - fără bulă rotundă */}
+          {/* Butonul de profil în dreapta */}
           <button
             onClick={() => onAccountSettings()}
-            className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 text-white rounded-lg transition-all duration-200 text-sm font-medium border border-gray-600/30 hover:border-gray-500/50"
+            className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-bold hover:shadow-lg transition-all duration-200 hover:scale-105"
           >
-            Account Settings
+            {user?.nickname ? user.nickname.charAt(0).toUpperCase() : 'U'}
           </button>
         </div>
         
