@@ -2049,7 +2049,9 @@ const ChatRoom = ({ room, onBack }) => {
             onChange={setNewMessage}
             onSubmit={() => {
               if (newMessage.trim()) {
-                sendMessage();
+                // Create a mock event object for sendMessage
+                const mockEvent = { preventDefault: () => {} };
+                sendMessage(mockEvent);
               }
             }}
             placeholder={`Trimite un mesaj în ${room.name}...`}
