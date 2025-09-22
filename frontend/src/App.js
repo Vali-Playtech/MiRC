@@ -3895,10 +3895,13 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                     />
                   </div>
 
-                  {/* Original Post Preview - fără avatar */}
+                  {/* Original Post Preview */}
                   <div className="bg-gray-700/30 border border-white/10 rounded-lg p-3">
                     <div className="text-xs text-gray-400 mb-2">Postarea originală:</div>
                     <div className="flex items-start space-x-2">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                        {shareModalPost.user_nickname?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
                       <div className="flex-1">
                         <div className="text-white text-xs font-medium">{shareModalPost.user_name}</div>
                         <div className="text-gray-300 text-xs mt-1 line-clamp-3">
