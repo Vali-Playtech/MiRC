@@ -3874,8 +3874,14 @@ const RoomList = ({
               </div>
             </div>
 
-            {/* Expandable Input Field pentru World Chat */}
-            <div className="p-4 md:p-6 border-t border-white/10 bg-gray-900/50">
+            {/* Floating Post Button - doar pe mobile */}
+            <FloatingPostButton
+              opacity={floatingButtonOpacity}
+              onCreatePost={() => setShowPostModal(true)}
+            />
+
+            {/* Fixed Bottom Input Bar pentru World Chat */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-900/95 backdrop-blur-sm border-t border-white/10 z-40">
               <div className="max-w-full md:max-w-2xl md:mx-auto">
                 <ExpandableMessengerInput
                   value={newPost}
@@ -3892,12 +3898,6 @@ const RoomList = ({
                 />
               </div>
             </div>
-
-            {/* Floating Post Button - doar pe mobile */}
-            <FloatingPostButton
-              opacity={floatingButtonOpacity}
-              onCreatePost={() => setShowPostModal(true)}
-            />
           </div>
         )}
 
