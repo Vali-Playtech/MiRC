@@ -105,14 +105,16 @@
     border-radius: 16px;
   }
 
-  /* Enhanced floating action button */
+  /* Enhanced floating action button - poziționat în dreapta jos ca pe X/Twitter */
   .mobile-fab {
+    position: fixed;
     bottom: calc(env(safe-area-inset-bottom) + 20px);
     right: calc(env(safe-area-inset-right) + 20px);
     width: 56px;
     height: 56px;
     border-radius: 28px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 50;
   }
 
   /* Enhanced modal for mobile */
