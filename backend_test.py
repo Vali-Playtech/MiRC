@@ -2435,7 +2435,7 @@ class BackendTester:
         # Separate core tests from new private chat tests and world chat tests
         core_tests = ['auth', 'user_mgmt', 'room_mgmt', 'websocket', 'http_messaging', 'message_persist']
         private_chat_tests = ['room_users_discovery', 'private_messaging', 'friends_system', 'private_conversations', 'integration_private_chat', 'unfavorite_friend_removal']
-        world_chat_tests = ['world_chat_auth', 'world_chat_posting', 'world_chat_comprehensive', 'world_chat_romanian']
+        world_chat_tests = ['world_chat_auth', 'world_chat_posting', 'world_chat_comprehensive', 'world_chat_romanian', 'world_chat_image_upload']
         
         print("CORE SYSTEM TESTS:")
         core_passed = 0
