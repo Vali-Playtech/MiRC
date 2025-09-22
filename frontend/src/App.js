@@ -1887,6 +1887,30 @@ const ChatRoom = ({ room, onBack }) => {
             {/* Private Chat Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-purple-500/30">
+                  {privateChatUser.avatar_url ? (
+                    privateChatUser.avatar_url.startsWith('data:') ? (
+                      <img 
+                        src={privateChatUser.avatar_url} 
+                        alt="Avatar" 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div 
+                        className="w-full h-full"
+                        dangerouslySetInnerHTML={{ 
+                          __html: defaultAvatars.find(a => a.id === privateChatUser.avatar_url)?.svg || '' 
+                        }}
+                      />
+                    )
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                      <span className="text-white text-sm font-semibold">
+                        {privateChatUser.nickname?.charAt(0)?.toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <div className="flex-1">
                   <h3 className="text-white font-semibold">Chat privat cu {privateChatUser.nickname}</h3>
                   <p className="text-gray-400 text-sm flex items-center">
