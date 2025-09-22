@@ -2640,6 +2640,9 @@ class BackendTester:
         # Test 17: World Chat Image Upload and Posting (REVIEW REQUEST TARGET)
         test_results['world_chat_image_upload'] = self.test_world_chat_image_upload_and_posting()
         
+        # Test 18: World Chat Image and Link Preview Conflict Bug Fix (CRITICAL)
+        test_results['world_chat_image_link_conflict_fix'] = self.test_world_chat_image_link_preview_conflict_fix()
+        
         # Summary
         print("\n" + "=" * 80)
         print("📊 COMPREHENSIVE TEST SUMMARY - PRIVATE CHAT & FRIENDS SYSTEM")
