@@ -4864,7 +4864,21 @@ const AppContent = () => {
   };
 
   // Post creation functions
-  const handleImageUpload = async (files) => {
+  const handleImageUpload = async (filesOrEvent) => {
+    // Determinăm dacă primim un event object sau direct files array
+    let files;
+    if (filesOrEvent && filesOrEvent.target && filesOrEvent.target.files) {
+      // Event object din input file
+      files = Array.from(filesOrEvent.target.files);
+    } else if (Array.isArray(filesOrEvent)) {
+      // Array de files direct
+      files = filesOrEvent;
+    } else {
+      console.error('Invalid files parameter:', filesOrEvent);
+      alert('Format invalid de fișiere');
+      return;
+    }
+
     for (const file of files) {
       if (file.type.startsWith('image/')) {
         const formData = new FormData();
@@ -4883,12 +4897,16 @@ const AppContent = () => {
             const imageData = await response.json();
             setUploadedImages(prev => [...prev, imageData]);
           } else {
-            alert('Eroare la încărcarea imaginii');
+            const errorData = await response.json();
+            console.error('Upload error:', errorData);
+            alert('Eroare la încărcarea imaginii: ' + (errorData.detail || 'Unknown error'));
           }
         } catch (error) {
           console.error('Error uploading image:', error);
           alert('Eroare la încărcarea imaginii');
         }
+      } else {
+        alert('Tip de fișier nesuportat. Doar imagini sunt permise.');
       }
     }
   };
