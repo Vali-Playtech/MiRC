@@ -3415,6 +3415,12 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <div className="text-center py-12 px-4">
+                    <h3 className="text-xl font-semibold text-white mb-2">Welcome to World Chat!</h3>
+                    <p className="text-gray-400 mb-6">Primul feed global VONEX. Împarte știri, link-uri și idei cu toată comunitatea.</p>
+                    <p className="text-sm text-gray-500">Fii primul care postează ceva!</p>
+                  </div>
                 )}
               </div>
             </div>
