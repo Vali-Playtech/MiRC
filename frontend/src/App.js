@@ -3960,44 +3960,7 @@ const FriendsBar = ({ onFriendClick }) => {
           
           return (
             <div key={userId} className="relative">
-              <button
-                onClick={() => onFriendClick({
-                  id: userId,
-                  nickname: nickname,
-                  avatar_url: avatar
-                })}
-                className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/50 hover:border-purple-400 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                {avatar ? (
-                  avatar.startsWith('data:') ? (
-                    <img 
-                      src={avatar} 
-                      alt="Avatar" 
-                      className="w-full h-full object-cover" 
-                    />
-                  ) : (
-                    <div 
-                      className="w-full h-full"
-                      dangerouslySetInnerHTML={{ 
-                        __html: defaultAvatars.find(a => a.id === avatar)?.svg || '' 
-                      }}
-                    />
-                  )
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                )}
-              </button>
-              {unreadCount > 0 && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                </div>
-              )}
+              {/* Contact button eliminat complet */}
             </div>
           );
         })}
