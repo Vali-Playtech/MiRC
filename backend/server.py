@@ -525,9 +525,9 @@ async def create_world_chat_post(
             except Exception as e:
                 logging.error(f"Error processing image {image_id}: {e}")
     
-    # Generate link preview if URL provided
+    # Generate link preview if URL provided AND no images are attached (images take priority)
     link_preview = None
-    if post_data.link_url:
+    if post_data.link_url and not image_attachments:
         link_preview = await scrape_link_preview(post_data.link_url)
     
     # Create post document
