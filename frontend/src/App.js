@@ -142,7 +142,7 @@ const FloatingPostButton = ({ onCreatePost, isVisible }) => {
   );
 };
 
-// Post Creation Modal Component
+// Post Creation Modal Component - Mobile Optimized
 const PostCreationModal = ({ 
   isOpen, 
   onClose, 
@@ -159,13 +159,14 @@ const PostCreationModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
-        {/* Modal Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
+      <div className="mobile-modal bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl w-full max-w-lg overflow-hidden android-viewport-fix">
+        {/* Modal Header - iOS Safe Area */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10 mobile-header">
           <h2 className="text-white text-xl font-semibold">Postare nouă</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 transition-colors"
+            className="touch-target text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 mobile-transition mobile-focus"
+            aria-label="Închide modal"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -173,24 +174,26 @@ const PostCreationModal = ({
           </button>
         </div>
 
-        {/* Modal Content */}
-        <div className="p-6 max-h-96 overflow-y-auto">
+        {/* Modal Content - Mobile Optimized Scroll */}
+        <div className="p-6 max-h-96 overflow-y-auto mobile-scroll">
           <div className="space-y-4">
-            {/* Messenger Input */}
-            <MessengerInput
-              value={newPost}
-              onChange={setNewPost}
-              onImageUpload={handleImageUpload}
-              onSubmit={() => {
-                createPost();
-                onClose();
-              }}
-              placeholder="Ce vrei să împarți cu lumea?"
-              maxLength={500}
-              showCharCount={true}
-            />
+            {/* Messenger Input - Mobile Enhanced */}
+            <div className="mobile-input-container">
+              <MessengerInput
+                value={newPost}
+                onChange={setNewPost}
+                onImageUpload={handleImageUpload}
+                onSubmit={() => {
+                  createPost();
+                  onClose();
+                }}
+                placeholder="Ce vrei să împarți cu lumea?"
+                maxLength={500}
+                showCharCount={true}
+              />
+            </div>
 
-            {/* Uploaded Images Preview */}
+            {/* Uploaded Images Preview - Mobile Grid */}
             {uploadedImages.length > 0 && (
               <div className="space-y-3">
                 <div className="text-sm text-gray-400">
@@ -198,15 +201,16 @@ const PostCreationModal = ({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {uploadedImages.map((image) => (
-                    <div key={image.id} className="relative group">
+                    <div key={image.id} className="relative group mobile-card">
                       <img 
                         src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
                         alt="Preview"
-                        className="w-full h-32 object-cover rounded-lg"
+                        className="w-full h-32 object-cover rounded-lg retina-optimized"
                       />
                       <button
                         onClick={() => removeImage(image.id)}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs hover:bg-red-600 mobile-transition opacity-0 group-hover:opacity-100 touch-target"
+                        aria-label="Șterge imagine"
                       >
                         ×
                       </button>
@@ -216,22 +220,22 @@ const PostCreationModal = ({
               </div>
             )}
 
-            {/* Link Preview Loading */}
+            {/* Link Preview Loading - Mobile Friendly */}
             {isLoadingPreview && (
-              <div className="flex items-center space-x-2 text-gray-400 text-sm">
+              <div className="flex items-center space-x-2 text-gray-400 text-sm p-3 bg-gray-700/30 rounded-lg">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
                 <span>Se generează preview pentru link...</span>
               </div>
             )}
 
-            {/* Link Preview */}
+            {/* Link Preview - Mobile Enhanced */}
             {linkPreview && (
-              <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
+              <div className="mobile-card bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
                 {linkPreview.image_url && (
                   <img 
                     src={linkPreview.image_url} 
                     alt="Link preview"
-                    className="w-full h-32 object-cover"
+                    className="w-full h-32 object-cover retina-optimized"
                   />
                 )}
                 <div className="p-4 space-y-2">
@@ -248,12 +252,12 @@ const PostCreationModal = ({
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="p-6 border-t border-white/10">
-          <div className="flex space-x-3">
+        {/* Modal Footer - iOS Safe Area Bottom */}
+        <div className="p-6 border-t border-white/10 ios-safe-area-bottom">
+          <div className="mobile-button-group flex space-x-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              className="flex-1 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg mobile-transition touch-target mobile-focus android-ripple"
             >
               Anulează
             </button>
@@ -263,7 +267,7 @@ const PostCreationModal = ({
                 onClose();
               }}
               disabled={!newPost.trim() && uploadedImages.length === 0}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-lg transition-all disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-lg mobile-transition disabled:cursor-not-allowed touch-target mobile-focus android-ripple"
             >
               Postează
             </button>
