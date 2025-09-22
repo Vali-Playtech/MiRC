@@ -4903,6 +4903,11 @@ const AppContent = () => {
     }
 
     try {
+      // Extrage primul URL din text pentru link preview
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const urls = newPost.match(urlRegex);
+      const linkUrl = urls ? urls[0] : null;
+
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/posts`, {
         method: 'POST',
         headers: {
@@ -4911,7 +4916,8 @@ const AppContent = () => {
         },
         body: JSON.stringify({
           content: newPost,
-          images: uploadedImages.map(img => img.id)
+          images: uploadedImages.map(img => img.id),
+          link_url: linkUrl
         })
       });
 
@@ -4922,6 +4928,9 @@ const AppContent = () => {
         setUploadedImages([]);
         setShowPostModal(false);
         alert('Postarea a fost creată cu succes!');
+        
+        // Refresh posts list
+        loadPosts();
       } else {
         const errorData = await response.json();
         console.error('Error creating post:', errorData);
