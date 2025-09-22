@@ -3447,7 +3447,7 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                       onSubmit={createPost}
                       placeholder="Ce vrei să împarți cu lumea?"
                       maxLength={500}
-                      showCharCount={true}
+                      showCharCount={false}
                     />
                   </div>
 
