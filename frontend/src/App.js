@@ -269,8 +269,8 @@ const FloatingPostButton = ({ onCreatePost, isVisible }) => {
         isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
       }`}
       style={{ 
-        bottom: 'calc(env(safe-area-inset-bottom) + 60px)',
-        right: 'calc(env(safe-area-inset-right) + 80px)',
+        bottom: 'calc(env(safe-area-inset-bottom) + 70px)',
+        right: 'calc(env(safe-area-inset-right) + 16px)',
         position: 'fixed',
         zIndex: 9999
       }}
