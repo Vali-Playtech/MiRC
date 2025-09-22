@@ -3874,6 +3874,25 @@ const RoomList = ({
               </div>
             </div>
 
+            {/* Expandable Input Field pentru World Chat */}
+            <div className="p-4 md:p-6 border-t border-white/10 bg-gray-900/50">
+              <div className="max-w-full md:max-w-2xl md:mx-auto">
+                <ExpandableMessengerInput
+                  value={newPost}
+                  onChange={setNewPost}
+                  onImageUpload={handleImageUpload}
+                  onSubmit={() => {
+                    if (newPost.trim()) {
+                      createPost();
+                    }
+                  }}
+                  placeholder="Ce vrei să împarți cu lumea?"
+                  maxWords={100}
+                  showCharCount={true}
+                />
+              </div>
+            </div>
+
             {/* Floating Post Button - doar pe mobile */}
             <FloatingPostButton
               opacity={floatingButtonOpacity}
