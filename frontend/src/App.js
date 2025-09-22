@@ -121,7 +121,156 @@ const useMessengerInput = () => {
   };
 };
 
-// Messenger-style Input Component
+// Floating Action Button Component pentru mobile posts
+const FloatingPostButton = ({ onCreatePost, isVisible }) => {
+  return (
+    <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
+      isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
+    }`}>
+      <button
+        onClick={onCreatePost}
+        className="w-14 h-14 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center"
+        title="Creează postare nouă"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
+    </div>
+  );
+};
+
+// Post Creation Modal Component
+const PostCreationModal = ({ 
+  isOpen, 
+  onClose, 
+  newPost,
+  setNewPost,
+  handleImageUpload,
+  createPost,
+  uploadedImages,
+  removeImage,
+  linkPreview,
+  isLoadingPreview
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-800/95 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 className="text-white text-xl font-semibold">Postare nouă</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-700/50 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6 max-h-96 overflow-y-auto">
+          <div className="space-y-4">
+            {/* Messenger Input */}
+            <MessengerInput
+              value={newPost}
+              onChange={setNewPost}
+              onImageUpload={handleImageUpload}
+              onSubmit={() => {
+                createPost();
+                onClose();
+              }}
+              placeholder="Ce vrei să împarți cu lumea?"
+              maxLength={500}
+              showCharCount={true}
+            />
+
+            {/* Uploaded Images Preview */}
+            {uploadedImages.length > 0 && (
+              <div className="space-y-3">
+                <div className="text-sm text-gray-400">
+                  {uploadedImages.length} imagine{uploadedImages.length > 1 ? 'i' : ''} atașat{uploadedImages.length > 1 ? 'e' : 'ă'}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {uploadedImages.map((image) => (
+                    <div key={image.id} className="relative group">
+                      <img 
+                        src={`${process.env.REACT_APP_BACKEND_URL}${image.thumbnail_url}`}
+                        alt="Preview"
+                        className="w-full h-32 object-cover rounded-lg"
+                      />
+                      <button
+                        onClick={() => removeImage(image.id)}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Link Preview Loading */}
+            {isLoadingPreview && (
+              <div className="flex items-center space-x-2 text-gray-400 text-sm">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+                <span>Se generează preview pentru link...</span>
+              </div>
+            )}
+
+            {/* Link Preview */}
+            {linkPreview && (
+              <div className="bg-gray-700/30 border border-white/10 rounded-xl overflow-hidden">
+                {linkPreview.image_url && (
+                  <img 
+                    src={linkPreview.image_url} 
+                    alt="Link preview"
+                    className="w-full h-32 object-cover"
+                  />
+                )}
+                <div className="p-4 space-y-2">
+                  <div className="text-xs text-gray-400 uppercase">{linkPreview.domain}</div>
+                  {linkPreview.title && (
+                    <div className="text-white font-medium text-sm line-clamp-2">{linkPreview.title}</div>
+                  )}
+                  {linkPreview.description && (
+                    <div className="text-gray-300 text-sm line-clamp-2">{linkPreview.description}</div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="p-6 border-t border-white/10">
+          <div className="flex space-x-3">
+            <button
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            >
+              Anulează
+            </button>
+            <button
+              onClick={() => {
+                createPost();
+                onClose();
+              }}
+              disabled={!newPost.trim() && uploadedImages.length === 0}
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 text-white rounded-lg transition-all disabled:cursor-not-allowed"
+            >
+              Postează
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 const MessengerInput = ({ 
   value, 
   onChange, 
