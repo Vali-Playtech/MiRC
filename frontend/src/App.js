@@ -439,6 +439,7 @@ const ExpandableMessengerInput = ({
   const [localValue, setLocalValue] = useState(value || '');
   const [isExpanded, setIsExpanded] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [showIcons, setShowIcons] = useState(true); // Pentru controlul vizibilității iconițelor
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -461,6 +462,9 @@ const ExpandableMessengerInput = ({
     // Count words
     const words = localValue.trim().split(/\s+/).filter(word => word.length > 0);
     setWordCount(words.length);
+
+    // Control iconițe - ascunde când utilizatorul tastează
+    setShowIcons(localValue.trim() === '');
   }, [localValue]);
 
   const handleInputChange = (e) => {
@@ -525,6 +529,10 @@ const ExpandableMessengerInput = ({
     }
   };
 
+  const toggleIcons = () => {
+    setShowIcons(!showIcons);
+  };
+
   return (
     <div className="relative">
       {/* Main Input Container - Facebook Messenger Style */}
@@ -532,9 +540,11 @@ const ExpandableMessengerInput = ({
         isExpanded ? 'items-start' : 'items-center'
       }`}>
         
-        {/* Left Side Icons - Doar când nu e expandat */}
-        {!isExpanded && (
-          <div className="flex items-center space-x-2 mr-3">
+        {/* Left Side Icons - Cu animație de glisare */}
+        <div className={`flex items-center mr-3 overflow-hidden transition-all duration-300 ease-in-out ${
+          showIcons ? 'max-w-40 opacity-100' : 'max-w-0 opacity-0'
+        } ${isExpanded ? 'items-start pt-1' : 'items-center'}`}>
+          <div className="flex items-center space-x-2 flex-shrink-0">
             {/* Camera Icon */}
             <button
               type="button"
@@ -580,6 +590,25 @@ const ExpandableMessengerInput = ({
                 ) : (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 )}
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Săgeata pentru redeschiderea iconițelor - apare când sunt ascunse */}
+        {!showIcons && (
+          <div className={`flex items-center mr-3 transition-all duration-300 ease-in-out ${
+            isExpanded ? 'items-start pt-1' : 'items-center'
+          }`}>
+            <button
+              type="button"
+              onClick={toggleIcons}
+              className="touch-target p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full mobile-transition mobile-focus android-ripple"
+              title="Afișează opțiuni"
+              aria-label="Afișează opțiunile de cameră și galerie"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
