@@ -109,7 +109,7 @@
   .mobile-fab {
     position: fixed !important;
     bottom: calc(env(safe-area-inset-bottom) + 80px) !important; /* Mai sus pentru a nu se suprapune cu badge-ul */
-    right: calc(env(safe-area-inset-right) + 20px) !important;   /* În DREAPTA, nu în stânga */
+    right: calc(env(safe-area-inset-right) - 10px) !important;   /* Mutat cu 30px mai în dreapta (20px - 30px = -10px) */
     left: auto !important; /* Resetăm orice left positioning */
     width: 56px !important;
     height: 56px !important;
