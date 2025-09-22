@@ -413,12 +413,16 @@ async def upload_image(file: UploadFile = File(...), current_user: User = Depend
     thumbnail_filename = f"{file_id}_thumb.jpg"
     
     try:
-        # Get image dimensions
+        # Get original image dimensions
         img = Image.open(io.BytesIO(content))
         original_width, original_height = img.size
         
         # Compress full image
         compressed_image = compress_image(content, max_width=1200, quality=85)
+        
+        # Get compressed image dimensions
+        compressed_img = Image.open(io.BytesIO(compressed_image))
+        final_width, final_height = compressed_img.size
         
         # Create thumbnail for feed
         thumbnail_image = create_thumbnail(content, max_height=400)
@@ -440,8 +444,8 @@ async def upload_image(file: UploadFile = File(...), current_user: User = Depend
             original_filename=file.filename,
             url=f"/api/world-chat/images/{filename}",
             thumbnail_url=f"/api/world-chat/images/{thumbnail_filename}",
-            width=original_width,
-            height=original_height,
+            width=final_width,
+            height=final_height,
             file_size=len(compressed_image)
         )
         
