@@ -3273,35 +3273,17 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               <div className="max-w-full md:max-w-2xl md:mx-auto p-4 md:p-6">
                 <div className="space-y-4">
                   {/* Single Text Input pentru mesaj și link */}
+                  {/* Messenger-style Input - World Chat */}
                   <div className="space-y-2">
-                    <textarea
+                    <MessengerInput
                       value={newPost}
-                      onChange={handleTextChange}
-                      onKeyDown={handleKeyPress}
-                      placeholder="Ce vrei să împarți cu lumea? Poți scrie text, pune link-uri..."
-                      className="w-full p-4 bg-gray-700/50 border border-white/20 rounded-xl text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-transparent transition-all duration-200"
-                      rows="4"
-                      style={{ minHeight: '100px' }}
+                      onChange={setNewPost}
+                      onImageUpload={handleImageUpload}
+                      onSubmit={createPost}
+                      placeholder="Ce vrei să împarți cu lumea?"
+                      maxLength={500}
+                      showCharCount={true}
                     />
-                    
-                    {/* Character Counter */}
-                    <div className="flex justify-between items-center text-xs">
-                      <div className="flex items-center space-x-2 md:space-x-4">
-                        <span className="text-gray-500">
-                          {characterCount > 0 && `${characterCount}/${MAX_CHARACTERS} caractere`}
-                        </span>
-                        {newPostLink && (
-                          <span className="text-cyan-400 text-xs">
-                            🔗 Link detectat automat
-                          </span>
-                        )}
-                      </div>
-                      {characterCount > MAX_CHARACTERS * 0.8 && (
-                        <span className={`${characterCount >= MAX_CHARACTERS ? 'text-red-400' : 'text-yellow-400'}`}>
-                          {MAX_CHARACTERS - characterCount} rămase
-                        </span>
-                      )}
-                    </div>
                   </div>
 
                   {/* Uploaded Images Preview */}
