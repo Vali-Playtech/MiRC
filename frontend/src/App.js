@@ -3580,6 +3580,11 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
               </div>
             </div>
 
+            {/* Floating Post Button - doar pe mobile */}
+            <FloatingPostButton
+              isVisible={showFloatingButton}
+              onCreatePost={() => setShowPostModal(true)}
+            />
           </div>
         )}
 
