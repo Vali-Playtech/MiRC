@@ -2759,6 +2759,23 @@ const RoomList = ({
     };
   }, [lastScrollY]);
 
+  // Close avatar dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showAvatarDropdown && !event.target.closest('.avatar-dropdown-container')) {
+        setShowAvatarDropdown(false);
+      }
+    };
+
+    if (showAvatarDropdown) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showAvatarDropdown]);
+
   const fetchRooms = async () => {
     try {
       const response = await api.get(`${API}/rooms`, {
