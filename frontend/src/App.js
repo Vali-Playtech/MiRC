@@ -277,6 +277,7 @@ const PostCreationModal = ({
     </div>
   );
 };
+// Messenger-style Input Component - Mobile Optimized
 const MessengerInput = ({ 
   value, 
   onChange, 
@@ -320,7 +321,6 @@ const MessengerInput = ({
   const handleCameraClick = async () => {
     const photoFile = await capturePhoto();
     if (photoFile && onImageUpload) {
-      // Simulate file input event
       const event = {
         target: {
           files: [photoFile]
@@ -333,7 +333,6 @@ const MessengerInput = ({
   const handleGalleryClick = async () => {
     const files = await selectFromGallery();
     if (files.length > 0 && onImageUpload) {
-      // Simulate file input event
       const event = {
         target: {
           files: files
@@ -346,7 +345,6 @@ const MessengerInput = ({
   const handleVoiceClick = async () => {
     if (isRecording) {
       stopVoiceRecording();
-      // Get the voice file after recording stops
       setTimeout(() => {
         if (window.lastVoiceFile && onVoiceMessage) {
           onVoiceMessage(window.lastVoiceFile);
@@ -360,17 +358,18 @@ const MessengerInput = ({
 
   return (
     <div className="relative">
-      {/* Main Input Container */}
-      <div className="flex items-center bg-gray-700/50 border border-white/20 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-cyan-400/50 focus-within:border-transparent transition-all duration-200">
+      {/* Main Input Container - Mobile Enhanced */}
+      <div className="flex items-center bg-gray-700/50 border border-white/20 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-cyan-400/50 focus-within:border-transparent mobile-transition">
         
-        {/* Left Side Icons */}
-        <div className="flex items-center space-x-2 mr-3">
+        {/* Left Side Icons - Touch Optimized */}
+        <div className="flex items-center space-x-1 mr-3">
           {/* Camera Icon */}
           <button
             type="button"
             onClick={handleCameraClick}
-            className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full transition-all duration-200"
+            className="touch-target p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full mobile-transition mobile-focus android-ripple"
             title="Fă o poză"
+            aria-label="Fă o poză cu camera"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -382,8 +381,9 @@ const MessengerInput = ({
           <button
             type="button"
             onClick={handleGalleryClick}
-            className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full transition-all duration-200"
+            className="touch-target p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full mobile-transition mobile-focus android-ripple"
             title="Alege din galerie"
+            aria-label="Alege imagini din galerie"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -394,12 +394,13 @@ const MessengerInput = ({
           <button
             type="button"
             onClick={handleVoiceClick}
-            className={`p-2 rounded-full transition-all duration-200 ${
+            className={`touch-target p-2 rounded-full mobile-transition mobile-focus android-ripple ${
               isRecording 
                 ? 'text-red-400 bg-red-500/20 animate-pulse' 
                 : 'text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50'
             }`}
             title={isRecording ? "Oprește înregistrarea" : "Înregistrează mesaj vocal"}
+            aria-label={isRecording ? "Oprește înregistrarea vocală" : "Înregistrează mesaj vocal"}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {isRecording ? (
@@ -411,7 +412,7 @@ const MessengerInput = ({
           </button>
         </div>
 
-        {/* Text Input */}
+        {/* Text Input - Mobile Input Optimized */}
         <input
           ref={inputRef}
           type="text"
@@ -419,21 +420,25 @@ const MessengerInput = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
           placeholder={placeholder}
-          className="flex-1 bg-transparent text-white placeholder-gray-400 border-none outline-none text-sm"
+          className="flex-1 bg-transparent text-white placeholder-gray-400 border-none outline-none mobile-input ios-input mobile-focus"
           maxLength={maxLength}
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
         />
 
-        {/* Send Button */}
+        {/* Send Button - Touch Optimized */}
         <button
           type="button"
           onClick={onSubmit}
           disabled={!localValue.trim()}
-          className={`ml-3 p-2 rounded-full transition-all duration-200 ${
+          className={`ml-3 touch-target p-2 rounded-full mobile-transition mobile-focus android-ripple ${
             localValue.trim()
               ? 'text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20'
               : 'text-gray-500 cursor-not-allowed'
           }`}
           title="Trimite mesaj"
+          aria-label="Trimite mesaj"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -441,15 +446,16 @@ const MessengerInput = ({
         </button>
       </div>
 
-      {/* Character Count */}
+      {/* Character Count - Mobile Optimized */}
       {showCharCount && (
         <div className="flex justify-between items-center mt-2 px-3">
           <div className="text-xs text-gray-500">
             {localValue.length}/{maxLength} caractere
           </div>
           {isRecording && (
-            <div className="text-xs text-red-400 animate-pulse">
-              🔴 Înregistrează...
+            <div className="text-xs text-red-400 animate-pulse flex items-center space-x-1">
+              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+              <span>Înregistrează...</span>
             </div>
           )}
         </div>
