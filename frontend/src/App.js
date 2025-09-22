@@ -4631,6 +4631,16 @@ const AppContent = () => {
       <RoomList 
         onRoomSelect={setSelectedRoom}
         onAccountSettings={() => setShowAccountSettings(true)}
+        showPostModal={showPostModal}
+        setShowPostModal={setShowPostModal}
+        newPost={newPost}
+        setNewPost={setNewPost}
+        handleImageUpload={handleImageUpload}
+        createPost={createPost}
+        uploadedImages={uploadedImages}
+        removeImage={removeImage}
+        linkPreview={linkPreview}
+        isLoadingPreview={isLoadingPreview}
       />
       {/* FriendsBar eliminată definitiv - nu mai apar bulele cu litere din dreapta jos */}
       
