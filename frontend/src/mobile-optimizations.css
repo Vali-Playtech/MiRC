@@ -156,9 +156,9 @@
     min-height: 40px;
   }
 
-  /* Logo scaling for very small screens */
+  /* Logo scaling for very small screens - updated pentru 20% mai mare */
   .mobile-logo-small {
-    height: 24px !important;
+    height: 28px !important; /* Era 24px, acum 28px pentru 20% mai mare */
     width: auto;
   }
 }
