@@ -1804,6 +1804,214 @@ class BackendTester:
         except Exception as e:
             return self.log_test("Quick Authentication Verification", False, f"Exception: {str(e)}")
 
+    def test_world_chat_posting_romanian(self):
+        """Test World Chat Posting with Romanian Content (User Request)"""
+        print("\n=== Testing World Chat Posting with Romanian Content ===")
+        
+        try:
+            # Use the exact credentials provided by user
+            test_credentials = {
+                "email": "test@example.com",
+                "password": "password123"
+            }
+            
+            # First register the user if not exists
+            register_data = {
+                "email": test_credentials["email"],
+                "password": test_credentials["password"],
+                "first_name": "Test",
+                "last_name": "User",
+                "nickname": "testuser_worldchat"
+            }
+            
+            # Try to register (might fail if user exists, that's OK)
+            response = self.session.post(f"{API_BASE}/auth/register", json=register_data)
+            if response.status_code == 200:
+                self.log_test("World Chat User Registration", True, "New user registered successfully")
+            elif response.status_code == 400:
+                self.log_test("World Chat User Registration", True, "User already exists (expected)")
+            else:
+                return self.log_test("World Chat User Registration", False, 
+                                   f"Unexpected status: {response.status_code}")
+            
+            # Login with the test credentials
+            response = self.session.post(f"{API_BASE}/auth/login", json=test_credentials)
+            if not self.log_test("World Chat User Login", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:200]}"):
+                return False
+            
+            token_data = response.json()
+            test_token = token_data['access_token']
+            headers = {"Authorization": f"Bearer {test_token}"}
+            
+            # Test 1: POST /api/world-chat/posts with Romanian text
+            romanian_post_data = {
+                "content": "Aceasta este o postare de test din backend!"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=romanian_post_data, headers=headers)
+            if not self.log_test("POST World Chat Romanian Post", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            created_post = response.json()
+            
+            # Validate post structure
+            required_fields = ['id', 'content', 'user_id', 'user_name', 'user_nickname', 'created_at', 'reactions', 'comments_count']
+            for field in required_fields:
+                if field not in created_post:
+                    return self.log_test("Romanian Post Structure", False,
+                                       f"Missing field: {field}")
+            
+            # Validate Romanian content
+            if created_post['content'] != romanian_post_data['content']:
+                return self.log_test("Romanian Content Validation", False,
+                                   f"Content mismatch: expected '{romanian_post_data['content']}', got '{created_post['content']}'")
+            
+            # Validate user information
+            if not created_post.get('user_name'):
+                return self.log_test("Post User Name", False, "user_name is empty")
+            
+            if not created_post.get('user_nickname'):
+                return self.log_test("Post User Nickname", False, "user_nickname is empty")
+            
+            post_id = created_post['id']
+            
+            # Test 2: GET /api/world-chat/posts to retrieve posts
+            response = self.session.get(f"{API_BASE}/world-chat/posts", headers=headers)
+            if not self.log_test("GET World Chat Posts", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            posts_list = response.json()
+            
+            if not isinstance(posts_list, list):
+                return self.log_test("Posts List Structure", False, "Response is not a list")
+            
+            # Find our Romanian post
+            romanian_post_found = False
+            for post in posts_list:
+                if post.get('id') == post_id and post.get('content') == romanian_post_data['content']:
+                    romanian_post_found = True
+                    break
+            
+            if not romanian_post_found:
+                return self.log_test("Romanian Post Retrieval", False, "Romanian post not found in posts list")
+            
+            # Test 3: Database persistence check
+            # Send another post to verify persistence
+            second_post_data = {
+                "content": "A doua postare pentru testarea persistenței în baza de date!"
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=second_post_data, headers=headers)
+            if not self.log_test("Second Romanian Post", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            second_post = response.json()
+            second_post_id = second_post['id']
+            
+            # Retrieve posts again and verify both posts exist
+            response = self.session.get(f"{API_BASE}/world-chat/posts", headers=headers)
+            if not self.log_test("Posts After Second Post", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            updated_posts = response.json()
+            
+            first_post_found = False
+            second_post_found = False
+            
+            for post in updated_posts:
+                if post.get('id') == post_id:
+                    first_post_found = True
+                elif post.get('id') == second_post_id:
+                    second_post_found = True
+            
+            if not first_post_found:
+                return self.log_test("First Post Persistence", False, "First Romanian post not persisted")
+            
+            if not second_post_found:
+                return self.log_test("Second Post Persistence", False, "Second Romanian post not persisted")
+            
+            # Test 4: Validation for empty posts
+            empty_post_data = {
+                "content": ""
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=empty_post_data, headers=headers)
+            if not self.log_test("Empty Post Validation", response.status_code == 400,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 5: Character limit validation (5000 characters)
+            long_content = "A" * 5001  # Exceed the limit
+            long_post_data = {
+                "content": long_content
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=long_post_data, headers=headers)
+            if not self.log_test("Character Limit Validation", response.status_code == 400,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 6: Valid long post (under limit)
+            valid_long_content = "Aceasta este o postare lungă pentru testarea limitelor de caractere. " * 50  # Should be under 5000
+            if len(valid_long_content) > 5000:
+                valid_long_content = valid_long_content[:4999]  # Ensure it's under limit
+            
+            valid_long_post_data = {
+                "content": valid_long_content
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts", 
+                                       json=valid_long_post_data, headers=headers)
+            if not self.log_test("Valid Long Post", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 7: Posts ordering (newest first)
+            response = self.session.get(f"{API_BASE}/world-chat/posts?limit=10", headers=headers)
+            if not self.log_test("Posts Ordering Check", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            ordered_posts = response.json()
+            
+            if len(ordered_posts) >= 2:
+                # Check if posts are ordered by created_at (newest first)
+                from datetime import datetime
+                first_post_time = datetime.fromisoformat(ordered_posts[0]['created_at'].replace('Z', '+00:00'))
+                second_post_time = datetime.fromisoformat(ordered_posts[1]['created_at'].replace('Z', '+00:00'))
+                
+                if first_post_time < second_post_time:
+                    return self.log_test("Posts Chronological Order", False, "Posts not ordered newest first")
+            
+            # Test 8: Authentication protection
+            # Try to post without authentication
+            response = self.session.post(f"{API_BASE}/world-chat/posts", json=romanian_post_data)
+            if not self.log_test("Authentication Protection", response.status_code == 403,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Try to get posts without authentication
+            response = self.session.get(f"{API_BASE}/world-chat/posts")
+            if not self.log_test("Get Posts Authentication", response.status_code == 403,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            self.log_test("World Chat Posting with Romanian Content", True, 
+                         "All World Chat posting tests passed with Romanian content!")
+            return True
+            
+        except Exception as e:
+            return self.log_test("World Chat Posting with Romanian Content", False, f"Exception: {str(e)}")
+
     async def run_all_tests(self):
         """Run all backend tests including NEW Private Chat and Friends System"""
         print("🚀 Starting Comprehensive Backend Testing - INCLUDING NEW PRIVATE CHAT & FRIENDS SYSTEM")
