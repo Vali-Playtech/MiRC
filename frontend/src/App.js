@@ -1804,6 +1804,39 @@ const ChatRoom = ({ room, onBack }) => {
                 <div key={roomUser.id} className="border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors">
                   <div className="p-4">
                     <div className="flex items-center space-x-3 mb-3">
+                      <div className="relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border border-purple-500/30">
+                          {roomUser.avatar_url ? (
+                            roomUser.avatar_url.startsWith('data:') ? (
+                              <img 
+                                src={roomUser.avatar_url} 
+                                alt="Avatar" 
+                                className="w-full h-full object-cover" 
+                              />
+                            ) : (
+                              <div 
+                                className="w-full h-full"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: defaultAvatars.find(a => a.id === roomUser.avatar_url)?.svg || '' 
+                                }}
+                              />
+                            )
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                              <span className="text-white text-sm font-semibold">
+                                {roomUser.nickname?.charAt(0)?.toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        {roomUser.unread_count > 0 && (
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full border-2 border-gray-800 flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">
+                              {roomUser.unread_count > 99 ? '99+' : roomUser.unread_count}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-1">
                         <h3 className="text-white font-semibold">{roomUser.nickname}</h3>
                         <p className="text-gray-400 text-sm">
