@@ -4222,7 +4222,7 @@ const AppContent = () => {
         onRoomSelect={setSelectedRoom}
         onAccountSettings={() => setShowAccountSettings(true)}
       />
-      <FriendsBar onFriendClick={openPrivateChat} />
+      {/* FriendsBar eliminată definitiv - nu mai apar bulele cu litere din dreapta jos */}
       
       {/* Global Private Chat Overlay - Responsive */}
       {showPrivateChat && privateChatUser && (
