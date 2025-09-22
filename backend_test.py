@@ -2073,6 +2073,9 @@ class BackendTester:
         # Test 15: World Chat Comprehensive Testing
         test_results['world_chat_comprehensive'] = self.test_world_chat_comprehensive()
         
+        # Test 16: World Chat Romanian Content Testing (USER REQUEST)
+        test_results['world_chat_romanian'] = self.test_world_chat_posting_romanian()
+        
         # Summary
         print("\n" + "=" * 80)
         print("📊 COMPREHENSIVE TEST SUMMARY - PRIVATE CHAT & FRIENDS SYSTEM")
