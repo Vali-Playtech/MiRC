@@ -122,7 +122,145 @@ const useMessengerInput = () => {
   };
 };
 
-// Floating Action Button Component pentru mobile posts - Optimized
+// Avatar Dropdown Component - Emergent/X Style
+const AvatarDropdown = ({ user, onAccountSettings, onLogout, isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="absolute top-full right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-xl overflow-hidden z-50">
+      {/* User Profile Header */}
+      <div className="p-4 border-b border-white/10">
+        <div className="flex items-center space-x-3">
+          <div className="relative">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-500">
+              {user?.avatar_url ? (
+                user.avatar_url.startsWith('data:') ? (
+                  <img 
+                    src={user.avatar_url} 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover retina-optimized" 
+                  />
+                ) : (
+                  <div 
+                    className="w-full h-full"
+                    dangerouslySetInnerHTML={{ 
+                      __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
+                    }}
+                  />
+                )
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                  <span className="text-white text-lg font-bold">
+                    {user?.nickname?.charAt(0)?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+              )}
+            </div>
+            {/* Online status indicator */}
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-800"></div>
+          </div>
+          <div className="flex-1">
+            <div className="text-white font-semibold text-sm">{user?.name || user?.nickname || 'Utilizator'}</div>
+            <div className="text-gray-400 text-xs">Standard</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Menu Items */}
+      <div className="py-2">
+        {/* New Room */}
+        <button
+          onClick={() => {
+            // Implementăm funcția pentru new room
+            onClose();
+          }}
+          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-white/5 mobile-transition text-left"
+        >
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          <span className="text-gray-300 text-sm">Cameră Nouă</span>
+        </button>
+
+        {/* VONEX Community */}
+        <button
+          onClick={() => {
+            // Implementăm funcția pentru community
+            onClose();
+          }}
+          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-white/5 mobile-transition text-left"
+        >
+          <div className="w-5 h-5 rounded bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
+            <span className="text-white text-xs font-bold">V</span>
+          </div>
+          <span className="text-green-400 text-sm">VONEX Community</span>
+        </button>
+
+        <div className="border-t border-white/10 my-2"></div>
+
+        {/* Account Settings */}
+        <button
+          onClick={() => {
+            onAccountSettings();
+            onClose();
+          }}
+          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-white/5 mobile-transition text-left"
+        >
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span className="text-gray-300 text-sm">Account Settings</span>
+        </button>
+
+        {/* Help Center */}
+        <button
+          onClick={() => {
+            // Implementăm funcția pentru help
+            onClose();
+          }}
+          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-white/5 mobile-transition text-left"
+        >
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-gray-300 text-sm">Help Center</span>
+        </button>
+
+        {/* Join VONEX Community */}
+        <button
+          onClick={() => {
+            // Implementăm funcția pentru community join
+            window.open('https://discord.gg/vonex', '_blank');
+            onClose();
+          }}
+          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-white/5 mobile-transition text-left"
+        >
+          <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9554 2.4189-2.1568 2.4189Z"/>
+          </svg>
+          <span className="text-gray-300 text-sm">Join VONEX Discord</span>
+        </button>
+
+        <div className="border-t border-white/10 my-2"></div>
+
+        {/* Logout */}
+        <button
+          onClick={() => {
+            onLogout();
+            onClose();
+          }}
+          className="w-full px-4 py-3 flex items-center space-x-3 hover:bg-red-500/10 mobile-transition text-left"
+        >
+          <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span className="text-red-400 text-sm">Logout</span>
+        </button>
+      </div>
+    </div>
+  );
+};
 const FloatingPostButton = ({ onCreatePost, isVisible }) => {
   return (
     <div className={`fixed mobile-fab z-50 transition-all duration-300 ${
