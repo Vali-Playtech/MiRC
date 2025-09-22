@@ -2721,7 +2721,7 @@ const RoomList = ({
   const [isPrivate, setIsPrivate] = useState(false);
   
   // Floating button și modal states
-  const [floatingButtonOpacity, setFloatingButtonOpacity] = useState(1); // 1 = opac, 0.5 = semi-transparent
+  const [floatingButtonOpacity, setFloatingButtonOpacity] = useState(1); // 1 = opac, 0.4 = mai transparent
   const [lastScrollY, setLastScrollY] = useState(0);
   
   // Avatar dropdown state
