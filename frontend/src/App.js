@@ -121,6 +121,188 @@ const useMessengerInput = () => {
   };
 };
 
+// Messenger-style Input Component
+const MessengerInput = ({ 
+  value, 
+  onChange, 
+  onImageUpload, 
+  onSubmit, 
+  onVoiceMessage,
+  placeholder = "Scrie un mesaj...", 
+  maxLength = 500,
+  showCharCount = false
+}) => {
+  const {
+    capturePhoto,
+    selectFromGallery,
+    startVoiceRecording,
+    stopVoiceRecording,
+    isRecording
+  } = useMessengerInput();
+
+  const [localValue, setLocalValue] = useState(value || '');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    setLocalValue(value || '');
+  }, [value]);
+
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    if (newValue.length <= maxLength) {
+      setLocalValue(newValue);
+      onChange(newValue);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
+  const handleCameraClick = async () => {
+    const photoFile = await capturePhoto();
+    if (photoFile && onImageUpload) {
+      // Simulate file input event
+      const event = {
+        target: {
+          files: [photoFile]
+        }
+      };
+      onImageUpload(event);
+    }
+  };
+
+  const handleGalleryClick = async () => {
+    const files = await selectFromGallery();
+    if (files.length > 0 && onImageUpload) {
+      // Simulate file input event
+      const event = {
+        target: {
+          files: files
+        }
+      };
+      onImageUpload(event);
+    }
+  };
+
+  const handleVoiceClick = async () => {
+    if (isRecording) {
+      stopVoiceRecording();
+      // Get the voice file after recording stops
+      setTimeout(() => {
+        if (window.lastVoiceFile && onVoiceMessage) {
+          onVoiceMessage(window.lastVoiceFile);
+          window.lastVoiceFile = null;
+        }
+      }, 100);
+    } else {
+      await startVoiceRecording();
+    }
+  };
+
+  return (
+    <div className="relative">
+      {/* Main Input Container */}
+      <div className="flex items-center bg-gray-700/50 border border-white/20 rounded-full px-3 py-2 focus-within:ring-2 focus-within:ring-cyan-400/50 focus-within:border-transparent transition-all duration-200">
+        
+        {/* Left Side Icons */}
+        <div className="flex items-center space-x-2 mr-3">
+          {/* Camera Icon */}
+          <button
+            type="button"
+            onClick={handleCameraClick}
+            className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full transition-all duration-200"
+            title="Fă o poză"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+
+          {/* Gallery Icon */}
+          <button
+            type="button"
+            onClick={handleGalleryClick}
+            className="p-2 text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50 rounded-full transition-all duration-200"
+            title="Alege din galerie"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+
+          {/* Voice Icon */}
+          <button
+            type="button"
+            onClick={handleVoiceClick}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              isRecording 
+                ? 'text-red-400 bg-red-500/20 animate-pulse' 
+                : 'text-gray-400 hover:text-cyan-400 hover:bg-gray-600/50'
+            }`}
+            title={isRecording ? "Oprește înregistrarea" : "Înregistrează mesaj vocal"}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isRecording ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        {/* Text Input */}
+        <input
+          ref={inputRef}
+          type="text"
+          value={localValue}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent text-white placeholder-gray-400 border-none outline-none text-sm"
+          maxLength={maxLength}
+        />
+
+        {/* Send Button */}
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={!localValue.trim()}
+          className={`ml-3 p-2 rounded-full transition-all duration-200 ${
+            localValue.trim()
+              ? 'text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/20'
+              : 'text-gray-500 cursor-not-allowed'
+          }`}
+          title="Trimite mesaj"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Character Count */}
+      {showCharCount && (
+        <div className="flex justify-between items-center mt-2 px-3">
+          <div className="text-xs text-gray-500">
+            {localValue.length}/{maxLength} caractere
+          </div>
+          {isRecording && (
+            <div className="text-xs text-red-400 animate-pulse">
+              🔴 Înregistrează...
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
