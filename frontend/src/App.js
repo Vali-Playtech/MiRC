@@ -4677,6 +4677,20 @@ const AppContent = () => {
           </div>
         </div>
       )}
+
+      {/* Post Creation Modal */}
+      <PostCreationModal
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
+        newPost={newPost}
+        setNewPost={setNewPost}
+        handleImageUpload={handleImageUpload}
+        createPost={createPost}
+        uploadedImages={uploadedImages}
+        removeImage={removeImage}
+        linkPreview={linkPreview}
+        isLoadingPreview={isLoadingPreview}
+      />
     </>
   );
 };
