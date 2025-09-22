@@ -2804,11 +2804,11 @@ class BackendTester:
             
             if final_image_test.status_code != 200:
                 return self.log_test("Final Image URL Test", False, 
-                                   f"Image URL not accessible: {upload_data['url']}")
+                                   f"Image URL not accessible: {API_BASE}{upload_data['url']} - Status: {final_image_test.status_code}")
             
             if final_thumb_test.status_code != 200:
                 return self.log_test("Final Thumbnail URL Test", False, 
-                                   f"Thumbnail URL not accessible: {upload_data['thumbnail_url']}")
+                                   f"Thumbnail URL not accessible: {API_BASE}{upload_data['thumbnail_url']} - Status: {final_thumb_test.status_code}")
             
             print("   ✅ Both image URLs are accessible and working")
             
