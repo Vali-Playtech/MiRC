@@ -4734,6 +4734,58 @@ const AppContent = () => {
   
   const { user, loading, token } = useAuth();
 
+  // Link preview detection - detectează URL-uri în text și generează preview
+  useEffect(() => {
+    const detectAndPreviewLinks = async () => {
+      if (!newPost.trim() || !token) return;
+
+      // Regex pentru detectarea URL-urilor
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const urls = newPost.match(urlRegex);
+
+      if (urls && urls.length > 0) {
+        const url = urls[0]; // Folosim primul URL găsit
+        
+        // Dacă URL-ul este diferit de cel anterior, generează preview nou
+        if (!linkPreview || linkPreview.url !== url) {
+          setIsLoadingPreview(true);
+          
+          try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/link-preview`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ url: url })
+            });
+
+            if (response.ok) {
+              const preview = await response.json();
+              setLinkPreview(preview);
+            } else {
+              // Dacă nu se poate genera preview, șterge preview-ul existent
+              setLinkPreview(null);
+            }
+          } catch (error) {
+            console.error('Error generating link preview:', error);
+            setLinkPreview(null);
+          } finally {
+            setIsLoadingPreview(false);
+          }
+        }
+      } else {
+        // Nu sunt URL-uri în text, șterge preview-ul
+        setLinkPreview(null);
+        setIsLoadingPreview(false);
+      }
+    };
+
+    // Debounce pentru a nu face prea multe cereri
+    const timeoutId = setTimeout(detectAndPreviewLinks, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [newPost, token, linkPreview]);
+
   // Functions for private chat
   const openPrivateChat = (chatUser) => {
     setPrivateChatUser(chatUser);
