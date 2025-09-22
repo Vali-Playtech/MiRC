@@ -524,6 +524,31 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "World Chat Image and Link Preview Conflict Bug Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "🎉 CRITICAL BUG FIX VERIFIED: Image and link preview conflict resolved! Comprehensive testing confirms: ✅ Post with image + URL: NO link_preview (images take priority) ✅ Post with URL only: HAS link_preview (normal behavior) ✅ Posts correctly persisted in backend ✅ Priority logic working: images > link preview. The backend now correctly implements the fix where when images are present, link previews are not generated, respecting the priority: images > link preview. This matches the frontend fix mentioned in the review request."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.1"
+  test_sequence: 3
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "World Chat Image and Link Preview Conflict Bug Fix"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
 agent_communication:
   - agent: "main"
     message: "Completed initial implementation of comprehensive chat application with email authentication, real-time messaging, room management, and mobile-optimized PWA interface. All core features implemented and ready for testing. Backend uses FastAPI with MongoDB and WebSocket support. Frontend uses React with modern glass morphism design."
@@ -565,3 +590,5 @@ agent_communication:
     message: "🎉 WORLD CHAT IMAGE UPLOAD AND POSTING COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY! All functionality requested in the review has been thoroughly tested and verified working: ✅ POST /api/world-chat/upload-image endpoint fully functional with proper authentication protection ✅ Image upload supports JPG/PNG formats with 10MB size limit validation ✅ Image processing and compression working perfectly - large images compressed to max 1200px width maintaining aspect ratio ✅ Thumbnail generation working - creates optimized thumbnails with max 400px height for feed display ✅ Image serving via GET /api/world-chat/images/{filename} working for both full images and thumbnails ✅ Post creation with images working - images properly included in posts via query parameter ✅ Text + image combination posts working perfectly ✅ Multiple images per post supported ✅ Image persistence in post retrieval working with complete metadata ✅ Invalid file type rejection and error handling working correctly. CRITICAL BUG FIXES APPLIED DURING TESTING: 1) Fixed image file extension handling bug - backend now properly supports PNG, JPG, and other formats instead of hardcoded .jpg lookup. 2) Fixed image dimensions bug - now returns actual compressed dimensions instead of original dimensions. The World Chat image upload and posting system is 100% functional and production-ready! All 6 review requirements fully satisfied."
   - agent: "testing"
     message: "🎯 FOCUSED IMAGE UPLOAD REVIEW REQUEST TESTING COMPLETED - USER ISSUE NOT REPRODUCIBLE! Conducted comprehensive end-to-end testing of the exact scenario reported by user: 'imaginile nu apar în postări după încărcare' (images don't appear in posts after upload). TESTING RESULTS: ✅ All 6 review request steps completed successfully with test@example.com/password123 credentials ✅ POST /api/world-chat/upload-image: HTTP 200, image ID obtained (261321cc-5453-43cb-a195-86e22025af43) ✅ POST /api/world-chat/posts with image: HTTP 200, post created with 'Test postare cu imagine' text ✅ Post contains image with correct thumbnail_url: /api/world-chat/images/[id]_thumb.jpg ✅ GET /api/world-chat/posts: HTTP 200, post with image retrieved successfully ✅ Image serving endpoints: Both full image and thumbnail accessible via GET requests ✅ Image paths and thumbnails working correctly, dimensions preserved (800x600), file size optimized. CRITICAL CONCLUSION: The reported issue 'imaginile nu apar în postări după încărcare' is NOT REPRODUCIBLE on the backend. Images DO appear correctly in posts after upload. The backend image upload and posting system is functioning perfectly. If users are experiencing issues, the problem may be frontend-related (image display, UI rendering) or network-related, NOT backend functionality."
+  - agent: "testing"
+    message: "🎯 CRITICAL BUG FIX VERIFICATION COMPLETED: World Chat Image and Link Preview Conflict Bug Fix! Comprehensive testing of the exact review request scenario confirms the bug has been successfully resolved: ✅ Step 1: POST /api/world-chat/upload-image with test@example.com/password123 credentials - HTTP 200, image uploaded successfully ✅ Step 2: Created post 'Test cu imagine și link https://www.google.com' with image + URL - Post does NOT contain link_preview (images take priority) ✅ Step 3: Created post 'Test doar cu link https://www.github.com' with URL only - Post DOES contain link_preview (normal behavior) ✅ Step 4: Posts correctly persisted in backend with proper behavior maintained ✅ Step 5: Priority logic verified - images > link preview working correctly. CRITICAL SUCCESS: The backend now correctly implements the fix where when uploadedImages.length > 0 (images are present), link previews are not generated, respecting the priority: images > link preview. This matches the frontend fix mentioned in the review request and ensures consistent behavior between frontend and backend. The conflict between images and link preview has been completely resolved!"
