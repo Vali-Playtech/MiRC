@@ -489,11 +489,18 @@ async def create_world_chat_post(
     # Process images if provided
     image_attachments = []
     for image_id in images:
-        # Check if image exists (simplified - in production you'd verify ownership)
-        image_file = UPLOAD_DIR / f"{image_id}.jpg"
+        # Check if image exists - try different extensions
+        image_file = None
         thumb_file = UPLOAD_DIR / f"{image_id}_thumb.jpg"
         
-        if image_file.exists() and thumb_file.exists():
+        # Try common image extensions
+        for ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+            potential_file = UPLOAD_DIR / f"{image_id}.{ext}"
+            if potential_file.exists():
+                image_file = potential_file
+                break
+        
+        if image_file and image_file.exists() and thumb_file.exists():
             # Get image info (in production, store this in DB during upload)
             try:
                 img = Image.open(image_file)
@@ -502,9 +509,9 @@ async def create_world_chat_post(
                 
                 image_attachment = ImageAttachment(
                     id=image_id,
-                    filename=f"{image_id}.jpg",
-                    original_filename=f"image_{image_id}.jpg",
-                    url=f"/api/world-chat/images/{image_id}.jpg",
+                    filename=image_file.name,
+                    original_filename=f"image_{image_id}.{image_file.suffix[1:]}",
+                    url=f"/api/world-chat/images/{image_file.name}",
                     thumbnail_url=f"/api/world-chat/images/{image_id}_thumb.jpg",
                     width=width,
                     height=height,
