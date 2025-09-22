@@ -2424,6 +2424,9 @@ class BackendTester:
         # Test 16: World Chat Romanian Content Testing (USER REQUEST)
         test_results['world_chat_romanian'] = self.test_world_chat_posting_romanian()
         
+        # Test 17: World Chat Image Upload and Posting (REVIEW REQUEST TARGET)
+        test_results['world_chat_image_upload'] = self.test_world_chat_image_upload_and_posting()
+        
         # Summary
         print("\n" + "=" * 80)
         print("📊 COMPREHENSIVE TEST SUMMARY - PRIVATE CHAT & FRIENDS SYSTEM")
