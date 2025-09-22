@@ -3446,7 +3446,7 @@ const RoomList = ({
               aria-label="Deschide meniul utilizatorului"
             >
               <div className="relative">
-                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-500 hover:border-purple-400 mobile-transition">
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-500 hover:border-purple-400 mobile-transition">
                   {user?.avatar_url ? (
                     user.avatar_url.startsWith('data:') ? (
                       <img 
@@ -3464,14 +3464,14 @@ const RoomList = ({
                     )
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">
+                      <span className="text-white text-base font-bold">
                         {user?.nickname?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     </div>
                   )}
                 </div>
-                {/* Online status indicator */}
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border border-gray-800"></div>
+                {/* Online status indicator - mărit proporțional */}
+                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-gray-800"></div>
               </div>
             </button>
 
