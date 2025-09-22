@@ -3229,55 +3229,57 @@ const RoomList = ({
 
   return (
     <div className="h-screen bg-gray-900 flex flex-col">
-      {/* Header nou cu logo și taburi */}
-      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl px-6 py-4 border-b border-white/10 shadow-lg">
+      {/* Header nou cu logo și taburi - Mobile Optimized */}
+      <div className="bg-gradient-to-r from-gray-800/95 to-gray-900/95 backdrop-blur-xl mobile-header border-b border-white/10 shadow-lg ios-safe-area-top">
         {/* Logo și taburi */}
         <div className="flex items-center justify-between">
-          {/* Logo VONEX în stânga */}
-          <div className="w-auto h-16 flex items-center">
+          {/* Logo VONEX în stânga - Mobile Responsive */}
+          <div className="w-auto h-10 md:h-16 flex items-center flex-shrink-0">
             <img 
               src="/vonex-original-logo.png" 
               alt="VONEX" 
-              className="h-16 w-auto object-contain"
+              className="h-8 md:h-16 w-auto object-contain retina-optimized"
               style={{
                 filter: 'drop-shadow(0 0 8px rgba(0, 255, 255, 0.3)) drop-shadow(0 0 12px rgba(68, 255, 68, 0.2)) drop-shadow(0 0 16px rgba(255, 136, 68, 0.1))'
               }}
             />
           </div>
 
-          {/* Taburi în centru - design ca bule */}
-          <div className="flex space-x-2">
-            {[
-              { id: 'world-chat', name: 'World Chat' },
-              { id: 'my-room', name: 'Camerele mele' },
-              { id: 'favorites', name: 'Favoriți' },
-              { id: 'recent', name: 'Recente' },
-              { id: 'search', name: 'Search' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 relative ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white border-2 border-cyan-400/50 shadow-lg shadow-cyan-400/20 scale-105'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700/30 border-2 border-transparent hover:border-gray-600/30 hover:scale-102'
-                }`}
-                style={activeTab === tab.id ? {
-                  textShadow: '0 0 10px rgba(6, 182, 212, 0.5)',
-                  boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)'
-                } : {}}
-              >
-                <span className="text-sm font-semibold">{tab.name}</span>
-                {/* Badge for unread messages on favorites tab */}
-                {tab.id === 'favorites' && favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 9 
-                      ? '9+' 
-                      : favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0)
-                    }
-                  </span>
-                )}
-              </button>
+          {/* Taburi în centru - Mobile Responsive Tabs */}
+          <div className="flex-1 mx-2 md:mx-4 overflow-x-auto scrollbar-hide">
+            <div className="flex space-x-1 md:space-x-2 mobile-tabs">
+              {[
+                { id: 'world-chat', name: 'World Chat' },
+                { id: 'my-room', name: 'Camerele mele' },
+                { id: 'favorites', name: 'Favoriți' },
+                { id: 'recent', name: 'Recente' },
+                { id: 'search', name: 'Search' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`mobile-tab px-2 md:px-6 py-2 md:py-3 rounded-full font-medium mobile-transition whitespace-nowrap relative touch-target mobile-focus flex-shrink-0 ${
+                    activeTab === tab.id
+                      ? 'bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-white border-2 border-cyan-400/50 shadow-lg shadow-cyan-400/20 scale-105'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700/30 border-2 border-transparent hover:border-gray-600/30 hover:scale-102'
+                  }`}
+                  style={activeTab === tab.id ? {
+                    textShadow: '0 0 10px rgba(6, 182, 212, 0.5)',
+                    boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)'
+                  } : {}}
+                  aria-label={`${tab.name} tab`}
+                >
+                  <span className="text-xs md:text-sm font-semibold">{tab.name}</span>
+                  {/* Badge for unread messages on favorites tab - Mobile Positioned */}
+                  {tab.id === 'favorites' && favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 0 && (
+                    <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center">
+                      {favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0) > 9 
+                        ? '9+' 
+                        : favoriteUsers.reduce((total, user) => total + user.unreadMessages, 0)
+                      }
+                    </span>
+                  )}
+                </button>
             ))}
           </div>
 
