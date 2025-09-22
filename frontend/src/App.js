@@ -1678,7 +1678,35 @@ const ChatRoom = ({ room, onBack }) => {
                 </div>
               </div>
               
-              {/* Avatar pentru mesaje proprii - eliminat complet */}
+              {/* Own Avatar - positioned at top right for own messages */}
+              {message.user_id === user?.id && (
+                <div className="flex justify-end mb-1">
+                  <div className="w-8 h-8 rounded-full overflow-hidden border border-green-500/30 flex-shrink-0">
+                    {user?.avatar_url ? (
+                      user.avatar_url.startsWith('data:') ? (
+                        <img 
+                          src={user.avatar_url} 
+                          alt="Avatar" 
+                          className="w-full h-full object-cover" 
+                        />
+                      ) : (
+                        <div 
+                          className="w-full h-full"
+                          dangerouslySetInnerHTML={{ 
+                            __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
+                          }}
+                        />
+                      )
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">
+                          {user?.nickname?.charAt(0)?.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
