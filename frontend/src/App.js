@@ -261,7 +261,7 @@ const AvatarDropdown = ({ user, onAccountSettings, onLogout, isOpen, onClose }) 
     </div>
   );
 };
-// Floating Action Button Component pentru mobile posts - Poziționat în dreapta jos ca pe X/Twitter
+// Floating Action Button Component - Bulă albastră rotundă în dreapta jos ca pe X/Twitter
 const FloatingPostButton = ({ onCreatePost, isVisible }) => {
   return (
     <div className={`mobile-fab transition-all duration-300 ${
@@ -269,7 +269,7 @@ const FloatingPostButton = ({ onCreatePost, isVisible }) => {
     }`}>
       <button
         onClick={onCreatePost}
-        className="w-full h-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl mobile-transition hover:scale-105 flex items-center justify-center android-ripple touch-target"
+        className="w-14 h-14 bg-gradient-to-r from-cyan-500/90 to-blue-500/90 hover:from-cyan-600/90 hover:to-blue-600/90 backdrop-blur-sm text-white rounded-full shadow-lg hover:shadow-xl mobile-transition hover:scale-105 flex items-center justify-center android-ripple touch-target"
         title="Creează postare nouă"
         aria-label="Creează postare nouă"
       >
