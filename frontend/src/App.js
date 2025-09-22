@@ -424,6 +424,67 @@ const PostCreationModal = ({
               />
             </div>
 
+            {/* Test Button pentru încărcarea imaginilor în mediul de dezvoltare */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-3 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+                <p className="text-xs text-yellow-300 mb-2">🧪 Test Mode: Simulează încărcarea unei imagini</p>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    console.log('🧪 Test: Simulez încărcarea unei imagini...');
+                    
+                    try {
+                      // Creează o imagine de test
+                      const canvas = document.createElement('canvas');
+                      canvas.width = 400;
+                      canvas.height = 300;
+                      const ctx = canvas.getContext('2d');
+                      
+                      // Desenează o imagine colorată
+                      ctx.fillStyle = '#4F46E5';
+                      ctx.fillRect(0, 0, 400, 300);
+                      ctx.fillStyle = '#10B981';
+                      ctx.fillRect(50, 50, 100, 100);
+                      ctx.fillStyle = '#F59E0B';
+                      ctx.fillRect(250, 150, 100, 100);
+                      
+                      ctx.fillStyle = 'white';
+                      ctx.font = '20px Arial';
+                      ctx.fillText('Test Image', 150, 180);
+                      
+                      // Convertește în File object
+                      canvas.toBlob(async (blob) => {
+                        if (blob) {
+                          const testFile = new File([blob], `test-image-${Date.now()}.png`, { 
+                            type: 'image/png' 
+                          });
+                          
+                          console.log('✅ Test file created:', testFile.name, testFile.size, 'bytes');
+                          
+                          // Apelează direct handleImageUpload
+                          const mockEvent = {
+                            target: {
+                              files: [testFile]
+                            }
+                          };
+                          
+                          await handleImageUpload(mockEvent);
+                          console.log('✅ Test image upload called');
+                        }
+                      }, 'image/png', 0.8);
+                      
+                    } catch (error) {
+                      console.error('❌ Error in test image upload:', error);
+                      alert('Eroare la testul de încărcare: ' + error.message);
+                    }
+                  }}
+                  className="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-black rounded text-sm font-medium mobile-transition"
+                >
+                  🧪 Test încărcare imagine
+                </button>
+              </div>
+            )}
+
             {/* Uploaded Images Preview - Mobile Grid */}
             {uploadedImages.length > 0 && (
               <div className="space-y-3">
