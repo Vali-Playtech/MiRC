@@ -1,146 +1,218 @@
 /* ================================
    VONEX PWA - Mobile Optimizations
    iOS & Android Responsive Design
+   Enhanced for Real Device Testing
    ================================ */
 
-/* Base mobile styles */
+/* Base mobile styles - Enhanced */
 @media screen and (max-width: 768px) {
   
   /* Safe area support for iOS devices with notch */
   .ios-safe-area-top {
-    padding-top: calc(env(safe-area-inset-top) + 1rem);
+    padding-top: calc(env(safe-area-inset-top) + 0.5rem);
   }
   
   .ios-safe-area-bottom {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
   }
   
   .ios-safe-area-left {
-    padding-left: calc(env(safe-area-inset-left) + 1rem);
+    padding-left: calc(env(safe-area-inset-left) + 0.5rem);
   }
   
   .ios-safe-area-right {
-    padding-right: calc(env(safe-area-inset-right) + 1rem);
+    padding-right: calc(env(safe-area-inset-right) + 0.5rem);
   }
 
-  /* Touch optimization - minimum 44px touch targets */
+  /* Enhanced touch optimization - 48px minimum for better accessibility */
   .touch-target {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 48px;
+    min-width: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
   }
 
-  /* Improved button spacing for mobile */
+  /* Mobile header improvements */
+  .mobile-header {
+    padding: 8px 12px;
+    min-height: 60px;
+  }
+
+  /* Improved mobile tabs - much better visibility */
+  .mobile-tabs {
+    padding: 0;
+    justify-content: flex-start;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .mobile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-tab {
+    flex: 0 0 auto;
+    min-height: 40px;
+    font-size: 13px;
+    padding: 8px 12px;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* Enhanced button groups for mobile */
   .mobile-button-group {
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
   
   .mobile-button-group button {
     min-height: 44px;
-    padding: 12px 16px;
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-
-  /* Optimized input fields */
-  .mobile-input {
-    font-size: 16px !important; /* Prevent zoom on iOS */
-    padding: 12px 16px;
-    min-height: 44px;
+    padding: 10px 16px;
+    font-size: 15px;
     border-radius: 12px;
   }
 
-  /* Scroll optimization */
+  /* Improved input fields - consistent across platforms */
+  .mobile-input {
+    font-size: 16px !important;
+    padding: 12px 16px;
+    min-height: 44px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  /* Enhanced scroll optimization */
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     scroll-behavior: smooth;
+    overflow-anchor: none;
   }
 
-  /* Card spacing for mobile */
+  /* Improved card spacing for mobile */
   .mobile-card {
-    margin: 8px;
+    margin: 8px 12px;
     padding: 16px;
     border-radius: 16px;
   }
 
-  /* Tab optimization */
-  .mobile-tabs {
-    padding: 8px 16px;
-    justify-content: space-between;
-    gap: 4px;
-  }
-  
-  .mobile-tab {
-    flex: 1;
-    min-height: 44px;
-    font-size: 14px;
-    padding: 8px 4px;
-    text-align: center;
-  }
-
-  /* Floating action button optimization */
+  /* Enhanced floating action button */
   .mobile-fab {
-    bottom: calc(env(safe-area-inset-bottom) + 24px);
-    right: calc(env(safe-area-inset-right) + 24px);
+    bottom: calc(env(safe-area-inset-bottom) + 20px);
+    right: calc(env(safe-area-inset-right) + 20px);
     width: 56px;
     height: 56px;
     border-radius: 28px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 
-  /* Modal optimization for mobile */
+  /* Enhanced modal for mobile */
   .mobile-modal {
-    margin: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px) 16px;
-    max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 32px);
+    margin: calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px) 12px;
+    max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);
     border-radius: 20px;
   }
 
-  /* Header optimization */
-  .mobile-header {
-    padding-top: calc(env(safe-area-inset-top) + 16px);
-    padding-left: calc(env(safe-area-inset-left) + 16px);
-    padding-right: calc(env(safe-area-inset-right) + 16px);
+  /* Hide scrollbars on mobile */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
 
-/* iPhone SE and small screens (320px - 375px) */
+/* iPhone SE and small screens (320px - 375px) - Enhanced */
 @media screen and (max-width: 375px) {
+  .mobile-header {
+    padding: 6px 8px;
+  }
+  
   .mobile-tab {
-    font-size: 12px;
-    padding: 6px 2px;
+    font-size: 11px;
+    padding: 6px 8px;
+    min-height: 36px;
   }
   
   .mobile-card {
-    margin: 4px;
+    margin: 6px 8px;
     padding: 12px;
   }
   
   .mobile-button-group button {
-    padding: 10px 12px;
-    font-size: 15px;
+    padding: 8px 12px;
+    font-size: 14px;
+    min-height: 40px;
+  }
+
+  /* Logo scaling for very small screens */
+  .mobile-logo-small {
+    height: 24px !important;
+    width: auto;
   }
 }
 
-/* Large phones (iPhone 12 Pro Max, Android XL) */
+/* Standard mobile phones (375px - 414px) - Enhanced */
+@media screen and (min-width: 375px) and (max-width: 414px) {
+  .mobile-tab {
+    font-size: 13px;
+    padding: 8px 14px;
+    min-height: 42px;
+  }
+  
+  .mobile-header {
+    padding: 8px 12px;
+    min-height: 64px;
+  }
+}
+
+/* Large phones (iPhone Pro Max, Android XL) - Enhanced */
 @media screen and (min-width: 414px) and (max-width: 768px) {
   .mobile-card {
-    margin: 12px;
+    margin: 12px 16px;
     padding: 20px;
   }
   
   .mobile-button-group button {
-    padding: 14px 20px;
-    font-size: 17px;
+    padding: 12px 20px;
+    font-size: 16px;
+    min-height: 48px;
+  }
+
+  .mobile-tab {
+    font-size: 14px;
+    padding: 10px 16px;
+    min-height: 44px;
+  }
+
+  .mobile-header {
+    padding: 10px 16px;
+    min-height: 68px;
   }
 }
 
-/* Landscape orientation optimization */
+/* Landscape orientation optimization - Enhanced */
 @media screen and (max-height: 500px) and (orientation: landscape) {
   .mobile-header {
-    padding-top: calc(env(safe-area-inset-top) + 8px);
-    padding-bottom: 8px;
+    padding: 4px 12px;
+    min-height: 48px;
+  }
+  
+  .mobile-tab {
+    padding: 4px 12px;
+    min-height: 32px;
+    font-size: 12px;
   }
   
   .mobile-modal {
@@ -149,12 +221,14 @@
   }
   
   .mobile-fab {
-    bottom: 16px;
-    right: 16px;
+    bottom: 12px;
+    right: 12px;
+    width: 48px;
+    height: 48px;
   }
 }
 
-/* Android specific optimizations */
+/* Android specific optimizations - Enhanced */
 @media screen and (max-width: 768px) {
   /* Android Chrome address bar compensation */
   .android-viewport-fix {
@@ -162,10 +236,11 @@
     min-height: -webkit-fill-available;
   }
   
-  /* Material Design ripple effect */
+  /* Enhanced Material Design ripple effect */
   .android-ripple {
     position: relative;
     overflow: hidden;
+    transform: translateZ(0);
   }
   
   .android-ripple::before {
@@ -176,36 +251,40 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.2);
     transform: translate(-50%, -50%);
-    transition: width 0.3s, height 0.3s;
+    transition: width 0.4s ease, height 0.4s ease;
   }
   
   .android-ripple:active::before {
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
+  }
+
+  /* Android-specific button styling */
+  .android-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
   }
 }
 
-/* iOS specific optimizations */
+/* iOS specific optimizations - Enhanced */
 @media screen and (max-width: 768px) {
   /* iOS bounce scroll prevention */
   .ios-no-bounce {
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
   }
   
-  /* iOS status bar styling */
-  .ios-status-bar-black {
-    --ios-status-bar-style: black-translucent;
-  }
-  
-  /* iOS input styling */
+  /* Enhanced iOS input styling */
   .ios-input {
-    appearance: none;
     -webkit-appearance: none;
+    appearance: none;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
   }
   
   .ios-input:focus {
@@ -213,72 +292,69 @@
     border-color: #007AFF;
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
   }
+
+  /* iOS-specific button styling */
+  .ios-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
 }
 
-/* High DPI displays (Retina) */
+/* High DPI displays (Retina) - Enhanced */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .retina-optimized {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
   }
-}
 
-/* Reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  /* Sharper borders on retina */
+  .retina-border {
+    border-width: 0.5px;
   }
 }
 
-/* Dark mode preferences */
-@media (prefers-color-scheme: dark) {
-  .mobile-input {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: white;
-  }
-}
-
-/* Accessibility improvements */
-@media (max-width: 768px) {
-  /* Larger touch targets for accessibility */
-  .a11y-touch-target {
-    min-height: 48px;
-    min-width: 48px;
-  }
-  
-  /* High contrast mode support */
-  @media (prefers-contrast: high) {
-    .mobile-button-group button {
-      border: 2px solid currentColor;
-    }
-    
-    .mobile-input {
-      border: 2px solid currentColor;
-    }
-  }
-  
-  /* Focus indicators */
-  .mobile-focus:focus-visible {
-    outline: 3px solid #007AFF;
-    outline-offset: 2px;
-  }
-}
-
-/* Performance optimizations */
+/* Enhanced Performance optimizations */
 .mobile-optimized {
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+  perspective: 1000px;
 }
 
-/* Smooth animations for mobile */
+/* Enhanced smooth animations for mobile */
 .mobile-transition {
-  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .mobile-transition-fast {
-  transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
+
+/* Platform-specific enhancements */
+.platform-android .mobile-tab {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.platform-ios .mobile-tab {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+/* Enhanced focus and accessibility */
+.mobile-focus:focus-visible {
+  outline: 3px solid #007AFF;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Enhanced spacing utilities */
+.mobile-spacing-xs { padding: 4px 8px; }
+.mobile-spacing-sm { padding: 8px 12px; }
+.mobile-spacing-md { padding: 12px 16px; }
+.mobile-spacing-lg { padding: 16px 20px; }
+.mobile-spacing-xl { padding: 20px 24px; }
