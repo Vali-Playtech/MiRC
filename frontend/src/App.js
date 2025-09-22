@@ -4597,27 +4597,21 @@ const AppContent = () => {
               )}
             </div>
 
-            {/* Private Message Input */}
-            <form onSubmit={sendPrivateMessage} className="p-4 border-t border-white/10">
-              <div className="flex space-x-3">
-                <input
-                  type="text"
-                  value={newPrivateMessage}
-                  onChange={(e) => setNewPrivateMessage(e.target.value)}
-                  placeholder={`Mesaj pentru ${privateChatUser.nickname}...`}
-                  className="flex-1 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-white/20 placeholder-gray-400 border border-white/20"
-                />
-                <button
-                  type="submit"
-                  disabled={!newPrivateMessage.trim()}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-4 py-2 rounded-xl transition-all duration-200 disabled:cursor-not-allowed"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                </button>
-              </div>
-            </form>
+            {/* Messenger-style Input pentru Private Chat */}
+            <div className="p-4 border-t border-white/10">
+              <MessengerInput
+                value={newPrivateMessage}
+                onChange={setNewPrivateMessage}
+                onSubmit={() => {
+                  if (newPrivateMessage.trim()) {
+                    const mockEvent = { preventDefault: () => {} };
+                    sendPrivateMessage(mockEvent);
+                  }
+                }}
+                placeholder={`Mesaj pentru ${privateChatUser.nickname}...`}
+                maxLength={1000}
+              />
+            </div>
           </div>
         </div>
       )}
