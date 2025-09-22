@@ -2722,6 +2722,9 @@ const RoomList = ({
   const [showFloatingButton, setShowFloatingButton] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   
+  // Avatar dropdown state
+  const [showAvatarDropdown, setShowAvatarDropdown] = useState(false);
+  
   const { token, user, logout } = useAuth();
   const { t } = useLanguage();
 
