@@ -743,26 +743,46 @@ const MessengerInput = ({
   };
 
   const handleCameraClick = async () => {
-    const photoFile = await capturePhoto();
-    if (photoFile && onImageUpload) {
-      const event = {
-        target: {
-          files: [photoFile]
-        }
-      };
-      onImageUpload(event);
+    console.log('Camera button clicked');
+    try {
+      const photoFile = await capturePhoto();
+      console.log('Photo captured:', photoFile);
+      if (photoFile && onImageUpload) {
+        const event = {
+          target: {
+            files: [photoFile]
+          }
+        };
+        console.log('Calling onImageUpload with photo');
+        onImageUpload(event);
+      } else {
+        console.log('No photo captured or no onImageUpload function');
+      }
+    } catch (error) {
+      console.error('Error in handleCameraClick:', error);
+      alert('Eroare la accesarea camerei: ' + error.message);
     }
   };
 
   const handleGalleryClick = async () => {
-    const files = await selectFromGallery();
-    if (files.length > 0 && onImageUpload) {
-      const event = {
-        target: {
-          files: files
-        }
-      };
-      onImageUpload(event);
+    console.log('Gallery button clicked');
+    try {
+      const files = await selectFromGallery();
+      console.log('Files selected from gallery:', files);
+      if (files && files.length > 0 && onImageUpload) {
+        const event = {
+          target: {
+            files: files
+          }
+        };
+        console.log('Calling onImageUpload with files:', files.length);
+        onImageUpload(event);
+      } else {
+        console.log('No files selected or no onImageUpload function');
+      }
+    } catch (error) {
+      console.error('Error in handleGalleryClick:', error);
+      alert('Eroare la selectarea fișierelor: ' + error.message);
     }
   };
 
