@@ -3798,15 +3798,10 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
                     />
                   </div>
 
-                  {/* Original Post Preview */}
+                  {/* Original Post Preview - fără avatar */}
                   <div className="bg-gray-700/30 border border-white/10 rounded-lg p-3">
                     <div className="text-xs text-gray-400 mb-2">Postarea originală:</div>
                     <div className="flex items-start space-x-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
                       <div className="flex-1">
                         <div className="text-white text-xs font-medium">{shareModalPost.user_name}</div>
                         <div className="text-gray-300 text-xs mt-1 line-clamp-3">
