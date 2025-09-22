@@ -2,6 +2,125 @@ import React, { useState, useEffect, useContext, createContext, useRef } from 'r
 import './App.css';
 import { languages, translations, getTranslation, defaultAvatars, getAvatarUrl, svgToBase64 } from './i18n';
 
+// Messenger-style Input Hook pentru funcționalități multimedia
+const useMessengerInput = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaStream, setMediaStream] = useState(null);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+
+  // Camera/Photo capture
+  const capturePhoto = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'user' }, 
+        audio: false 
+      });
+      
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
+      
+      return new Promise((resolve) => {
+        video.addEventListener('loadedmetadata', () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0);
+          
+          // Stop camera
+          stream.getTracks().forEach(track => track.stop());
+          
+          canvas.toBlob((blob) => {
+            const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
+            resolve(file);
+          }, 'image/jpeg', 0.8);
+        });
+      });
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      alert('Nu se poate accesa camera. Verifică permisiunile.');
+      return null;
+    }
+  };
+
+  // Gallery/File selection
+  const selectFromGallery = () => {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*,video/*';
+      input.multiple = true;
+      
+      input.onchange = (e) => {
+        const files = Array.from(e.target.files);
+        resolve(files);
+      };
+      
+      input.click();
+    });
+  };
+
+  // Voice recording
+  const startVoiceRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMediaStream(stream);
+      
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      mediaRecorderRef.current = recorder;
+      chunksRef.current = [];
+      
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+      
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        const file = new File([blob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+        
+        // Cleanup
+        stream.getTracks().forEach(track => track.stop());
+        setMediaStream(null);
+        setMediaRecorder(null);
+        
+        // Return voice file
+        window.lastVoiceFile = file;
+      };
+      
+      recorder.start();
+      setIsRecording(true);
+      
+      return recorder;
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      alert('Nu se poate accesa microfonul. Verifică permisiunile.');
+      return null;
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  return {
+    capturePhoto,
+    selectFromGallery,
+    startVoiceRecording,
+    stopVoiceRecording,
+    isRecording
+  };
+};
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
