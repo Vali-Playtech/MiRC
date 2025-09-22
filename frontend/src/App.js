@@ -4428,6 +4428,14 @@ const AppContent = () => {
   const [privateMessages, setPrivateMessages] = useState([]);
   const [newPrivateMessage, setNewPrivateMessage] = useState('');
   const [isPrivateChatUserFriend, setIsPrivateChatUserFriend] = useState(false);
+  
+  // Post creation states
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [newPost, setNewPost] = useState('');
+  const [linkPreview, setLinkPreview] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+  
   const { user, loading, token } = useAuth();
 
   // Functions for private chat
