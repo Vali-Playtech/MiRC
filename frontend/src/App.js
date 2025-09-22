@@ -2548,7 +2548,20 @@ const getRoomIcon = (roomName, isPrivate) => {
   );
 };
 
-const RoomList = ({ onRoomSelect, onAccountSettings }) => {
+const RoomList = ({ 
+  onRoomSelect, 
+  onAccountSettings,
+  showPostModal,
+  setShowPostModal,
+  newPost,
+  setNewPost,
+  handleImageUpload,
+  createPost,
+  uploadedImages,
+  removeImage,
+  linkPreview,
+  isLoadingPreview
+}) => {
   const [rooms, setRooms] = useState([]);
   const [showCreateRoom, setShowCreateRoom] = useState(false);
   const [newRoomName, setNewRoomName] = useState('');
