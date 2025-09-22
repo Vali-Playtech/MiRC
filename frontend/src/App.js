@@ -5147,7 +5147,7 @@ const AppContent = () => {
         alert('Postarea a fost creată cu succes!');
         
         // Refresh posts list
-        loadPosts();
+        await fetchPosts();
       } else {
         const errorData = await response.json();
         console.error('Error creating post:', errorData);
