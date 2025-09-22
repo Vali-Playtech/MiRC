@@ -4176,7 +4176,11 @@ const FriendsBar = ({ onFriendClick }) => {
             </div>
           );
         })}
-        {/* Bulă "+X" eliminată complet */}
+        {allContacts.length > 5 && (
+          <div className="w-12 h-12 rounded-full bg-gray-700/80 backdrop-blur-sm border-2 border-white/20 flex items-center justify-center">
+            <span className="text-white text-xs font-semibold">+{allContacts.length - 5}</span>
+          </div>
+        )}
       </div>
     </div>
   );
