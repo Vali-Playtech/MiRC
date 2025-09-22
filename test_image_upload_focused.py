@@ -258,16 +258,16 @@ class FocusedImageUploadTester:
             print(f"   ✅ Thumbnail URL: {upload_data['thumbnail_url']}")
             
             # Test that the image URLs are actually accessible
-            final_image_test = self.session.get(f"{API_BASE}{upload_data['url']}")
-            final_thumb_test = self.session.get(f"{API_BASE}{upload_data['thumbnail_url']}")
+            final_image_test = self.session.get(f"{BACKEND_URL}{upload_data['url']}")
+            final_thumb_test = self.session.get(f"{BACKEND_URL}{upload_data['thumbnail_url']}")
             
             if final_image_test.status_code != 200:
                 return self.log_test("Final Image URL Test", False, 
-                                   f"Image URL not accessible: {API_BASE}{upload_data['url']} - Status: {final_image_test.status_code}")
+                                   f"Image URL not accessible: {BACKEND_URL}{upload_data['url']} - Status: {final_image_test.status_code}")
             
             if final_thumb_test.status_code != 200:
                 return self.log_test("Final Thumbnail URL Test", False, 
-                                   f"Thumbnail URL not accessible: {API_BASE}{upload_data['thumbnail_url']} - Status: {final_thumb_test.status_code}")
+                                   f"Thumbnail URL not accessible: {BACKEND_URL}{upload_data['thumbnail_url']} - Status: {final_thumb_test.status_code}")
             
             print("   ✅ Both image URLs are accessible and working")
             
