@@ -83,18 +83,76 @@ const useMessengerInput = () => {
 
   // Gallery/File selection
   const selectFromGallery = () => {
-    return new Promise((resolve) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*,video/*';
-      input.multiple = true;
-      
-      input.onchange = (e) => {
-        const files = Array.from(e.target.files);
-        resolve(files);
-      };
-      
-      input.click();
+    return new Promise((resolve, reject) => {
+      try {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*,video/*';
+        input.multiple = true;
+        input.style.display = 'none';
+        
+        let isResolved = false;
+        
+        input.onchange = (e) => {
+          if (!isResolved) {
+            isResolved = true;
+            const files = Array.from(e.target.files || []);
+            console.log('Files selected:', files.length);
+            
+            // Validate files
+            const validFiles = files.filter(file => {
+              const isImage = file.type.startsWith('image/');
+              const isVideo = file.type.startsWith('video/');
+              const sizeOk = file.size <= 10 * 1024 * 1024; // 10MB limit
+              
+              if (!isImage && !isVideo) {
+                alert(`Fișierul "${file.name}" nu este o imagine sau video valid.`);
+                return false;
+              }
+              
+              if (!sizeOk) {
+                alert(`Fișierul "${file.name}" este prea mare. Limita este 10MB.`);
+                return false;
+              }
+              
+              return true;
+            });
+            
+            resolve(validFiles);
+            document.body.removeChild(input);
+          }
+        };
+        
+        // Handle cancel (focus return without selection)
+        input.oncancel = () => {
+          if (!isResolved) {
+            isResolved = true;
+            console.log('File selection cancelled by user');
+            resolve([]);
+            document.body.removeChild(input);
+          }
+        };
+
+        // Add to DOM and trigger click
+        document.body.appendChild(input);
+        input.click();
+        
+        // Fallback timeout for browsers that don't support oncancel
+        setTimeout(() => {
+          if (!isResolved) {
+            isResolved = true;
+            console.log('File selection timeout - likely cancelled');
+            resolve([]);
+            if (document.body.contains(input)) {
+              document.body.removeChild(input);
+            }
+          }
+        }, 30000); // 30 second timeout
+
+      } catch (error) {
+        console.error('Error in selectFromGallery:', error);
+        reject(new Error('Nu s-a putut deschide selectorul de fișiere'));
+      }
     });
   };
 
