@@ -105,11 +105,12 @@
     border-radius: 16px;
   }
 
-  /* Enhanced floating action button - poziționat în dreapta jos ca pe X/Twitter */
+  /* Enhanced floating action button - poziționat în dreapta jos (nu stânga jos) */
   .mobile-fab {
     position: fixed;
-    bottom: calc(env(safe-area-inset-bottom) + 20px);
-    right: calc(env(safe-area-inset-right) + 20px);
+    bottom: calc(env(safe-area-inset-bottom) + 80px); /* Mai sus pentru a nu se suprapune cu badge-ul */
+    right: calc(env(safe-area-inset-right) + 20px);   /* În DREAPTA, nu în stânga */
+    left: auto; /* Resetăm orice left positioning */
     width: 56px;
     height: 56px;
     border-radius: 28px;
