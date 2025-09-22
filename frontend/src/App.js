@@ -317,9 +317,9 @@ const PostCreationModal = ({
         {/* Modal Content - Mobile Optimized Scroll */}
         <div className="p-6 max-h-96 overflow-y-auto mobile-scroll">
           <div className="space-y-4">
-            {/* Messenger Input - Mobile Enhanced */}
+            {/* Expandable Messenger Input - Mobile Enhanced */}
             <div className="mobile-input-container">
-              <MessengerInput
+              <ExpandableMessengerInput
                 value={newPost}
                 onChange={setNewPost}
                 onImageUpload={handleImageUpload}
@@ -328,7 +328,7 @@ const PostCreationModal = ({
                   onClose();
                 }}
                 placeholder="Ce vrei să împarți cu lumea?"
-                maxLength={500}
+                maxWords={100}
                 showCharCount={true}
               />
             </div>
