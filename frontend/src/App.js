@@ -262,12 +262,11 @@ const AvatarDropdown = ({ user, onAccountSettings, onLogout, isOpen, onClose }) 
   );
 };
 // Floating Action Button Component - Bulă albastră rotundă în dreapta jos ca pe X/Twitter
-const FloatingPostButton = ({ onCreatePost, isVisible }) => {
+const FloatingPostButton = ({ onCreatePost, opacity = 1 }) => {
   return (
     <div 
-      className={`mobile-fab transition-all duration-300 ${
-        isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
-      }`}
+      className="mobile-fab transition-all duration-300"
+      style={{ opacity: opacity }}
     >
       <button
         onClick={onCreatePost}
