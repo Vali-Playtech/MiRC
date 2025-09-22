@@ -265,12 +265,14 @@ const AvatarDropdown = ({ user, onAccountSettings, onLogout, isOpen, onClose }) 
 const FloatingPostButton = ({ onCreatePost, isVisible }) => {
   return (
     <div 
-      className={`fixed bottom-20 right-5 w-14 h-14 z-50 transition-all duration-300 ${
+      className={`fixed w-14 h-14 z-50 transition-all duration-300 ${
         isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
       }`}
       style={{ 
         bottom: 'calc(env(safe-area-inset-bottom) + 80px)',
-        right: 'calc(env(safe-area-inset-right) + 20px)'
+        right: 'calc(env(safe-area-inset-right) + 20px)',
+        position: 'fixed',
+        zIndex: 9999
       }}
     >
       <button
