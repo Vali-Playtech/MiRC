@@ -2011,6 +2011,354 @@ class BackendTester:
             
         except Exception as e:
             return self.log_test("World Chat Posting with Romanian Content", False, f"Exception: {str(e)}")
+    
+    def test_world_chat_image_upload_and_posting(self):
+        """Test 17: World Chat Image Upload and Posting Functionality (REVIEW REQUEST TARGET)"""
+        print("\n=== Testing World Chat Image Upload and Posting Functionality ===")
+        
+        try:
+            # Setup authentication with test credentials from review request
+            test_credentials = {
+                "email": "test@example.com",
+                "password": "password123"
+            }
+            
+            # Try to login first, if fails then register
+            response = self.session.post(f"{API_BASE}/auth/login", json=test_credentials)
+            if response.status_code != 200:
+                # Register the user
+                register_data = {
+                    "email": test_credentials["email"],
+                    "password": test_credentials["password"],
+                    "first_name": "Test",
+                    "last_name": "User",
+                    "nickname": "testuser_image"
+                }
+                
+                response = self.session.post(f"{API_BASE}/auth/register", json=register_data)
+                if not self.log_test("Image Test User Registration", response.status_code == 200,
+                                   f"Status: {response.status_code}"):
+                    return False
+                
+                # Now login
+                response = self.session.post(f"{API_BASE}/auth/login", json=test_credentials)
+                if not self.log_test("Image Test User Login", response.status_code == 200,
+                                   f"Status: {response.status_code}"):
+                    return False
+            
+            token_data = response.json()
+            headers = {"Authorization": f"Bearer {token_data['access_token']}"}
+            
+            # Test 1: Verify POST /api/world-chat/upload-image endpoint exists and is protected
+            print("Phase 1: Testing image upload endpoint protection...")
+            
+            # Test without authentication (should fail)
+            response = self.session.post(f"{API_BASE}/world-chat/upload-image")
+            if not self.log_test("Image Upload Auth Protection", response.status_code == 403,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 2: Create a mock image file for testing
+            print("Phase 2: Creating mock image for testing...")
+            
+            import io
+            from PIL import Image
+            
+            # Create a simple test image (100x100 red square)
+            test_image = Image.new('RGB', (100, 100), color='red')
+            img_buffer = io.BytesIO()
+            test_image.save(img_buffer, format='JPEG', quality=85)
+            img_buffer.seek(0)
+            
+            # Test 3: Upload image via POST /api/world-chat/upload-image
+            print("Phase 3: Testing image upload...")
+            
+            files = {
+                'file': ('test_image.jpg', img_buffer, 'image/jpeg')
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/upload-image", 
+                                       files=files, headers=headers)
+            if not self.log_test("Image Upload", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            uploaded_image = response.json()
+            
+            # Validate image upload response structure
+            required_fields = ['id', 'filename', 'original_filename', 'url', 'thumbnail_url', 'width', 'height', 'file_size']
+            for field in required_fields:
+                if field not in uploaded_image:
+                    return self.log_test("Image Upload Response Structure", False,
+                                       f"Missing field: {field}")
+            
+            image_id = uploaded_image['id']
+            image_url = uploaded_image['url']
+            thumbnail_url = uploaded_image['thumbnail_url']
+            
+            # Validate image dimensions and file size
+            if uploaded_image['width'] != 100 or uploaded_image['height'] != 100:
+                return self.log_test("Image Dimensions", False,
+                                   f"Expected 100x100, got {uploaded_image['width']}x{uploaded_image['height']}")
+            
+            if uploaded_image['file_size'] <= 0:
+                return self.log_test("Image File Size", False, "File size should be greater than 0")
+            
+            self.log_test("Image Upload Success", True, 
+                         f"Image uploaded: ID={image_id}, Size={uploaded_image['file_size']} bytes")
+            
+            # Test 4: Verify image compression and thumbnail generation
+            print("Phase 4: Testing image processing...")
+            
+            # Check if thumbnail URL is different from main image URL
+            if thumbnail_url == image_url:
+                return self.log_test("Thumbnail Generation", False, "Thumbnail URL same as main image URL")
+            
+            # Verify URLs are properly formatted
+            if not image_url.startswith('/api/world-chat/images/'):
+                return self.log_test("Image URL Format", False, f"Invalid image URL format: {image_url}")
+            
+            if not thumbnail_url.startswith('/api/world-chat/images/'):
+                return self.log_test("Thumbnail URL Format", False, f"Invalid thumbnail URL format: {thumbnail_url}")
+            
+            # Test 5: Verify image serving endpoint
+            print("Phase 5: Testing image serving...")
+            
+            # Test main image serving
+            response = self.session.get(f"{API_BASE.replace('/api', '')}{image_url}")
+            if not self.log_test("Image Serving", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test thumbnail serving
+            response = self.session.get(f"{API_BASE.replace('/api', '')}{thumbnail_url}")
+            if not self.log_test("Thumbnail Serving", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 6: Create post with image
+            print("Phase 6: Testing post creation with image...")
+            
+            post_with_image_data = {
+                "content": "Aceasta este o postare cu imagine pentru testare!"
+            }
+            
+            # Include image ID as query parameter
+            response = self.session.post(f"{API_BASE}/world-chat/posts?images={image_id}", 
+                                       json=post_with_image_data, headers=headers)
+            if not self.log_test("Post Creation with Image", response.status_code == 200,
+                               f"Status: {response.status_code}, Response: {response.text[:300]}"):
+                return False
+            
+            post_with_image = response.json()
+            
+            # Validate post structure with image
+            required_post_fields = ['id', 'content', 'user_id', 'user_name', 'user_nickname', 'images', 'created_at']
+            for field in required_post_fields:
+                if field not in post_with_image:
+                    return self.log_test("Post with Image Structure", False,
+                                       f"Missing field: {field}")
+            
+            # Verify image is included in post
+            if not post_with_image.get('images'):
+                return self.log_test("Image in Post", False, "No images found in post")
+            
+            if len(post_with_image['images']) != 1:
+                return self.log_test("Image Count in Post", False, 
+                                   f"Expected 1 image, got {len(post_with_image['images'])}")
+            
+            post_image = post_with_image['images'][0]
+            if post_image['id'] != image_id:
+                return self.log_test("Image ID in Post", False, "Image ID mismatch in post")
+            
+            self.log_test("Post with Image Creation", True, 
+                         f"Post created with image: {post_with_image['id']}")
+            
+            # Test 7: Verify image appears in post retrieval with thumbnail
+            print("Phase 7: Testing post retrieval with image...")
+            
+            response = self.session.get(f"{API_BASE}/world-chat/posts?limit=5", headers=headers)
+            if not self.log_test("Posts Retrieval with Images", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            posts = response.json()
+            
+            # Find our post with image
+            image_post_found = False
+            for post in posts:
+                if post.get('id') == post_with_image['id']:
+                    image_post_found = True
+                    
+                    # Verify image data is preserved
+                    if not post.get('images'):
+                        return self.log_test("Image Persistence in Posts", False, "Image not found in retrieved post")
+                    
+                    retrieved_image = post['images'][0]
+                    
+                    # Verify all image fields are present
+                    for field in required_fields:
+                        if field not in retrieved_image:
+                            return self.log_test("Retrieved Image Structure", False,
+                                               f"Missing field in retrieved image: {field}")
+                    
+                    # Verify thumbnail URL is present and accessible
+                    if not retrieved_image.get('thumbnail_url'):
+                        return self.log_test("Thumbnail in Retrieved Post", False, "Thumbnail URL missing")
+                    
+                    break
+            
+            if not image_post_found:
+                return self.log_test("Image Post Retrieval", False, "Post with image not found in posts list")
+            
+            # Test 8: Test combination of text + image in same post
+            print("Phase 8: Testing text + image combination...")
+            
+            # Create another image for combination test
+            test_image2 = Image.new('RGB', (150, 150), color='blue')
+            img_buffer2 = io.BytesIO()
+            test_image2.save(img_buffer2, format='PNG', quality=90)
+            img_buffer2.seek(0)
+            
+            files2 = {
+                'file': ('test_image2.png', img_buffer2, 'image/png')
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/upload-image", 
+                                       files=files2, headers=headers)
+            if not self.log_test("Second Image Upload", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            uploaded_image2 = response.json()
+            image_id2 = uploaded_image2['id']
+            
+            # Create post with both text and image
+            combo_post_data = {
+                "content": "Aceasta este o postare combinată cu text și imagine! 🖼️ Testăm funcționalitatea completă."
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/posts?images={image_id2}", 
+                                       json=combo_post_data, headers=headers)
+            if not self.log_test("Text + Image Combination Post", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            combo_post = response.json()
+            
+            # Verify both text and image are present
+            if not combo_post.get('content') or len(combo_post['content'].strip()) == 0:
+                return self.log_test("Text in Combo Post", False, "Text content missing in combination post")
+            
+            if not combo_post.get('images') or len(combo_post['images']) == 0:
+                return self.log_test("Image in Combo Post", False, "Image missing in combination post")
+            
+            # Test 9: Test multiple images in single post
+            print("Phase 9: Testing multiple images in single post...")
+            
+            multiple_images_post_data = {
+                "content": "Postare cu multiple imagini pentru testare!"
+            }
+            
+            # Try to include both images
+            response = self.session.post(f"{API_BASE}/world-chat/posts?images={image_id}&images={image_id2}", 
+                                       json=multiple_images_post_data, headers=headers)
+            if not self.log_test("Multiple Images Post", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            multi_image_post = response.json()
+            
+            # Verify multiple images are included
+            if not multi_image_post.get('images'):
+                return self.log_test("Multiple Images in Post", False, "No images found in multi-image post")
+            
+            if len(multi_image_post['images']) < 2:
+                return self.log_test("Multiple Images Count", False, 
+                                   f"Expected at least 2 images, got {len(multi_image_post['images'])}")
+            
+            # Test 10: Test invalid image upload scenarios
+            print("Phase 10: Testing invalid image scenarios...")
+            
+            # Test with non-image file
+            text_file = io.StringIO("This is not an image")
+            files_invalid = {
+                'file': ('test.txt', text_file, 'text/plain')
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/upload-image", 
+                                       files=files_invalid, headers=headers)
+            if not self.log_test("Invalid File Type Rejection", response.status_code == 400,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            # Test 11: Verify image compression works (file size optimization)
+            print("Phase 11: Testing image compression...")
+            
+            # Create a larger image to test compression
+            large_image = Image.new('RGB', (2000, 2000), color='green')
+            large_img_buffer = io.BytesIO()
+            large_image.save(large_img_buffer, format='JPEG', quality=100)  # High quality, large file
+            original_size = large_img_buffer.tell()
+            large_img_buffer.seek(0)
+            
+            files_large = {
+                'file': ('large_image.jpg', large_img_buffer, 'image/jpeg')
+            }
+            
+            response = self.session.post(f"{API_BASE}/world-chat/upload-image", 
+                                       files=files_large, headers=headers)
+            if not self.log_test("Large Image Upload", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            compressed_image = response.json()
+            
+            # Verify compression occurred (image should be resized to max 1200px width)
+            if compressed_image['width'] > 1200:
+                return self.log_test("Image Compression Width", False, 
+                                   f"Image width {compressed_image['width']} exceeds 1200px limit")
+            
+            # Verify aspect ratio is maintained
+            expected_height = int(2000 * (compressed_image['width'] / 2000))
+            if abs(compressed_image['height'] - expected_height) > 5:  # Allow small rounding differences
+                return self.log_test("Aspect Ratio Preservation", False, 
+                                   f"Aspect ratio not preserved: expected ~{expected_height}, got {compressed_image['height']}")
+            
+            self.log_test("Image Compression", True, 
+                         f"Large image compressed from 2000x2000 to {compressed_image['width']}x{compressed_image['height']}")
+            
+            # Test 12: Final verification - retrieve all posts and verify images are working
+            print("Phase 12: Final verification...")
+            
+            response = self.session.get(f"{API_BASE}/world-chat/posts?limit=10", headers=headers)
+            if not self.log_test("Final Posts Retrieval", response.status_code == 200,
+                               f"Status: {response.status_code}"):
+                return False
+            
+            final_posts = response.json()
+            
+            posts_with_images = 0
+            for post in final_posts:
+                if post.get('images') and len(post['images']) > 0:
+                    posts_with_images += 1
+                    
+                    # Verify each image has required fields
+                    for img in post['images']:
+                        if not all(field in img for field in ['id', 'url', 'thumbnail_url', 'width', 'height']):
+                            return self.log_test("Final Image Structure Validation", False, 
+                                               "Image missing required fields in final verification")
+            
+            if posts_with_images < 3:  # We created at least 3 posts with images
+                return self.log_test("Final Image Posts Count", False, 
+                                   f"Expected at least 3 posts with images, found {posts_with_images}")
+            
+            self.log_test("World Chat Image Upload and Posting", True, 
+                         f"🎉 ALL IMAGE FUNCTIONALITY TESTS PASSED! Created {posts_with_images} posts with images, compression working, thumbnails generated!")
+            return True
+            
+        except Exception as e:
+            return self.log_test("World Chat Image Upload and Posting", False, f"Exception: {str(e)}")
 
     async def run_all_tests(self):
         """Run all backend tests including NEW Private Chat and Friends System"""
