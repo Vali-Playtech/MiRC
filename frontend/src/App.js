@@ -3744,7 +3744,7 @@ const RoomList = ({
             </div>
 
             {/* Post Feed */}
-            <div className="flex-1 overflow-y-auto" id="world-chat-feed">
+            <div className="flex-1 overflow-y-auto pb-32" id="world-chat-feed">
               <div className="max-w-full md:max-w-2xl md:mx-auto p-4 md:p-6">
                 {posts.length > 0 ? (
                   <div className="space-y-6">
