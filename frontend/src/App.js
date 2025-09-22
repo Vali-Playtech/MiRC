@@ -2570,7 +2570,6 @@ const RoomList = ({
   
   // Floating button și modal states
   const [showFloatingButton, setShowFloatingButton] = useState(false);
-  const [showPostModal, setShowPostModal] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   
   const { token, user, logout } = useAuth();
