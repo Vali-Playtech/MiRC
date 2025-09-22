@@ -2819,7 +2819,34 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
           </button>
           
           <div className="flex items-center space-x-3">
-            {/* Buton Account Settings eliminat - se folosește cel din header */}
+            <button
+              onClick={onAccountSettings}
+              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-500 hover:border-purple-400 transition-all duration-200 group"
+              title={t('accountSettings')}
+            >
+              {user?.avatar_url ? (
+                user.avatar_url.startsWith('data:') ? (
+                  <img 
+                    src={user.avatar_url} 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" 
+                  />
+                ) : (
+                  <div 
+                    className="w-full h-full group-hover:scale-110 transition-transform duration-200"
+                    dangerouslySetInnerHTML={{ 
+                      __html: defaultAvatars.find(a => a.id === user.avatar_url)?.svg || '' 
+                    }}
+                  />
+                )
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center group-hover:from-gray-500 group-hover:to-gray-600 transition-all duration-200">
+                  <span className="text-white text-sm font-semibold">
+                    {user?.nickname?.charAt(0)?.toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </button>
             <button
               onClick={logout}
               className="text-gray-400 hover:text-red-400 transition-colors p-2 rounded-lg hover:bg-red-500/10"
