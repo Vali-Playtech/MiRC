@@ -2692,65 +2692,6 @@ const RoomList = ({
   const [selectedFavorite, setSelectedFavorite] = useState(null);
   const [showFavoriteActions, setShowFavoriteActions] = useState(null);
 
-  // World Chat functions
-  const handleTextChange = (e) => {
-    const text = e.target.value;
-    if (text.length <= MAX_CHARACTERS) {
-      setNewPost(text);
-      setCharacterCount(text.length);
-      
-      // Auto-detect links in text (like Facebook)
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      const urls = text.match(urlRegex);
-      
-      if (urls && urls.length > 0) {
-        // Take the first URL found
-        const firstUrl = urls[0];
-        if (firstUrl !== newPostLink) {
-          setNewPostLink(firstUrl);
-          generateLinkPreview(firstUrl);
-        }
-      } else {
-        // No URL found, clear preview
-        setNewPostLink('');
-        setLinkPreview(null);
-      }
-    }
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      createPost();
-    }
-  };
-
-  const generateLinkPreview = async (url) => {
-    setIsLoadingPreview(true);
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/link-preview`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ url })
-      });
-      
-      if (response.ok) {
-        const preview = await response.json();
-        setLinkPreview(preview);
-      } else {
-        setLinkPreview(null);
-      }
-    } catch (error) {
-      console.error('Error generating link preview:', error);
-      setLinkPreview(null);
-    } finally {
-      setIsLoadingPreview(false);
-    }
-  };
-
   const loadPosts = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/world-chat/posts`, {
