@@ -2567,6 +2567,33 @@ const RoomList = ({ onRoomSelect, onAccountSettings }) => {
     fetchRooms();
   }, []);
 
+  // Scroll detection pentru floating button
+  useEffect(() => {
+    const handleScroll = () => {
+      const feedElement = document.getElementById('world-chat-feed');
+      if (!feedElement) return;
+
+      const currentScrollY = feedElement.scrollTop;
+      const isScrollingUp = currentScrollY < lastScrollY;
+      const isScrolledDown = currentScrollY > 100; // Show after scrolling down 100px
+
+      // Show button when scrolling up and when we've scrolled down a bit
+      setShowFloatingButton(isScrollingUp && isScrolledDown);
+      setLastScrollY(currentScrollY);
+    };
+
+    const feedElement = document.getElementById('world-chat-feed');
+    if (feedElement) {
+      feedElement.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    return () => {
+      if (feedElement) {
+        feedElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [lastScrollY]);
+
   const fetchRooms = async () => {
     try {
       const response = await api.get(`${API}/rooms`, {
